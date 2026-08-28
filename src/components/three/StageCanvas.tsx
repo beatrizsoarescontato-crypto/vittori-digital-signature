@@ -1,17 +1,10 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Lightformer } from "@react-three/drei";
-import { Suspense, useMemo, useRef } from "react";
+import { Suspense, useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { brushedTexture, radialTexture, starGeometry, vGeometry } from "./shapes";
+import { stageScroll, startStageScroll } from "./stageScroll";
 
-/* ------------------------------------------------------------------ *
- * Progresso de scroll: uma cena só, atravessando a página inteira.
- * ------------------------------------------------------------------ */
-function scrollProgress() {
-  if (typeof window === "undefined") return 0;
-  const max = document.documentElement.scrollHeight - window.innerHeight;
-  return max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
-}
 
 /** Keyframes: [x, y, z, rotX, rotY, rotZ, escala, bordô, presença] */
 type Key = { p: number; v: number[] };
