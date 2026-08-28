@@ -122,6 +122,9 @@ function Monogram({
     [],
   );
 
+  const spin = useRef(0);
+  const drift = useRef(0);
+
   useFrame((s, delta) => {
     const dt = Math.min(delta, 0.05);
     const [x, y, z, rx, ry, rz, scale, , presence] = state.current as number[];
@@ -129,24 +132,39 @@ function Monogram({
     if (!g) return;
 
     const t = s.clock.elapsedTime;
-    g.position.x = damp(g.position.x, viewport.width * (x ?? 0), 5, dt);
+
+    // Aceleração: a velocidade do scroll empurra o giro e "afunda" o V no eixo Z.
+    spin.current = damp(spin.current, stageScroll.vel, 2.4, dt);
+    drift.current = damp(drift.current, Math.abs(stageScroll.vel), 1.8, dt);
+    stageScroll.vel = damp(stageScroll.vel, 0, 3.2, dt);
+    const boost = spin.current;
+
+    g.position.x = damp(g.position.x, viewport.width * (x ?? 0) + boost * 0.12, 3.2, dt);
     g.position.y = damp(
       g.position.y,
-      viewport.height * (y ?? 0) + Math.sin(t * 0.55) * 0.08,
-      5,
+      viewport.height * (y ?? 0) + Math.sin(t * 0.55) * 0.08 - boost * 0.16,
+      3.2,
       dt,
     );
-    g.position.z = damp(g.position.z, z ?? 0, 5, dt);
-    g.rotation.x = damp(g.rotation.x, (rx ?? 0) + Math.sin(t * 0.4) * 0.035, 4, dt);
-    g.rotation.y = damp(g.rotation.y, (ry ?? 0) + t * 0.06, 4, dt);
-    g.rotation.z = damp(g.rotation.z, rz ?? 0, 4, dt);
+    g.position.z = damp(g.position.z, (z ?? 0) - drift.current * 0.5, 2.6, dt);
+    g.rotation.x = damp(
+      g.rotation.x,
+      (rx ?? 0) + Math.sin(t * 0.4) * 0.035 + boost * 0.1,
+      3,
+      dt,
+    );
+    g.rotation.y = damp(g.rotation.y, (ry ?? 0) + t * 0.06 + boost * 0.55, 2.8, dt);
+    g.rotation.z = damp(g.rotation.z, (rz ?? 0) - boost * 0.14, 3, dt);
 
-    const target = viewport.height * (scale ?? 0.2);
-    const s0 = damp(g.scale.x, target, 5, dt);
+    // Escala com leve "respiro" no impulso — nunca borrachudo.
+    const target = viewport.height * (scale ?? 0.2) * (1 + drift.current * 0.035);
+    const s0 = damp(g.scale.x, target, 3.4, dt);
     g.scale.setScalar(s0);
 
-    brass.opacity = damp(brass.opacity, presence ?? 1, 5, dt);
+    brass.roughness = damp(brass.roughness, 0.3 - drift.current * 0.1, 3, dt);
+    brass.opacity = damp(brass.opacity, presence ?? 1, 4, dt);
     brassStar.opacity = brass.opacity;
+
 
     // Estrela orbitando o "V"
     if (star.current) {
