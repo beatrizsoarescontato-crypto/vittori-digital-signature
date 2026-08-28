@@ -1,24 +1,54 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { ClientBackgroundCanvas } from "@/components/ClientCanvas";
+import { Nav } from "@/components/site/Nav";
+import { Hero } from "@/components/site/Hero";
+import { Sobre } from "@/components/site/Sobre";
+import { Pilares } from "@/components/site/Pilares";
+import { Servicos } from "@/components/site/Servicos";
+import { Portfolio } from "@/components/site/Portfolio";
+import { CtaFinal } from "@/components/site/CtaFinal";
+import { Footer } from "@/components/site/Footer";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
+const TITULO = "Vittori Creative House — Criamos presença";
+const DESC =
+  "Agência criativa de alto padrão em Brasília: estratégia de marca, identidade visual, direção de arte, conteúdo e presença digital.";
+
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: TITULO },
+      { name: "description", content: DESC },
+      { property: "og:title", content: TITULO },
+      { property: "og:description", content: DESC },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
+  useScrollReveal();
+
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div className="relative bg-preto">
+      <div className="pointer-events-none fixed inset-0 z-0 opacity-70">
+        <ClientBackgroundCanvas />
+      </div>
+
+      <Nav />
+
+      <main className="relative z-10">
+        <Hero />
+        <Sobre />
+        <Pilares />
+        <Servicos />
+        <Portfolio />
+        <CtaFinal />
+      </main>
+
+      <Footer />
     </div>
   );
 }
