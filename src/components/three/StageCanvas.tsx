@@ -39,10 +39,12 @@ function sample(keys: Key[], p: number): number[] {
     }
   }
   const span = b.p - a.p || 1;
-  const raw = (p - a.p) / span;
-  const t = raw * raw * (3 - 2 * raw); // smoothstep
+  const raw = Math.min(1, Math.max(0, (p - a.p) / span));
+  // easeInOutQuint — entra e sai com peso, sem "elástico de template".
+  const t = raw < 0.5 ? 16 * raw ** 5 : 1 - (-2 * raw + 2) ** 5 / 2;
   return a.v.map((v, i) => v + (b.v[i]! - v) * t);
 }
+
 
 const damp = (current: number, target: number, k: number, dt: number) =>
   current + (target - current) * (1 - Math.exp(-k * dt));
