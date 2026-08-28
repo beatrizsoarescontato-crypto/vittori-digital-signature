@@ -94,15 +94,15 @@ export default function HeroCanvas() {
           <Lightformer intensity={8} position={[0, 4, 4]} scale={[12, 12, 1]} color="#F0DCA8" />
           <Lightformer intensity={4} position={[3, -2, 4]} scale={[8, 8, 1]} color="#E4C98F" />
           <Lightformer
-            intensity={1.6}
-            color="#6A4A33"
+            intensity={2.2}
+            color="#E0C48A"
             position={[-5, 0, 1]}
             rotation-y={Math.PI / 2}
             scale={[14, 3, 1]}
           />
           <Lightformer
-            intensity={0.7}
-            color="#8B0F1A"
+            intensity={2.4}
+            color="#C8A25A"
             position={[5, -1, 1]}
             rotation-y={-Math.PI / 2}
             scale={[14, 3, 1]}
