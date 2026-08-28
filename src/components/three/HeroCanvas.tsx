@@ -18,7 +18,7 @@ function Monogram() {
   const geometry = useMemo(() => vGeometry(), []);
   const material = useMemo(() => brassMaterial(0.36), []);
   const { viewport } = useThree();
-  const wide = viewport.width > 7;
+  const wide = viewport.aspect > 1.1;
 
   useFrame((_, delta) => {
     const dt = Math.min(delta, 0.05);
@@ -31,8 +31,12 @@ function Monogram() {
         ref={ref}
         geometry={geometry}
         material={material}
-        position={wide ? [viewport.width * 0.24, 0.4, 0] : [0, 1.9, 0]}
-        scale={wide ? 1.05 : 0.8}
+        position={
+          wide
+            ? [viewport.width * 0.26, viewport.height * 0.04, 0]
+            : [0, viewport.height * 0.2, 0]
+        }
+        scale={wide ? viewport.height * 0.26 : viewport.height * 0.16}
       />
     </Float>
   );
