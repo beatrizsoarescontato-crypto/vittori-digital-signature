@@ -1,4 +1,4 @@
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Lightformer, Float } from "@react-three/drei";
 import { Suspense, useMemo, useRef } from "react";
 import * as THREE from "three";
@@ -9,23 +9,31 @@ function brassMaterial(rough = 0.28) {
     color: new THREE.Color("#C8A25A"),
     metalness: 1,
     roughness: rough,
-    envMapIntensity: 1.4,
+    envMapIntensity: 1.5,
   });
 }
 
 function Monogram() {
   const ref = useRef<THREE.Mesh>(null);
   const geometry = useMemo(() => vGeometry(), []);
-  const material = useMemo(() => brassMaterial(0.3), []);
+  const material = useMemo(() => brassMaterial(0.36), []);
+  const { viewport } = useThree();
+  const wide = viewport.width > 7;
 
   useFrame((_, delta) => {
     const dt = Math.min(delta, 0.05);
-    if (ref.current) ref.current.rotation.y += dt * 0.32;
+    if (ref.current) ref.current.rotation.y += dt * 0.3;
   });
 
   return (
-    <Float speed={1.1} rotationIntensity={0.12} floatIntensity={0.35}>
-      <mesh ref={ref} geometry={geometry} material={material} scale={1.55} />
+    <Float speed={1.1} rotationIntensity={0.12} floatIntensity={0.3}>
+      <mesh
+        ref={ref}
+        geometry={geometry}
+        material={material}
+        position={wide ? [viewport.width * 0.24, 0.4, 0] : [0, 1.9, 0]}
+        scale={wide ? 1.05 : 0.8}
+      />
     </Float>
   );
 }
