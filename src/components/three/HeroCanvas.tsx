@@ -6,10 +6,10 @@ import { starGeometry, vGeometry } from "./shapes";
 
 function brassMaterial(rough = 0.28) {
   return new THREE.MeshStandardMaterial({
-    color: new THREE.Color("#C8A25A"),
-    metalness: 1,
+    color: new THREE.Color("#E0B96C"),
+    metalness: 0.92,
     roughness: rough,
-    envMapIntensity: 1.5,
+    envMapIntensity: 2.6,
   });
 }
 
@@ -90,7 +90,8 @@ export default function HeroCanvas() {
       <spotLight position={[-5, -2, 3]} angle={0.7} penumbra={1} intensity={4} color="#8B0F1A" />
       <Suspense fallback={null}>
         <Environment resolution={128}>
-          <Lightformer intensity={5} position={[0, 4, 2]} scale={[8, 8, 1]} color="#E4C98F" />
+          <Lightformer intensity={8} position={[0, 4, 4]} scale={[12, 12, 1]} color="#F0DCA8" />
+          <Lightformer intensity={4} position={[3, -2, 4]} scale={[8, 8, 1]} color="#E4C98F" />
           <Lightformer
             intensity={1.6}
             color="#6A4A33"
