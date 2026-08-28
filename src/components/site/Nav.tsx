@@ -71,7 +71,7 @@ export function Nav() {
       </div>
 
       <div
-        className={`fixed inset-0 -z-10 flex flex-col justify-center bg-preto/97 px-8 transition-all duration-500 md:hidden ${
+        className={`fixed inset-0 z-40 flex flex-col justify-center bg-preto px-8 transition-all duration-500 md:hidden ${
           open ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
         }`}
       >
