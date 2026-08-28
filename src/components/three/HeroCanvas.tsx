@@ -87,7 +87,7 @@ export default function HeroCanvas() {
         intensity={150}
         color="#E4C98F"
       />
-      <spotLight position={[-5, -2, 3]} angle={0.7} penumbra={1} intensity={1.2} color="#8B0F1A" />
+      <spotLight position={[-5, -2, 3]} angle={0.7} penumbra={1} intensity={0} color="#8B0F1A" />
       <directionalLight position={[1, 1.5, 6]} intensity={3.4} color="#F2DEA8" />
       <Suspense fallback={null}>
         <Environment resolution={128}>
