@@ -83,7 +83,7 @@ export default function HeroCanvas() {
         intensity={90}
         color="#E4C98F"
       />
-      <spotLight position={[-5, -2, 3]} angle={0.7} penumbra={1} intensity={35} color="#8B0F1A" />
+      <spotLight position={[-5, -2, 3]} angle={0.7} penumbra={1} intensity={16} color="#8B0F1A" />
       <Suspense fallback={null}>
         <Environment resolution={128}>
           <Lightformer intensity={3} position={[0, 4, 2]} scale={[8, 8, 1]} color="#E4C98F" />
@@ -95,7 +95,7 @@ export default function HeroCanvas() {
             scale={[14, 3, 1]}
           />
           <Lightformer
-            intensity={1.2}
+            intensity={0.7}
             color="#8B0F1A"
             position={[5, -1, 1]}
             rotation-y={-Math.PI / 2}
