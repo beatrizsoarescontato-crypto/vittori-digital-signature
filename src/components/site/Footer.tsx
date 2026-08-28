@@ -1,43 +1,89 @@
+import { EMAIL, whatsappLink } from "@/lib/contato";
+
 export function Footer() {
   return (
-    <footer className="border-t border-border/60 bg-preto py-16">
-      <div className="mx-auto flex max-w-[1400px] flex-col gap-10 px-6 md:flex-row md:items-end md:justify-between md:px-12">
-        <div>
-          <p className="font-serif text-3xl font-semibold tracking-[0.08em] text-marfim">
-            VITTORI<span className="text-dourado">.</span>
-          </p>
-          <p className="mt-3 max-w-xs text-xs leading-relaxed tracking-[0.14em] text-muted-foreground uppercase">
-            Creative House · Brasília — DF
-          </p>
+    <footer className="relative border-t border-border/50 py-16 md:py-20">
+      <div className="mx-auto max-w-[1440px] px-6 md:px-12">
+        <div className="grid grid-cols-12 gap-y-12">
+          <div className="col-span-12 md:col-span-5">
+            <p className="font-serif text-4xl font-semibold tracking-[0.06em] text-marfim">
+              VITTORI<span className="text-dourado">.</span>
+            </p>
+            <p className="caption mt-4 max-w-xs leading-relaxed">
+              Creative House · Brasília — DF · Estratégia, design e conteúdo para marcas de alto
+              padrão.
+            </p>
+          </div>
+
+          <div className="col-span-6 md:col-span-3">
+            <p className="label-mono text-dourado">Navegar</p>
+            <nav className="mt-5 flex flex-col gap-3">
+              {[
+                { href: "#sobre", l: "Sobre" },
+                { href: "#pilares", l: "Pilares" },
+                { href: "#servicos", l: "Serviços" },
+                { href: "#portfolio", l: "Portfólio" },
+                { href: "#processo", l: "Processo" },
+              ].map((i) => (
+                <a
+                  key={i.href}
+                  href={i.href}
+                  className="text-sm text-marfim/60 transition-colors hover:text-dourado"
+                >
+                  {i.l}
+                </a>
+              ))}
+            </nav>
+          </div>
+
+          <div className="col-span-6 md:col-span-4">
+            <p className="label-mono text-dourado">Contato</p>
+            <nav className="mt-5 flex flex-col gap-3">
+              <a
+                href={`mailto:${EMAIL}`}
+                className="text-sm text-marfim/60 transition-colors hover:text-dourado"
+              >
+                {EMAIL}
+              </a>
+              <a
+                href={whatsappLink()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-marfim/60 transition-colors hover:text-dourado"
+              >
+                WhatsApp · +55 61 99999-9999
+              </a>
+              <a
+                href="https://instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-marfim/60 transition-colors hover:text-dourado"
+              >
+                Instagram
+              </a>
+              <a
+                href="https://www.linkedin.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-marfim/60 transition-colors hover:text-dourado"
+              >
+                LinkedIn
+              </a>
+            </nav>
+          </div>
         </div>
 
-        <nav className="flex flex-wrap gap-8">
-          <a
-            href="https://instagram.com"
-            className="eyebrow text-marfim/70 transition-colors hover:text-dourado"
-          >
-            Instagram
-          </a>
-          <a
-            href="https://www.linkedin.com"
-            className="eyebrow text-marfim/70 transition-colors hover:text-dourado"
-          >
-            LinkedIn
-          </a>
-          <a
-            href="#top"
-            className="eyebrow text-marfim/70 transition-colors hover:text-dourado"
-          >
-            Topo
-          </a>
-        </nav>
-      </div>
-
-      <div className="mx-auto mt-14 max-w-[1400px] px-6 md:px-12">
-        <div className="rule-gold w-full" />
-        <p className="mt-6 text-[0.65rem] tracking-[0.28em] text-muted-foreground uppercase">
-          © {new Date().getFullYear()} Vittori Creative House — Criamos presença.
-        </p>
+        <div className="mt-16">
+          <div className="rule-gold w-full" />
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+            <p className="caption">
+              © {new Date().getFullYear()} Vittori Creative House — Criamos presença.
+            </p>
+            <a href="#top" className="caption transition-colors hover:text-dourado">
+              ✦ Voltar ao topo
+            </a>
+          </div>
+        </div>
       </div>
     </footer>
   );

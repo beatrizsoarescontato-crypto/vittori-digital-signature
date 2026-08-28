@@ -80,6 +80,12 @@
   --border: oklch(0.727 0.088 82.5 / 18%);
   --input: oklch(0.727 0.088 82.5 / 25%);
   --ring: var(--dourado);
+
+  /* Escala tipográfica fluida (editorial) */
+  --step-display: clamp(3.1rem, 11vw, 10rem);
+  --step-h1: clamp(2.6rem, 8vw, 7rem);
+  --step-h2: clamp(2.1rem, 5vw, 4.6rem);
+  --step-h3: clamp(1.5rem, 2.6vw, 2.6rem);
 }
 
 @layer base {
@@ -114,14 +120,62 @@
   ::-webkit-scrollbar-thumb {
     background: linear-gradient(var(--color-bordo), var(--color-dourado));
   }
+
+  :focus-visible {
+    outline: 1px solid var(--color-dourado);
+    outline-offset: 3px;
+  }
 }
 
 @utility eyebrow {
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   letter-spacing: 0.34em;
   text-transform: uppercase;
   font-weight: 500;
   color: var(--color-dourado);
+}
+
+@utility label-mono {
+  font-size: 0.58rem;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+/* Títulos editoriais */
+@utility display {
+  font-family: var(--font-serif);
+  font-size: var(--step-display);
+  font-weight: 300;
+  line-height: 0.88;
+  letter-spacing: -0.03em;
+}
+
+@utility title-1 {
+  font-family: var(--font-serif);
+  font-size: var(--step-h1);
+  font-weight: 300;
+  line-height: 0.94;
+  letter-spacing: -0.025em;
+}
+
+@utility title-2 {
+  font-family: var(--font-serif);
+  font-size: var(--step-h2);
+  font-weight: 300;
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+}
+
+@utility lead {
+  font-size: 0.9375rem;
+  font-weight: 300;
+  line-height: 2;
+  max-width: 34ch;
+}
+
+@utility measure {
+  max-width: 52ch;
 }
 
 @utility rule-gold {
@@ -133,9 +187,47 @@
   height: 1px;
 }
 
+@utility caption {
+  font-size: 0.6rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--color-marfim) 45%, transparent);
+}
+
+/* Grão de filme + vinheta: tira o "digital limpo demais" */
+@utility grain {
+  position: relative;
+}
+@utility grain-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.055;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@utility vignette {
+  background: radial-gradient(
+    120% 90% at 50% 40%,
+    transparent 40%,
+    color-mix(in oklab, var(--color-preto) 85%, transparent) 100%
+  );
+}
+
+/* Revelação */
 @utility reveal-item {
   opacity: 0;
   transform: translateY(28px);
+}
+
+@utility line-mask {
+  display: block;
+  overflow: hidden;
+}
+@utility line-inner {
+  display: block;
+  transform: translateY(105%);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -145,5 +237,12 @@
   .reveal-item {
     opacity: 1;
     transform: none;
+  }
+  .line-inner {
+    transform: none;
+  }
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
   }
 }

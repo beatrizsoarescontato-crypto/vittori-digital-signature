@@ -37,18 +37,63 @@ export const vGeometry = () =>
   new THREE.ExtrudeGeometry(createVShape(), {
     depth: 0.34,
     bevelEnabled: true,
-    bevelThickness: 0.035,
-    bevelSize: 0.035,
-    bevelSegments: 4,
+    bevelThickness: 0.05,
+    bevelSize: 0.045,
+    bevelSegments: 5,
     curveSegments: 6,
   }).center();
 
 export const starGeometry = () =>
-  new THREE.ExtrudeGeometry(createStarShape(), {
-    depth: 0.14,
+  new THREE.ExtrudeGeometry(createStarShape(0.26), {
+    depth: 0.07,
     bevelEnabled: true,
-    bevelThickness: 0.05,
-    bevelSize: 0.06,
-    bevelSegments: 2,
+    bevelThickness: 0.03,
+    bevelSize: 0.035,
+    bevelSegments: 3,
     curveSegments: 2,
   }).center();
+
+/** Textura de gradiente radial usada como "parede" bordô do estúdio. */
+export function radialTexture(
+  inner: string,
+  outer: string,
+  size = 512,
+): THREE.CanvasTexture {
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d")!;
+  const g = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+  g.addColorStop(0, inner);
+  g.addColorStop(0.48, inner);
+  g.addColorStop(1, outer);
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, size, size);
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+/** Mapa de ruído direcional: dá aparência de latão escovado. */
+export function brushedTexture(size = 256): THREE.CanvasTexture {
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d")!;
+  ctx.fillStyle = "#8a8a8a";
+  ctx.fillRect(0, 0, size, size);
+  for (let i = 0; i < size * 5; i++) {
+    const y = Math.random() * size;
+    const v = 118 + Math.random() * 60;
+    ctx.strokeStyle = `rgba(${v},${v},${v},0.32)`;
+    ctx.lineWidth = Math.random() * 1.4;
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(size, y + (Math.random() - 0.5) * 3);
+    ctx.stroke();
+  }
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(2, 2);
+  return tex;
+}
