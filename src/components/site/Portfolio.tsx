@@ -125,7 +125,7 @@ function TiltCard({ projeto }: { projeto: (typeof PROJETOS)[number] }) {
 export function Portfolio() {
   return (
     <section id="portfolio" className="relative overflow-hidden border-t border-border/50 py-28 md:py-44">
-      <div aria-hidden className="absolute inset-0 -z-10 bg-preto/93" />
+      <div aria-hidden className="absolute inset-0 -z-10 bg-preto/96" />
       <div className="mx-auto max-w-[1440px] px-6 md:px-12">
         <div className="grid grid-cols-12 items-end gap-y-10">
           <div className="col-span-12 lg:col-span-7">
