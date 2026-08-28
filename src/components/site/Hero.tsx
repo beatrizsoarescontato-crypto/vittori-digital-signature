@@ -1,54 +1,98 @@
-import { ClientHeroCanvas } from "../ClientCanvas";
+import { Line } from "./Lines";
 
 export function Hero() {
   return (
-    <section id="top" className="relative flex min-h-[100svh] items-center overflow-hidden">
-      <div className="absolute inset-0 opacity-90">
-        <ClientHeroCanvas />
-      </div>
+    <section
+      id="top"
+      className="relative flex min-h-[100svh] flex-col justify-end overflow-hidden pb-10"
+    >
+      {/* Vinheta sobre a parede bordô da cena 3D */}
       <div
-        className="absolute inset-0"
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(120% 80% at 20% 30%, transparent 20%, rgba(13,13,13,0.82) 70%), linear-gradient(to bottom, transparent 55%, #0D0D0D 100%)",
+            "radial-gradient(110% 75% at 22% 34%, rgba(13,13,13,0.1) 0%, rgba(13,13,13,0.74) 58%, rgba(13,13,13,0.94) 100%), linear-gradient(to bottom, transparent 45%, #0D0D0D 100%)",
         }}
       />
+      <div aria-hidden className="grain-layer" />
 
-      <div className="relative mx-auto w-full max-w-[1400px] px-6 pt-28 md:px-12">
-        <span className="eyebrow block">Brasília ✦ Estratégia, Design e Conteúdo</span>
-        <h1 className="mt-8 max-w-4xl font-serif text-[clamp(2.9rem,8.5vw,7.5rem)] leading-[0.94] font-light tracking-[-0.01em] text-marfim">
-          Criamos <em className="text-dourado not-italic italic">presença</em>.
-          <br />
-          Você deixa <em className="italic text-dourado">legado</em>.
-        </h1>
-        <p className="mt-10 max-w-md text-sm leading-relaxed text-muted-foreground md:text-base">
-          Vittori é mais que uma agência. É uma assinatura — construída em estratégia,
-          desenhada com intenção, sustentada por presença.
-        </p>
-        <div className="mt-12 flex flex-wrap items-center gap-8">
-          <a
-            href="#contato"
-            className="group relative inline-flex items-center gap-4 border border-dourado/50 px-8 py-4 transition-colors duration-500 hover:border-dourado"
+      <div className="relative mx-auto w-full max-w-[1440px] grow px-6 pt-32 md:px-12">
+        <div className="grid h-full grid-cols-12 items-end gap-y-12">
+          <div className="col-span-12 lg:col-span-8">
+            <div className="flex items-center gap-4">
+              <span className="h-px w-10 bg-dourado" />
+              <span className="label-mono text-dourado">Brasília · Agência boutique</span>
+            </div>
+
+            <h1
+              data-lines
+              className="display mt-8 text-marfim"
+              style={{ textWrap: "balance" }}
+            >
+              <Line>Criamos</Line>
+              <Line>
+                <em className="pr-2 italic text-dourado">presença</em>
+              </Line>
+              <Line>
+                <span className="text-marfim/45">você deixa legado.</span>
+              </Line>
+            </h1>
+          </div>
+
+          <div
+            data-reveal
+            className="col-span-12 flex flex-col gap-9 md:col-span-8 lg:col-span-6"
           >
-            <span className="eyebrow text-marfim transition-colors group-hover:text-dourado">
-              Iniciar conversa
-            </span>
-            <span className="h-px w-8 bg-dourado transition-all duration-500 group-hover:w-12" />
-          </a>
-          <a
-            href="#portfolio"
-            className="eyebrow text-muted-foreground transition-colors hover:text-dourado"
-          >
-            Ver trabalhos
-          </a>
+
+            <p className="reveal-item lead border-l border-dourado/30 pl-6 text-marfim/70">
+              Estratégia, design e conteúdo para marcas que não competem por atenção — competem
+              por permanência.
+            </p>
+
+            <div className="reveal-item flex flex-wrap items-center gap-x-8 gap-y-4">
+              <a
+                href="#contato"
+                className="group relative inline-flex items-center gap-4 overflow-hidden border border-dourado/60 px-8 py-4"
+              >
+                <span className="absolute inset-0 -translate-y-full bg-dourado transition-transform duration-500 ease-out group-hover:translate-y-0" />
+                <span className="label-mono relative text-marfim transition-colors duration-500 group-hover:text-preto">
+                  Iniciar projeto
+                </span>
+                <span className="relative text-dourado transition-colors duration-500 group-hover:text-preto">
+                  ✦
+                </span>
+              </a>
+              <a
+                href="#portfolio"
+                className="label-mono text-marfim/60 underline decoration-dourado/40 decoration-1 underline-offset-8 transition-colors hover:text-dourado"
+              >
+                Ver trabalhos
+              </a>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="absolute bottom-8 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-3 md:flex">
-        <span className="text-[0.6rem] tracking-[0.4em] text-muted-foreground uppercase">
-          Role
-        </span>
-        <span className="h-14 w-px bg-gradient-to-b from-dourado to-transparent" />
+      {/* Régua de prova social */}
+      <div className="relative mx-auto mt-16 w-full max-w-[1440px] px-6 md:px-12">
+        <div className="rule-gold w-full" />
+        <dl className="grid grid-cols-2 gap-y-8 pt-7 md:grid-cols-4">
+          {[
+            { k: "Marcas atendidas", v: "40", suf: "+" },
+            { k: "Anos de estrada", v: "9", suf: "" },
+            { k: "Projetos por trimestre", v: "4", suf: " no máx." },
+            { k: "Cidades", v: "12", suf: "" },
+          ].map((s) => (
+            <div key={s.k} className="min-w-0">
+              <dd className="font-serif text-4xl font-light text-marfim md:text-5xl">
+                <span data-counter={s.v}>0</span>
+                <span className="text-dourado">{s.suf}</span>
+              </dd>
+              <dt className="caption mt-2">{s.k}</dt>
+            </div>
+          ))}
+        </dl>
       </div>
     </section>
   );

@@ -1,30 +1,29 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 
-const HeroCanvas = lazy(() => import("./three/HeroCanvas"));
-const BackgroundCanvas = lazy(() => import("./three/BackgroundCanvas"));
+const StageCanvas = lazy(() => import("./three/StageCanvas"));
 
-function useMounted() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-  return mounted;
-}
+/**
+ * Cena 3D única, montada apenas depois da hidratação (nunca no servidor)
+ * e apenas quando o dispositivo não pede movimento reduzido.
+ */
+export function ClientStage() {
+  const [ready, setReady] = useState(false);
 
-export function ClientHeroCanvas() {
-  const mounted = useMounted();
-  if (!mounted) return null;
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const id = window.requestIdleCallback
+      ? window.requestIdleCallback(() => setReady(true))
+      : window.setTimeout(() => setReady(true), 200);
+    return () => {
+      if (window.cancelIdleCallback) window.cancelIdleCallback(id as number);
+      else clearTimeout(id as number);
+    };
+  }, []);
+
+  if (!ready) return null;
   return (
     <Suspense fallback={null}>
-      <HeroCanvas />
-    </Suspense>
-  );
-}
-
-export function ClientBackgroundCanvas() {
-  const mounted = useMounted();
-  if (!mounted) return null;
-  return (
-    <Suspense fallback={null}>
-      <BackgroundCanvas />
+      <StageCanvas />
     </Suspense>
   );
 }
