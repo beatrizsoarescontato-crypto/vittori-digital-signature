@@ -230,11 +230,13 @@ function Rig({
   state: React.MutableRefObject<number[]>;
   keys: Key[];
 }) {
+  useEffect(() => startStageScroll(), []);
   useFrame(() => {
-    state.current = sample(keys, scrollProgress());
+    state.current = sample(keys, stageScroll.p);
   });
   return null;
 }
+
 
 export default function StageCanvas() {
   const mobile = typeof window !== "undefined" && window.innerWidth < 768;
