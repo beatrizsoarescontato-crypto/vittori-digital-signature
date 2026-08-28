@@ -34,9 +34,9 @@ function Monogram() {
         position={
           wide
             ? [viewport.width * 0.26, viewport.height * 0.04, 0]
-            : [0, viewport.height * 0.27, 0]
+            : [0, viewport.height * 0.3, 0]
         }
-        scale={wide ? viewport.height * 0.26 : viewport.height * 0.125}
+        scale={wide ? viewport.height * 0.26 : viewport.height * 0.11}
       />
     </Float>
   );
@@ -87,7 +87,7 @@ export default function HeroCanvas() {
         intensity={150}
         color="#E4C98F"
       />
-      <spotLight position={[-5, -2, 3]} angle={0.7} penumbra={1} intensity={0} color="#8B0F1A" />
+      <spotLight position={[-5, -2, 3]} angle={0.7} penumbra={1} intensity={0.35} color="#8B0F1A" />
       <directionalLight position={[1, 1.5, 6]} intensity={3.4} color="#F2DEA8" />
       <Suspense fallback={null}>
         <Environment resolution={128}>
