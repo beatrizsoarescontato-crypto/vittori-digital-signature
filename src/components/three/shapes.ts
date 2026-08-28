@@ -12,8 +12,7 @@ export function createVShape(): THREE.Shape {
     [-0.16, -1],
   ];
   const shape = new THREE.Shape();
-  shape.moveTo(pts[0][0], pts[0][1]);
-  for (let i = 1; i < pts.length; i++) shape.lineTo(pts[i][0], pts[i][1]);
+  pts.forEach(([x, y], i) => (i === 0 ? shape.moveTo(x, y) : shape.lineTo(x, y)));
   shape.closePath();
   return shape;
 }
