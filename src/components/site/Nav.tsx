@@ -34,7 +34,7 @@ export function Nav() {
           : "border-b border-transparent py-6"
       }`}
     >
-      <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 md:px-12">
+      <div className="relative z-50 mx-auto flex max-w-[1400px] items-center justify-between px-6 md:px-12">
         <a
           href="#top"
           className="font-serif text-2xl font-semibold tracking-[0.08em] text-marfim"
