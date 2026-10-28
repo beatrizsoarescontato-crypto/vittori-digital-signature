@@ -11,7 +11,7 @@ type Key = { p: number; v: number[] };
 
 // Só na abertura: o monograma fica à direita do título e reage ao mouse e ao scroll.
 const DESKTOP: Key[] = [{ p: 0, v: [0.26, 0.02, 0, -0.05, 0.22, 0, 0.26, 1, 1] }];
-const MOBILE: Key[] = [{ p: 0, v: [0.22, 0.22, -0.5, -0.05, 0.25, 0, 0.12, 1, 1] }];
+const MOBILE: Key[] = [{ p: 0, v: [0.12, 0.24, -0.5, -0.05, 0.25, 0, 0.12, 1, 1] }];
 
 const mouse = { x: 0, y: 0 };
 
@@ -89,11 +89,11 @@ function Monogram({
   const brass = useMemo(() => {
     const brushed = brushedTexture();
     return new THREE.MeshStandardMaterial({
-      color: new THREE.Color("#8B0F1A"),
-      metalness: 0.85,
-      roughness: 0.32,
+      color: new THREE.Color("#5E0811"),
+      metalness: 0.8,
+      roughness: 0.4,
       roughnessMap: brushed,
-      envMapIntensity: 1.8,
+      envMapIntensity: 0.9,
       transparent: true,
     });
   }, []);
