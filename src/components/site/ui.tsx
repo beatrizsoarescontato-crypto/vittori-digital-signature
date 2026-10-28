@@ -26,7 +26,7 @@ export function Btn(props: BtnProps) {
       </a>
     );
   return (
-    <Link to={props.to} {...(props.hash ? { hash: props.hash } : {})} className={cls}>
+    <Link to={props.to!} {...(props.hash ? { hash: props.hash } : {})} className={cls}>
       {props.children}
     </Link>
   );
