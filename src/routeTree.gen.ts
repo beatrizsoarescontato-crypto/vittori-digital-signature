@@ -10,33 +10,54 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ServicosLinhaRouteImport } from './routes/servicos.$linha'
+import { Route as ServicosInteligenciaIndexRouteImport } from './routes/servicos.inteligencia.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ServicosLinhaRoute = ServicosLinhaRouteImport.update({
+  id: '/servicos/$linha',
+  path: '/servicos/$linha',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicosInteligenciaIndexRoute =
+  ServicosInteligenciaIndexRouteImport.update({
+    id: '/servicos/inteligencia/',
+    path: '/servicos/inteligencia/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/servicos/$linha': typeof ServicosLinhaRoute
+  '/servicos/inteligencia/': typeof ServicosInteligenciaIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/servicos/$linha': typeof ServicosLinhaRoute
+  '/servicos/inteligencia': typeof ServicosInteligenciaIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/servicos/$linha': typeof ServicosLinhaRoute
+  '/servicos/inteligencia/': typeof ServicosInteligenciaIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/servicos/$linha' | '/servicos/inteligencia/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/servicos/$linha' | '/servicos/inteligencia'
+  id: '__root__' | '/' | '/servicos/$linha' | '/servicos/inteligencia/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ServicosLinhaRoute: typeof ServicosLinhaRoute
+  ServicosInteligenciaIndexRoute: typeof ServicosInteligenciaIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +69,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/servicos/$linha': {
+      id: '/servicos/$linha'
+      path: '/servicos/$linha'
+      fullPath: '/servicos/$linha'
+      preLoaderRoute: typeof ServicosLinhaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/servicos/inteligencia/': {
+      id: '/servicos/inteligencia/'
+      path: '/servicos/inteligencia'
+      fullPath: '/servicos/inteligencia/'
+      preLoaderRoute: typeof ServicosInteligenciaIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ServicosLinhaRoute: ServicosLinhaRoute,
+  ServicosInteligenciaIndexRoute: ServicosInteligenciaIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
