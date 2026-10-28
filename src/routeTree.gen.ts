@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ComeceRouteImport } from './routes/comece'
 import { Route as CookiesRouteImport } from './routes/cookies'
+import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as TermosRouteImport } from './routes/termos'
 import { Route as ServicosLinhaRouteImport } from './routes/servicos.$linha'
@@ -33,6 +34,11 @@ const ComeceRoute = ComeceRouteImport.update({
 const CookiesRoute = CookiesRouteImport.update({
   id: '/cookies',
   path: '/cookies',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortfolioRoute = PortfolioRouteImport.update({
+  id: '/portfolio',
+  path: '/portfolio',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacidadeRoute = PrivacidadeRouteImport.update({
@@ -79,6 +85,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/comece': typeof ComeceRoute
   '/cookies': typeof CookiesRoute
+  '/portfolio': typeof PortfolioRoute
   '/privacidade': typeof PrivacidadeRoute
   '/termos': typeof TermosRoute
   '/servicos/$linha': typeof ServicosLinhaRoute
@@ -91,6 +98,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/comece': typeof ComeceRoute
   '/cookies': typeof CookiesRoute
+  '/portfolio': typeof PortfolioRoute
   '/privacidade': typeof PrivacidadeRoute
   '/termos': typeof TermosRoute
   '/servicos/$linha': typeof ServicosLinhaRoute
@@ -104,6 +112,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/comece': typeof ComeceRoute
   '/cookies': typeof CookiesRoute
+  '/portfolio': typeof PortfolioRoute
   '/privacidade': typeof PrivacidadeRoute
   '/termos': typeof TermosRoute
   '/servicos/$linha': typeof ServicosLinhaRoute
@@ -118,6 +127,7 @@ export interface FileRouteTypes {
     | '/'
     | '/comece'
     | '/cookies'
+    | '/portfolio'
     | '/privacidade'
     | '/termos'
     | '/servicos/$linha'
@@ -130,6 +140,7 @@ export interface FileRouteTypes {
     | '/'
     | '/comece'
     | '/cookies'
+    | '/portfolio'
     | '/privacidade'
     | '/termos'
     | '/servicos/$linha'
@@ -142,6 +153,7 @@ export interface FileRouteTypes {
     | '/'
     | '/comece'
     | '/cookies'
+    | '/portfolio'
     | '/privacidade'
     | '/termos'
     | '/servicos/$linha'
@@ -155,6 +167,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ComeceRoute: typeof ComeceRoute
   CookiesRoute: typeof CookiesRoute
+  PortfolioRoute: typeof PortfolioRoute
   PrivacidadeRoute: typeof PrivacidadeRoute
   TermosRoute: typeof TermosRoute
   ServicosLinhaRoute: typeof ServicosLinhaRoute
@@ -185,6 +198,13 @@ declare module '@tanstack/react-router' {
       path: '/cookies'
       fullPath: '/cookies'
       preLoaderRoute: typeof CookiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portfolio': {
+      id: '/portfolio'
+      path: '/portfolio'
+      fullPath: '/portfolio'
+      preLoaderRoute: typeof PortfolioRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacidade': {
@@ -243,6 +263,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ComeceRoute: ComeceRoute,
   CookiesRoute: CookiesRoute,
+  PortfolioRoute: PortfolioRoute,
   PrivacidadeRoute: PrivacidadeRoute,
   TermosRoute: TermosRoute,
   ServicosLinhaRoute: ServicosLinhaRoute,

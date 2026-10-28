@@ -5,6 +5,7 @@ const LINKS = [
   { to: "/", hash: "servicos", label: "Serviços" },
   { to: "/", hash: "metodo", label: "Como trabalhamos" },
   { to: "/servicos/inteligencia", label: "Inteligência" },
+  { to: "/portfolio", label: "Portfólio" },
   { to: "/", hash: "contato", label: "Contato" },
 ] as const;
 
