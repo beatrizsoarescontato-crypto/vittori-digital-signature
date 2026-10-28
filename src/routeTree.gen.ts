@@ -10,33 +10,158 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ComeceRouteImport } from './routes/comece'
+import { Route as CookiesRouteImport } from './routes/cookies'
+import { Route as PrivacidadeRouteImport } from './routes/privacidade'
+import { Route as TermosRouteImport } from './routes/termos'
+import { Route as ServicosLinhaRouteImport } from './routes/servicos.$linha'
+import { Route as ServicosInteligenciaIndexRouteImport } from './routes/servicos.inteligencia.index'
+import { Route as ServicosInteligenciaAtendenteRouteImport } from './routes/servicos.inteligencia.atendente'
+import { Route as ServicosInteligenciaEstudioDePostsRouteImport } from './routes/servicos.inteligencia.estudio-de-posts'
+import { Route as ServicosInteligenciaSistemasRouteImport } from './routes/servicos.inteligencia.sistemas'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ComeceRoute = ComeceRouteImport.update({
+  id: '/comece',
+  path: '/comece',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CookiesRoute = CookiesRouteImport.update({
+  id: '/cookies',
+  path: '/cookies',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacidadeRoute = PrivacidadeRouteImport.update({
+  id: '/privacidade',
+  path: '/privacidade',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermosRoute = TermosRouteImport.update({
+  id: '/termos',
+  path: '/termos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicosLinhaRoute = ServicosLinhaRouteImport.update({
+  id: '/servicos/$linha',
+  path: '/servicos/$linha',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicosInteligenciaIndexRoute =
+  ServicosInteligenciaIndexRouteImport.update({
+    id: '/servicos/inteligencia/',
+    path: '/servicos/inteligencia/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ServicosInteligenciaAtendenteRoute =
+  ServicosInteligenciaAtendenteRouteImport.update({
+    id: '/servicos/inteligencia/atendente',
+    path: '/servicos/inteligencia/atendente',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ServicosInteligenciaEstudioDePostsRoute =
+  ServicosInteligenciaEstudioDePostsRouteImport.update({
+    id: '/servicos/inteligencia/estudio-de-posts',
+    path: '/servicos/inteligencia/estudio-de-posts',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ServicosInteligenciaSistemasRoute =
+  ServicosInteligenciaSistemasRouteImport.update({
+    id: '/servicos/inteligencia/sistemas',
+    path: '/servicos/inteligencia/sistemas',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/comece': typeof ComeceRoute
+  '/cookies': typeof CookiesRoute
+  '/privacidade': typeof PrivacidadeRoute
+  '/termos': typeof TermosRoute
+  '/servicos/$linha': typeof ServicosLinhaRoute
+  '/servicos/inteligencia/atendente': typeof ServicosInteligenciaAtendenteRoute
+  '/servicos/inteligencia/estudio-de-posts': typeof ServicosInteligenciaEstudioDePostsRoute
+  '/servicos/inteligencia/sistemas': typeof ServicosInteligenciaSistemasRoute
+  '/servicos/inteligencia/': typeof ServicosInteligenciaIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/comece': typeof ComeceRoute
+  '/cookies': typeof CookiesRoute
+  '/privacidade': typeof PrivacidadeRoute
+  '/termos': typeof TermosRoute
+  '/servicos/$linha': typeof ServicosLinhaRoute
+  '/servicos/inteligencia/atendente': typeof ServicosInteligenciaAtendenteRoute
+  '/servicos/inteligencia/estudio-de-posts': typeof ServicosInteligenciaEstudioDePostsRoute
+  '/servicos/inteligencia/sistemas': typeof ServicosInteligenciaSistemasRoute
+  '/servicos/inteligencia': typeof ServicosInteligenciaIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/comece': typeof ComeceRoute
+  '/cookies': typeof CookiesRoute
+  '/privacidade': typeof PrivacidadeRoute
+  '/termos': typeof TermosRoute
+  '/servicos/$linha': typeof ServicosLinhaRoute
+  '/servicos/inteligencia/atendente': typeof ServicosInteligenciaAtendenteRoute
+  '/servicos/inteligencia/estudio-de-posts': typeof ServicosInteligenciaEstudioDePostsRoute
+  '/servicos/inteligencia/sistemas': typeof ServicosInteligenciaSistemasRoute
+  '/servicos/inteligencia/': typeof ServicosInteligenciaIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/comece'
+    | '/cookies'
+    | '/privacidade'
+    | '/termos'
+    | '/servicos/$linha'
+    | '/servicos/inteligencia/atendente'
+    | '/servicos/inteligencia/estudio-de-posts'
+    | '/servicos/inteligencia/sistemas'
+    | '/servicos/inteligencia/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/comece'
+    | '/cookies'
+    | '/privacidade'
+    | '/termos'
+    | '/servicos/$linha'
+    | '/servicos/inteligencia/atendente'
+    | '/servicos/inteligencia/estudio-de-posts'
+    | '/servicos/inteligencia/sistemas'
+    | '/servicos/inteligencia'
+  id:
+    | '__root__'
+    | '/'
+    | '/comece'
+    | '/cookies'
+    | '/privacidade'
+    | '/termos'
+    | '/servicos/$linha'
+    | '/servicos/inteligencia/atendente'
+    | '/servicos/inteligencia/estudio-de-posts'
+    | '/servicos/inteligencia/sistemas'
+    | '/servicos/inteligencia/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ComeceRoute: typeof ComeceRoute
+  CookiesRoute: typeof CookiesRoute
+  PrivacidadeRoute: typeof PrivacidadeRoute
+  TermosRoute: typeof TermosRoute
+  ServicosLinhaRoute: typeof ServicosLinhaRoute
+  ServicosInteligenciaAtendenteRoute: typeof ServicosInteligenciaAtendenteRoute
+  ServicosInteligenciaEstudioDePostsRoute: typeof ServicosInteligenciaEstudioDePostsRoute
+  ServicosInteligenciaSistemasRoute: typeof ServicosInteligenciaSistemasRoute
+  ServicosInteligenciaIndexRoute: typeof ServicosInteligenciaIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +173,84 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/comece': {
+      id: '/comece'
+      path: '/comece'
+      fullPath: '/comece'
+      preLoaderRoute: typeof ComeceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cookies': {
+      id: '/cookies'
+      path: '/cookies'
+      fullPath: '/cookies'
+      preLoaderRoute: typeof CookiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacidade': {
+      id: '/privacidade'
+      path: '/privacidade'
+      fullPath: '/privacidade'
+      preLoaderRoute: typeof PrivacidadeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/termos': {
+      id: '/termos'
+      path: '/termos'
+      fullPath: '/termos'
+      preLoaderRoute: typeof TermosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/servicos/$linha': {
+      id: '/servicos/$linha'
+      path: '/servicos/$linha'
+      fullPath: '/servicos/$linha'
+      preLoaderRoute: typeof ServicosLinhaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/servicos/inteligencia/': {
+      id: '/servicos/inteligencia/'
+      path: '/servicos/inteligencia'
+      fullPath: '/servicos/inteligencia/'
+      preLoaderRoute: typeof ServicosInteligenciaIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/servicos/inteligencia/atendente': {
+      id: '/servicos/inteligencia/atendente'
+      path: '/servicos/inteligencia/atendente'
+      fullPath: '/servicos/inteligencia/atendente'
+      preLoaderRoute: typeof ServicosInteligenciaAtendenteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/servicos/inteligencia/estudio-de-posts': {
+      id: '/servicos/inteligencia/estudio-de-posts'
+      path: '/servicos/inteligencia/estudio-de-posts'
+      fullPath: '/servicos/inteligencia/estudio-de-posts'
+      preLoaderRoute: typeof ServicosInteligenciaEstudioDePostsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/servicos/inteligencia/sistemas': {
+      id: '/servicos/inteligencia/sistemas'
+      path: '/servicos/inteligencia/sistemas'
+      fullPath: '/servicos/inteligencia/sistemas'
+      preLoaderRoute: typeof ServicosInteligenciaSistemasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ComeceRoute: ComeceRoute,
+  CookiesRoute: CookiesRoute,
+  PrivacidadeRoute: PrivacidadeRoute,
+  TermosRoute: TermosRoute,
+  ServicosLinhaRoute: ServicosLinhaRoute,
+  ServicosInteligenciaAtendenteRoute: ServicosInteligenciaAtendenteRoute,
+  ServicosInteligenciaEstudioDePostsRoute:
+    ServicosInteligenciaEstudioDePostsRoute,
+  ServicosInteligenciaSistemasRoute: ServicosInteligenciaSistemasRoute,
+  ServicosInteligenciaIndexRoute: ServicosInteligenciaIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
