@@ -6,7 +6,7 @@ type BtnProps = {
   children: ReactNode;
   variant?: "solid" | "ghost" | "light" | "ghostLight";
   className?: string;
-} & ({ to: LinkProps["to"]; href?: never; hash?: string } | { href: string; to?: never; hash?: never });
+} & ({ to: NonNullable<LinkProps["to"]>; href?: never; hash?: string } | { href: string; to?: never; hash?: never });
 
 const base =
   "label-mono inline-flex min-h-12 items-center justify-center gap-3 px-7 py-4 text-center transition-colors duration-500";

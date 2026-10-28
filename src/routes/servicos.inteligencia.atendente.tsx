@@ -135,7 +135,7 @@ function Page() {
             resultado={(v) => (
               <>
                 <p>Custo mensal estimado com encargos: <span className="text-dourado">{brl(v.s * 1.44)}</span></p>
-                <p className="mt-3">Horas cobertas por semana: <span className="text-dourado">{fmtv.h}</span> de 168.</p>
+                <p className="mt-3">Horas cobertas por semana: <span className="text-dourado">{fmt(v.h)}</span> de 168.</p>
               </>
             )}
             nota={
