@@ -18,7 +18,7 @@ export function PortfolioGrid() {
                 />
               ) : (
                 <div className="flex h-full items-center justify-center p-8 text-center">
-                  <span className="font-display text-3xl italic text-dourado">{p.nome}</span>
+                  <span className="font-serif text-3xl italic text-dourado">{p.nome}</span>
                 </div>
               )}
             </div>
@@ -27,7 +27,7 @@ export function PortfolioGrid() {
                 {p.tipo}
                 {p.status ? ` · ${p.status}` : ""}
               </p>
-              <h3 className="mt-3 font-display text-3xl text-marfim">{p.nome}</h3>
+              <h3 className="mt-3 font-serif text-3xl text-marfim">{p.nome}</h3>
               <p className="mt-3 text-sm leading-relaxed text-marfim/70">{p.resumo}</p>
               {p.url && !p.status && <p className="label-mono mt-6 text-marfim">Ver site ✦</p>}
             </div>
