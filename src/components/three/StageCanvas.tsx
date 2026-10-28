@@ -9,24 +9,11 @@ import { stageScroll, startStageScroll } from "./stageScroll";
 /** Keyframes: [x, y, z, rotX, rotY, rotZ, escala, bordô, presença] */
 type Key = { p: number; v: number[] };
 
-const DESKTOP: Key[] = [
-  { p: 0.0, v: [0.33, 0.03, 0, -0.05, 0.22, 0, 0.2, 1, 1] },
-  { p: 0.16, v: [-0.4, -0.1, -1.8, 0.15, 1.1, -0.1, 0.14, 0.22, 0.8] },
-  { p: 0.36, v: [0.44, 0.1, -2.8, -0.2, 2.4, 0.12, 0.1, 0.1, 0.65] },
-  { p: 0.58, v: [-0.46, 0.02, -3.8, 0.1, 3.4, -0.16, 0.08, 0.05, 0.4] },
-  { p: 0.82, v: [0, -0.02, -0.8, 0, 4.7, 0, 0.18, 0.95, 1] },
-  { p: 1.0, v: [0, 0.12, -2.6, 0.1, 5.4, 0, 0.11, 0.45, 0.7] },
-];
+// Só na abertura: o monograma fica à direita do título e reage ao mouse e ao scroll.
+const DESKTOP: Key[] = [{ p: 0, v: [0.26, 0.02, 0, -0.05, 0.22, 0, 0.26, 1, 1] }];
+const MOBILE: Key[] = [{ p: 0, v: [0.22, 0.22, -0.5, -0.05, 0.25, 0, 0.12, 1, 1] }];
 
-const MOBILE: Key[] = [
-  { p: 0.0, v: [0.36, 0.26, -0.5, -0.05, 0.25, 0, 0.05, 0.7, 1] },
-  { p: 0.16, v: [-0.22, 0.3, -1, 0.12, 1.1, -0.1, 0.08, 0.2, 0.8] },
-
-  { p: 0.36, v: [0.26, 0.28, -1.6, -0.16, 2.4, 0.12, 0.075, 0.1, 0.55] },
-  { p: 0.58, v: [-0.24, 0.24, -2.4, 0.1, 3.4, -0.14, 0.07, 0.05, 0.35] },
-  { p: 0.8, v: [0, 0.24, -0.6, 0, 4.7, 0, 0.11, 0.95, 1] },
-  { p: 1.0, v: [0, 0.3, -1.8, 0.1, 5.4, 0, 0.08, 0.55, 0.8] },
-];
+const mouse = { x: 0, y: 0 };
 
 function sample(keys: Key[], p: number): number[] {
   let a = keys[0]!;
@@ -56,7 +43,7 @@ function BordoWall({ state }: { state: React.MutableRefObject<number[]> }) {
   const ref = useRef<THREE.Mesh>(null);
   const { viewport } = useThree();
   const material = useMemo(() => {
-    const tex = radialTexture("#8B0F1A", "#180608");
+    const tex = radialTexture("#3A2618", "#0D0D0D");
     return new THREE.MeshBasicMaterial({
       map: tex,
       transparent: true,
@@ -98,17 +85,29 @@ function Monogram({
   const vGeo = useMemo(() => vGeometry(), []);
   const sGeo = useMemo(() => starGeometry(), []);
 
+  // Corpo em metal bordô; aresta (bevel/laterais) em dourado.
   const brass = useMemo(() => {
     const brushed = brushedTexture();
     return new THREE.MeshStandardMaterial({
-      color: new THREE.Color("#D8AE60"),
-      metalness: 0.94,
-      roughness: 0.3,
+      color: new THREE.Color("#8B0F1A"),
+      metalness: 0.85,
+      roughness: 0.32,
       roughnessMap: brushed,
-      envMapIntensity: 2.6,
+      envMapIntensity: 1.8,
       transparent: true,
     });
   }, []);
+  const edge = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: new THREE.Color("#C8A25A"),
+        metalness: 1,
+        roughness: 0.22,
+        envMapIntensity: 2.6,
+        transparent: true,
+      }),
+    [],
+  );
 
   const brassStar = useMemo(
     () =>
@@ -149,11 +148,11 @@ function Monogram({
     g.position.z = damp(g.position.z, (z ?? 0) - drift.current * 0.5, 2.6, dt);
     g.rotation.x = damp(
       g.rotation.x,
-      (rx ?? 0) + Math.sin(t * 0.4) * 0.035 + boost * 0.1,
+      (rx ?? 0) + mouse.y * 0.25 + Math.sin(t * 0.4) * 0.035 + boost * 0.1,
       3,
       dt,
     );
-    g.rotation.y = damp(g.rotation.y, (ry ?? 0) + t * 0.06 + boost * 0.55, 2.8, dt);
+    g.rotation.y = damp(g.rotation.y, (ry ?? 0) + t * 0.06 + mouse.x * 0.5 + boost * 0.55, 2.8, dt);
     g.rotation.z = damp(g.rotation.z, (rz ?? 0) - boost * 0.14, 3, dt);
 
     // Escala com leve "respiro" no impulso — nunca borrachudo.
@@ -164,6 +163,7 @@ function Monogram({
     brass.roughness = damp(brass.roughness, 0.3 - drift.current * 0.1, 3, dt);
     brass.opacity = damp(brass.opacity, presence ?? 1, 4, dt);
     brassStar.opacity = brass.opacity;
+    edge.opacity = brass.opacity;
 
 
     // Estrela orbitando o "V"
@@ -183,7 +183,7 @@ function Monogram({
 
   return (
     <group ref={group}>
-      <mesh geometry={vGeo} material={brass} castShadow />
+      <mesh geometry={vGeo} material={[brass, edge]} castShadow />
       <mesh ref={star} geometry={sGeo} material={brassStar} scale={mobile ? 0.26 : 0.3} />
       <mesh ref={star2} geometry={sGeo} material={brassStar} scale={mobile ? 0.14 : 0.18} />
     </group>
@@ -249,6 +249,14 @@ function Rig({
   keys: Key[];
 }) {
   useEffect(() => startStageScroll(), []);
+  useEffect(() => {
+    const onMove = (e: PointerEvent) => {
+      mouse.x = e.clientX / window.innerWidth - 0.5;
+      mouse.y = e.clientY / window.innerHeight - 0.5;
+    };
+    window.addEventListener("pointermove", onMove, { passive: true });
+    return () => window.removeEventListener("pointermove", onMove);
+  }, []);
   useFrame(() => {
     state.current = sample(keys, stageScroll.p);
   });
@@ -272,7 +280,7 @@ export default function StageCanvas() {
       <ambientLight intensity={0.2} />
       <directionalLight position={[1, 1.6, 6]} intensity={2.2} color="#EFD49B" />
       <spotLight position={[4, 6, 5]} angle={0.5} penumbra={0.9} intensity={140} color="#E4C98F" />
-      <spotLight position={[-5, -2, 2]} angle={0.7} penumbra={1} intensity={40} color="#8B0F1A" />
+      <spotLight position={[-5, -2, 2]} angle={0.7} penumbra={1} intensity={30} color="#F2EFE6" />
       <Suspense fallback={null}>
         <Environment resolution={128}>
           <Lightformer intensity={7} position={[0, 4, 4]} scale={[12, 12, 1]} color="#F0DCA8" />
