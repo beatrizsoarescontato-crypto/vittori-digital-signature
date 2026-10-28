@@ -54,6 +54,20 @@ export function useScrollReveal() {
           });
         });
 
+        // Linha que se desenha com o scroll
+        gsap.utils.toArray<HTMLElement>("[data-draw]").forEach((el) => {
+          const vertical = el.dataset["draw"] === "y";
+          gsap.fromTo(
+            el,
+            vertical ? { scaleY: 0 } : { scaleX: 0 },
+            {
+              ...(vertical ? { scaleY: 1 } : { scaleX: 1 }),
+              ease: "none",
+              scrollTrigger: { trigger: el.parentElement, start: "top 75%", end: "bottom 60%", scrub: true },
+            },
+          );
+        });
+
         gsap.utils.toArray<HTMLElement>("[data-counter]").forEach((el) => {
           const end = Number(el.dataset["counter"] ?? 0);
           const obj = { v: 0 };
