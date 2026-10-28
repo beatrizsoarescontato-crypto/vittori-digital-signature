@@ -230,8 +230,8 @@ export function ChamadaFinal() {
           Uma conversa de até 40 minutos para entender o seu momento e mostrar por onde começar.
         </p>
         <div className="mt-12 flex flex-col gap-4 sm:flex-row">
-          <Btn to="/comece" className="bg-marfim text-preto">Agendar uma conversa</Btn>
-          <Btn href={whatsappLink()} variant="ghost" className="border-marfim/60 text-marfim">
+          <Btn to="/comece" variant="light">Agendar uma conversa</Btn>
+          <Btn href={whatsappLink()} variant="ghostLight">
             WhatsApp
           </Btn>
         </div>

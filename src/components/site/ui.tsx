@@ -4,7 +4,7 @@ import { Line } from "./Lines";
 
 type BtnProps = {
   children: ReactNode;
-  variant?: "solid" | "ghost";
+  variant?: "solid" | "ghost" | "light" | "ghostLight";
   className?: string;
 } & ({ to: string; href?: never; hash?: string } | { href: string; to?: never; hash?: never });
 
@@ -13,6 +13,8 @@ const base =
 const variants = {
   solid: "bg-bordo text-marfim hover:bg-dourado hover:text-preto",
   ghost: "border border-dourado/50 text-dourado hover:bg-dourado hover:text-preto",
+  light: "bg-marfim text-preto hover:bg-dourado",
+  ghostLight: "border border-marfim/60 text-marfim hover:bg-marfim hover:text-preto",
 };
 
 export function Btn(props: BtnProps) {
