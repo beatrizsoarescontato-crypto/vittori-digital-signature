@@ -13,6 +13,7 @@ import {
   Pilares,
 } from "@/components/home/Blocos";
 import { VITTORI_WHATS } from "@/lib/contato";
+import { PortfolioHome } from "@/components/home/Portfolio";
 
 const TITULO = "Vittori Creative House · Agência criativa em Brasília";
 const DESC =
@@ -62,6 +63,7 @@ function Index() {
       <Pilares />
       <ParaQuem />
       <OQueEsperar />
+      <PortfolioHome />
       <Bastidores />
       <Perguntas />
       <ChamadaFinal />
