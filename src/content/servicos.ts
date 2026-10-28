@@ -319,6 +319,7 @@ export const LINHA_INTELIGENCIA = {
 export const PRODUTOS_IA = [
   {
     slug: "atendente",
+    to: "/servicos/inteligencia/atendente" as const,
     produto: "Atendente de IA" as const,
     nome: "Atendente de IA no WhatsApp",
     titulo: "Nenhum cliente sem resposta.",
@@ -327,6 +328,7 @@ export const PRODUTOS_IA = [
   },
   {
     slug: "sistemas",
+    to: "/servicos/inteligencia/sistemas" as const,
     produto: "Sistemas e Painéis" as const,
     nome: "Sistemas e Painéis",
     titulo: "Os números da sua empresa num lugar só.",
@@ -335,6 +337,7 @@ export const PRODUTOS_IA = [
   },
   {
     slug: "estudio-de-posts",
+    to: "/servicos/inteligencia/estudio-de-posts" as const,
     produto: "Estúdio de Posts" as const,
     nome: "Estúdio de Posts Modelados",
     titulo: "O que já funciona, com a cara da sua marca.",

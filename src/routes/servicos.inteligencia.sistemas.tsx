@@ -54,11 +54,11 @@ function Page() {
               { id: "c", label: "Custo da hora (R$)", inicial: 40 },
             ]}
             resultado={(v) => {
-              const horas = (v.p ?? 0) * (v.h ?? 0) * 4.3;
+              const horas = v.p * v.h * 4.3;
               return (
                 <>
                   <p>Horas por mês: <span className="text-dourado">{fmt(horas)}</span></p>
-                  <p className="mt-3">Custo por mês: <span className="text-dourado">{brl(horas * (v.c ?? 0))}</span></p>
+                  <p className="mt-3">Custo por mês: <span className="text-dourado">{brl(horas * v.c)}</span></p>
                 </>
               );
             }}

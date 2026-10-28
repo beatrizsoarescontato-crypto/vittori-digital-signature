@@ -100,7 +100,7 @@ export function InteligenciaDestaque() {
                 <h3 className="mt-4 font-serif text-3xl font-light text-marfim">{p.titulo}</h3>
                 <p className="measure mt-4 text-sm leading-loose text-marfim/75">{p.resumo}</p>
                 <Link
-                  to={`/servicos/inteligencia/${p.slug}`}
+                  to={p.to}
                   className="label-mono mt-6 inline-flex min-h-11 items-center gap-3 text-dourado"
                 >
                   Saiba mais <span className="h-px w-8 bg-dourado" />

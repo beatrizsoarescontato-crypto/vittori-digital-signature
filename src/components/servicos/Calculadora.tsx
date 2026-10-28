@@ -1,25 +1,25 @@
 import { useState, type ReactNode } from "react";
 
-export type Campo = { id: string; label: string; inicial: number };
+export type Campo<K extends string = string> = { id: K; label: string; inicial: number };
 
 const fmt = (n: number) => Math.round(n).toLocaleString("pt-BR");
 export const brl = (n: number) => `R$ ${fmt(n)}`;
 export { fmt };
 
 /** Calculadora local: nada é enviado nem salvo. */
-export function Calculadora({
+export function Calculadora<K extends string>({
   titulo,
   campos,
   resultado,
   nota,
 }: {
   titulo: string;
-  campos: Campo[];
-  resultado: (v: Record<string, number>) => ReactNode;
+  campos: Campo<K>[];
+  resultado: (v: Record<K, number>) => ReactNode;
   nota?: ReactNode;
 }) {
-  const [v, setV] = useState<Record<string, number>>(() =>
-    Object.fromEntries(campos.map((c) => [c.id, c.inicial])),
+  const [v, setV] = useState<Record<K, number>>(
+    () => Object.fromEntries(campos.map((c) => [c.id, c.inicial])) as Record<K, number>,
   );
   return (
     <div className="border border-border/60 bg-preto p-7 md:p-10">

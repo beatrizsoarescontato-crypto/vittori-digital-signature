@@ -114,13 +114,13 @@ function Page() {
               { id: "v", label: "Valor médio de uma venda (R$)", inicial: 500 },
             ]}
             resultado={(v) => {
-              const conv = (v.m ?? 0) * 30 * ((v.f ?? 0) / 100) * ((v.p ?? 0) / 100);
-              const vendas = conv * ((v.t ?? 0) / 100);
+              const conv = v.m * 30 * (v.f / 100) * (v.p / 100);
+              const vendas = conv * (v.t / 100);
               return (
                 <>
                   <p>Conversas que esfriam por mês: <span className="text-dourado">{fmt(conv)}</span></p>
                   <p className="mt-3">Vendas que podem estar ficando pelo caminho: <span className="text-dourado">{fmt(vendas)}</span></p>
-                  <p className="mt-3">Em valor: cerca de <span className="text-dourado">{brl(vendas * (v.v ?? 0))}</span> por mês.</p>
+                  <p className="mt-3">Em valor: cerca de <span className="text-dourado">{brl(vendas * v.v)}</span> por mês.</p>
                 </>
               );
             }}
@@ -134,8 +134,8 @@ function Page() {
             ]}
             resultado={(v) => (
               <>
-                <p>Custo mensal estimado com encargos: <span className="text-dourado">{brl((v.s ?? 0) * 1.44)}</span></p>
-                <p className="mt-3">Horas cobertas por semana: <span className="text-dourado">{fmt(v.h ?? 0)}</span> de 168.</p>
+                <p>Custo mensal estimado com encargos: <span className="text-dourado">{brl(v.s * 1.44)}</span></p>
+                <p className="mt-3">Horas cobertas por semana: <span className="text-dourado">{fmtv.h}</span> de 168.</p>
               </>
             )}
             nota={

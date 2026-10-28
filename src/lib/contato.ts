@@ -5,8 +5,8 @@ export const HENRIQUE_WHATS = "5517997220909";
 export const HENRIQUE_WHATS_LABEL = "(17) 99722-0909";
 
 /** Preencher quando existirem. Enquanto vazios, não aparecem no site. */
-export const EMAIL = "";
-export const INSTAGRAM = "";
+export const EMAIL: string = "";
+export const INSTAGRAM: string = "";
 
 export const MSG_VITTORI = "Olá! Vim pelo site da Vittori e quero conversar sobre a minha marca.";
 

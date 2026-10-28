@@ -83,7 +83,7 @@ function Page() {
             ]}
             resultado={(v) => (
               <p>
-                Cerca de <span className="text-dourado">{fmt((v.c ?? 0) * (v.p ?? 0) * ((v.x ?? 0) / 100))}</span> conversas
+                Cerca de <span className="text-dourado">{fmt(v.c * v.p * (v.x / 100))}</span> conversas
                 novas por mês a partir dos comentários.
               </p>
             )}

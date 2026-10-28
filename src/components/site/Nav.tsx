@@ -53,7 +53,7 @@ export function Nav() {
               <Link
                 key={l.label}
                 to={l.to}
-                hash={"hash" in l ? l.hash : undefined}
+                {...("hash" in l ? { hash: l.hash } : {})}
                 className="label-mono py-1 text-marfim/80 transition-colors duration-300 hover:text-dourado"
               >
                 {l.label}
@@ -88,7 +88,7 @@ export function Nav() {
           <Link
             key={l.label}
             to={l.to}
-            hash={"hash" in l ? l.hash : undefined}
+            {...("hash" in l ? { hash: l.hash } : {})}
             onClick={() => setOpen(false)}
             className="border-b border-border/40 py-4 font-serif text-4xl font-light text-marfim"
           >

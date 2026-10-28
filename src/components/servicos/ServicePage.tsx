@@ -20,7 +20,7 @@ export function PageHero({ eyebrow, titulo, texto, children }: { eyebrow: string
   );
 }
 
-export function Bloco({ eyebrow, titulo, children, tom = "preto" }: { eyebrow?: string; titulo: string; children: ReactNode; tom?: "preto" | "marrom" | "bordo" }) {
+export function Bloco({ eyebrow, titulo, children, tom = "preto" }: { eyebrow?: string | undefined; titulo: string; children: ReactNode; tom?: "preto" | "marrom" | "bordo" }) {
   const bg = { preto: "bg-preto", marrom: "bg-marrom", bordo: "bg-bordo-dark" }[tom];
   return (
     <section className={`border-b border-border/50 py-24 md:py-32 ${bg}`}>
