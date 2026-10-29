@@ -17,17 +17,17 @@ export function EntryGate() {
     const reduz = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (sessionStorage.getItem(KEY) || reduz) {
       skipPortal();
-      document.documentElement.dataset.phase = "inside";
+      document.documentElement.dataset["phase"] = "inside";
       return;
     }
-    document.documentElement.dataset.phase = "portal";
+    document.documentElement.dataset["phase"] = "portal";
     document.documentElement.style.overflow = "hidden";
     window.scrollTo(0, 0);
     setVisivel(true);
     const id = window.setTimeout(() => setPronto(true), 2200);
     const off = onPhase(() => {
       if (stageScroll.phase === "inside") {
-        document.documentElement.dataset.phase = "inside";
+        document.documentElement.dataset["phase"] = "inside";
         document.documentElement.style.overflow = "";
         setVisivel(false);
       }
@@ -44,7 +44,7 @@ export function EntryGate() {
     sessionStorage.setItem(KEY, "1");
     if (som) void setSound(true);
     setSaindo(true);
-    document.documentElement.dataset.phase = "diving";
+    document.documentElement.dataset["phase"] = "diving";
     startDive();
   };
 
