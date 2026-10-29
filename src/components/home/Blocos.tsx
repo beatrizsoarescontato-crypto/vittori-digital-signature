@@ -11,30 +11,30 @@ export function Metodo() {
     ["Leitura", "Relatório, reunião e ajuste do próximo mês."],
   ];
   return (
-    <section id="metodo" className="relative border-t border-border/50 bg-marfim py-28 text-preto md:py-40">
+    <section id="metodo" className="relative border-t border-border/50 bg-preto/40 py-28 text-marfim backdrop-blur-[2px] md:py-40">
       <div className="mx-auto max-w-[1440px] px-6 md:px-12">
-        <p className="label-mono mb-6 text-bordo">Como trabalhamos</p>
+        <p className="label-mono mb-6 text-dourado">Como trabalhamos</p>
         <h2 data-lines className="title-1">
           <Line>
-            Método <em className="italic text-bordo">Vittori.</em>
+            Método <em className="italic text-dourado">Vittori.</em>
           </Line>
         </h2>
         <div className="relative mt-20">
-          <span aria-hidden className="absolute left-0 top-0 hidden h-px w-full bg-preto/15 md:block" />
-          <span aria-hidden data-draw className="absolute left-0 top-0 hidden h-px w-full origin-left bg-bordo md:block" />
+          <span aria-hidden className="absolute left-0 top-0 hidden h-px w-full bg-marfim/15 md:block" />
+          <span aria-hidden data-draw className="absolute left-0 top-0 hidden h-px w-full origin-left bg-dourado md:block" />
           <ol className="grid gap-12 md:grid-cols-4 md:gap-8">
             {etapas.map(([t, d], i) => {
               const Icon = [Search, ClipboardList, Clapperboard, ChartNoAxesCombined][i] ?? Search;
               return (
-              <li key={t} className="border-l border-preto/30 pl-6 md:border-l-0 md:pl-0 md:pt-10">
-                <div className="flex items-center justify-between gap-4"><span className="font-serif text-5xl font-medium text-bordo">0{i + 1}</span><Icon aria-hidden="true" className="size-6 text-bordo" strokeWidth={1.5} /></div>
+              <li key={t} className="border-l border-dourado/40 pl-6 md:border-l-0 md:pl-0 md:pt-10">
+                <div className="flex items-center justify-between gap-4"><span className="font-serif text-5xl font-medium text-dourado">0{i + 1}</span><Icon aria-hidden="true" className="size-6 text-dourado" strokeWidth={1.5} /></div>
                 <h3 className="mt-4 font-serif text-3xl font-semibold">{t}</h3>
-                <p className="mt-3 text-sm font-medium leading-loose text-preto">{d}</p>
+                <p className="mt-3 text-sm font-medium leading-loose text-marfim/90">{d}</p>
               </li>
             ); })}
           </ol>
         </div>
-        <p className="mt-20 font-serif text-2xl font-medium italic text-preto md:text-3xl">
+        <p className="mt-20 font-serif text-2xl font-medium italic text-marfim md:text-3xl">
           <strong className="font-semibold">Contrato, prazos e entregas escritos.</strong> Sem surpresa.
         </p>
       </div>
