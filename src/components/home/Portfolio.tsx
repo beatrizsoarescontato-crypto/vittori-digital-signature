@@ -1,9 +1,16 @@
 import { Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { Maximize2 } from "lucide-react";
 import { PROJETOS } from "@/content/portfolio";
 import { SectionTitle } from "@/components/site/ui";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 export function PortfolioGrid() {
+  const [aberto, setAberto] = useState<string | null>(null);
+  const projeto = PROJETOS.find((p) => p.nome === aberto);
   return (
+    <>
     <div className="grid gap-px bg-border/50 md:grid-cols-3">
       {PROJETOS.map((p) => {
         const corpo = (
@@ -12,7 +19,7 @@ export function PortfolioGrid() {
               {p.imagem ? (
                 <img
                   src={p.imagem}
-                  alt={`Site ${p.nome}`}
+                  alt={`Projeto ${p.nome}`}
                   loading="lazy"
                   className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
                 />
@@ -23,25 +30,39 @@ export function PortfolioGrid() {
               )}
             </div>
             <div className="p-8">
-              <p className="label-mono text-dourado">
-                {p.tipo}
-                {p.status ? ` · ${p.status}` : ""}
-              </p>
+              <p className="label-mono text-dourado">{p.tipo}</p>
               <h3 className="mt-3 font-serif text-3xl text-marfim">{p.nome}</h3>
               <p className="mt-3 text-sm leading-relaxed text-marfim/70">{p.resumo}</p>
-              {p.url && !p.status && <p className="label-mono mt-6 text-marfim">Ver site ✦</p>}
+              {(p.imagem || p.midias?.length) ? <Button variant="ghost" className="mt-5 h-auto min-h-11 max-w-full justify-start whitespace-normal px-0 text-dourado hover:bg-transparent hover:text-marfim" onClick={() => setAberto(p.nome)} aria-label={`Visualizar projeto ${p.nome}`}>
+                <Maximize2 aria-hidden="true" /> Visualizar projeto
+              </Button> : null}
             </div>
           </>
         );
-        return p.url && !p.status ? (
-          <a key={p.nome} href={p.url} target="_blank" rel="noopener noreferrer" className="group block bg-preto">
-            {corpo}
-          </a>
-        ) : (
+        return (
           <div key={p.nome} className="group bg-preto">{corpo}</div>
         );
       })}
     </div>
+    <Dialog open={Boolean(projeto)} onOpenChange={(open) => { if (!open) setAberto(null); }}>
+      <DialogContent className="max-h-[90dvh] w-[calc(100%-2rem)] max-w-5xl overflow-y-auto rounded-none border-border bg-preto p-5 md:p-8">
+        <DialogTitle className="pr-8 font-serif text-3xl font-normal text-marfim">{projeto?.nome}</DialogTitle>
+        <DialogDescription className="text-dourado">{projeto?.tipo}</DialogDescription>
+        <div className="grid gap-5">
+          {projeto?.midias ? projeto.midias.map((m) => m.tipo === "video" ? (
+            <video key={m.src} poster={m.poster} controls playsInline preload="none" aria-label={m.alt} className="max-h-[65dvh] w-full bg-preto object-contain">
+              {m.alternativa ? <source src={m.alternativa} type="video/webm" /> : null}
+              <source src={m.src} type="video/mp4" />
+            </video>
+          ) : (
+            <img key={m.src} src={m.src} alt={m.alt} className="max-h-[75dvh] w-full object-contain" />
+          )) : projeto?.imagem ? (
+            <img src={projeto.imagem} alt={`Visualização do site ${projeto.nome}`} className="w-full" />
+          ) : null}
+        </div>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }
 
