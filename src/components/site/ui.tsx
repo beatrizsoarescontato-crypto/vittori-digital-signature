@@ -1,33 +1,43 @@
 import { Link, type LinkProps } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
+import { ArrowRight } from "lucide-react";
 import { Line } from "./Lines";
 
 type BtnProps = {
   children: ReactNode;
-  variant?: "solid" | "ghost" | "light" | "ghostLight";
+  /** primary = ação principal; secondary = alternativa; link = texto com seta. Antigos nomes mapeados. */
+  variant?: "primary" | "secondary" | "link" | "solid" | "ghost" | "light" | "ghostLight";
   className?: string;
 } & ({ to: NonNullable<LinkProps["to"]>; href?: never; hash?: string } | { href: string; to?: never; hash?: never });
 
-const base =
-  "label-mono inline-flex min-h-12 items-center justify-center gap-3 px-7 py-4 text-center transition-colors duration-500";
 const variants = {
-  solid: "bg-bordo text-marfim hover:bg-dourado hover:text-preto",
-  ghost: "border border-dourado/50 text-dourado hover:bg-dourado hover:text-preto",
-  light: "bg-marfim text-preto hover:bg-dourado",
-  ghostLight: "border border-marfim/60 text-marfim hover:bg-marfim hover:text-preto",
+  primary: "vbtn vbtn--primary",
+  solid: "vbtn vbtn--primary",
+  light: "vbtn vbtn--primary",
+  secondary: "vbtn vbtn--secondary",
+  ghost: "vbtn vbtn--secondary",
+  ghostLight: "vbtn vbtn--secondary",
+  link: "vlink",
 };
 
 export function Btn(props: BtnProps) {
-  const cls = `${base} ${variants[props.variant ?? "solid"]} ${props.className ?? ""}`;
+  const v = props.variant ?? "primary";
+  const cls = `${variants[v]} text-center ${props.className ?? ""}`;
+  const inner = (
+    <>
+      <span>{props.children}</span>
+      {(v === "primary" || v === "solid" || v === "light" || v === "link") && <ArrowRight aria-hidden="true" className="size-4 shrink-0" strokeWidth={1.5} />}
+    </>
+  );
   if (props.href)
     return (
       <a href={props.href} target="_blank" rel="noopener noreferrer" className={cls}>
-        {props.children}
+        {inner}
       </a>
     );
   return (
     <Link to={props.to!} {...(props.hash ? { hash: props.hash } : {})} className={cls}>
-      {props.children}
+      {inner}
     </Link>
   );
 }
@@ -44,7 +54,7 @@ export function SectionTitle({
 }) {
   return (
     <div className={className}>
-      {eyebrow && <p className="label-mono mb-6 text-dourado">{eyebrow}</p>}
+      {eyebrow && <p className="t-label mb-6">{eyebrow}</p>}
       <h2 data-lines className="title-2 text-marfim">
         {lines.map((l, i) => (
           <Line key={i}>{l}</Line>
@@ -66,10 +76,10 @@ export function Faq({ itens }: { itens: { q: string; a: string }[] }) {
             onClick={() => setAberto(aberto === i ? null : i)}
             className="flex min-h-14 w-full items-center justify-between gap-6 py-6 text-left"
           >
-            <span className="font-serif text-xl font-light text-marfim md:text-2xl">{f.q}</span>
+            <span className="font-serif text-xl font-medium text-marfim md:text-2xl">{f.q}</span>
             <span
               aria-hidden
-              className={`text-dourado transition-transform duration-500 ${aberto === i ? "rotate-45" : ""}`}
+              className={`flex size-9 shrink-0 items-center justify-center rounded-full border border-dourado/35 text-lg text-dourado transition-transform duration-500 ${aberto === i ? "rotate-45" : ""}`}
             >
               +
             </span>
@@ -80,7 +90,7 @@ export function Faq({ itens }: { itens: { q: string; a: string }[] }) {
             }`}
           >
             <div className="overflow-hidden">
-              <p className="measure pb-7 text-sm leading-loose text-marfim/70">{f.a}</p>
+              <p className="measure t-body pb-7">{f.a}</p>
             </div>
           </div>
         </li>

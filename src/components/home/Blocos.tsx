@@ -13,25 +13,32 @@ export function Metodo() {
   return (
     <section data-stage-section="wide" id="metodo" className="relative section-seam py-28 text-marfim md:py-40 reading-veil">
       <div className="mx-auto max-w-[1440px] px-6 md:px-12">
-        <p className="label-mono mb-6 text-dourado">Como trabalhamos</p>
+        <p className="t-label mb-6">Como trabalhamos</p>
         <h2 data-lines className="title-1">
           <Line>
             Método <em className="italic text-dourado">Vittori.</em>
           </Line>
         </h2>
         <div className="relative mt-20">
-          <span aria-hidden className="absolute left-0 top-0 hidden h-px w-full bg-marfim/15 md:block" />
-          <span aria-hidden data-draw className="absolute left-0 top-0 hidden h-px w-full origin-left bg-dourado md:block" />
-          <ol className="grid gap-12 md:grid-cols-4 md:gap-8">
+          {/* fio contínuo: horizontal no computador, vertical no celular */}
+          <span aria-hidden className="absolute left-[7px] top-0 h-full w-px bg-marfim/15 md:left-0 md:top-[7px] md:h-px md:w-full" />
+          <span aria-hidden data-draw className="absolute left-0 top-[7px] hidden h-px w-full origin-left bg-gradient-to-r from-dourado/80 via-dourado to-dourado/20 md:block" />
+          <ol className="relative grid gap-14 md:grid-cols-4 md:gap-10">
             {etapas.map(([t, d], i) => {
               const Icon = [Search, ClipboardList, Clapperboard, ChartNoAxesCombined][i] ?? Search;
               return (
-              <li key={t} className="border-l border-dourado/40 pl-6 md:border-l-0 md:pl-0 md:pt-10">
-                <div className="flex items-center justify-between gap-4"><span className="font-serif text-5xl font-medium text-dourado">0{i + 1}</span><Icon aria-hidden="true" className="size-6 text-dourado" strokeWidth={1.5} /></div>
-                <h3 className="mt-4 font-serif text-3xl font-semibold">{t}</h3>
-                <p className="mt-3 text-sm font-medium leading-loose text-marfim/90">{d}</p>
-              </li>
-            ); })}
+                <li key={t} className="group relative pl-10 md:pl-0 md:pt-14">
+                  <span aria-hidden className="metodo-node absolute left-0 top-1 md:top-0" />
+                  <div className="flex items-end gap-5">
+                    <span className="title-shimmer font-serif text-7xl font-light leading-none md:text-8xl">0{i + 1}</span>
+                    <span className="mb-2 flex size-11 items-center justify-center rounded-full border border-dourado/35"><Icon aria-hidden="true" className="size-5 text-dourado" strokeWidth={1.25} /></span>
+                  </div>
+                  <p className="t-label mt-8">Etapa {i + 1}</p>
+                  <h3 className="mt-2 font-serif text-3xl font-medium md:text-[2.15rem]">{t}</h3>
+                  <p className="t-body mt-4 max-w-[30ch]">{d}</p>
+                </li>
+              );
+            })}
           </ol>
         </div>
         <p className="mt-20 font-serif text-2xl font-medium italic text-marfim md:text-3xl">
@@ -54,9 +61,9 @@ export function Pilares() {
       <ul data-reveal className="mx-auto max-w-[1440px] px-6 md:px-12">
         {p.map(([t, d], i) => (
           <li key={t} className="reveal-item grid items-baseline gap-2 border-t border-border/60 py-8 md:grid-cols-12">
-            <span className="label-mono text-dourado/70 md:col-span-1">{["I", "II", "III", "IV"][i]}</span>
+            <span className="font-serif text-2xl italic text-dourado md:col-span-1">{["I", "II", "III", "IV"][i]}</span>
             <span className="font-serif text-4xl font-light text-marfim md:col-span-5 md:text-6xl">{t}</span>
-            <span className="font-serif text-xl italic text-marfim/85 md:col-span-6 md:text-2xl">{d}</span>
+            <span className="font-serif text-2xl italic text-marfim/90 md:col-span-6 md:text-3xl">{d}</span>
           </li>
         ))}
       </ul>
@@ -92,10 +99,10 @@ export function ParaQuem() {
             ["Não é para você se", nao, "text-marfim/85"],
           ].map(([t, itens, cor]) => (
             <div key={t as string} data-reveal>
-              <p className={`label-mono mb-6 ${cor}`}>{t as string}</p>
+              <p className={`t-label mb-6 !text-sm ${cor}`}>{t as string}</p>
               <ul>
                 {(itens as string[]).map((i) => (
-                  <li key={i} className="reveal-item flex items-start gap-3 border-t border-border/60 py-5 text-base font-normal leading-relaxed text-marfim/90">
+                  <li key={i} className="reveal-item flex items-start gap-3 border-t border-border/60 py-5 text-base font-normal leading-relaxed text-marfim md:text-lg">
                     {t === "É para você se" ? <Check aria-hidden="true" className="mt-1 size-4 shrink-0 text-dourado" /> : <X aria-hidden="true" className="mt-1 size-4 shrink-0 text-marfim/80" />}<span>{i}</span>
                   </li>
                 ))}
@@ -103,7 +110,7 @@ export function ParaQuem() {
             </div>
           ))}
         </div>
-        <p className="mt-16 font-serif text-2xl italic text-marfim/80">
+        <p className="mt-16 font-serif text-2xl italic text-marfim/90 md:text-3xl">
           Preferimos poucos clientes bem atendidos a muitos frustrados.
         </p>
       </div>
@@ -132,14 +139,14 @@ export function OQueEsperar() {
             {marcos.map(([t, d], i) => (
               <li key={t} className="reveal-item month-card" style={{ animationDelay: `${i * -2.5}s` }}>
                 <span aria-hidden className="month-card-glow" style={{ animationDelay: `${i * -2.5}s` }} />
-                <span className="relative label-mono text-dourado">✦ {t}</span>
-                <p className="relative mt-5 text-sm leading-loose text-marfim/85">{d}</p>
+                <span className="relative t-label !text-sm">✦ {t}</span>
+                <p className="relative t-body mt-5">{d}</p>
                 <span aria-hidden className="relative mt-8 block font-serif text-6xl font-light text-dourado/25">0{i + 1}</span>
               </li>
             ))}
           </ol>
         </div>
-        <p className="measure mt-16 text-sm font-normal leading-loose text-marfim/85">
+        <p className="measure t-body mt-16">
           Trabalhamos sempre com <strong className="font-semibold text-marfim">um mês de antecedência.</strong> O conteúdo de dezembro fica pronto em novembro.
           <strong className="font-semibold text-marfim">Nada é feito às pressas.</strong>
         </p>
@@ -203,7 +210,7 @@ export function Perguntas() {
     <section data-stage-section="wide" className="relative section-seam py-28 md:py-40 reading-veil">
       <div className="mx-auto grid max-w-[1440px] gap-12 px-6 md:grid-cols-12 md:px-12">
         <div className="md:col-span-4">
-          <p className="label-mono mb-6 text-dourado">Perguntas frequentes</p>
+          <p className="t-label mb-6">Perguntas frequentes</p>
           <h2 data-lines className="title-2 text-marfim">
             <Line>Antes de</Line>
             <Line>
@@ -227,16 +234,16 @@ export function ChamadaFinal() {
         <h2 data-lines className="title-1 mt-8 max-w-5xl text-marfim">
           <Line>Conte o que você</Line>
           <Line>
-            <em className="italic">está construindo.</em>
+            <em className="italic text-dourado">está construindo.</em>
           </Line>
         </h2>
-        <p className="measure mt-10 text-base leading-loose text-marfim/80">
+        <p className="measure t-body mt-10 md:text-lg">
           Uma conversa de <strong className="font-semibold text-marfim">até 40 minutos</strong> para entender o seu momento e mostrar por onde começar.
         </p>
         <div className="mt-12 flex flex-col gap-4 sm:flex-row">
-          <Btn to="/comece" variant="light">Agendar uma conversa</Btn>
-          <Btn href={whatsappLink()} variant="ghostLight">
-            WhatsApp com Beatriz Soares
+          <Btn to="/comece">Agendar uma conversa</Btn>
+          <Btn href={whatsappLink()} variant="secondary">
+            Falar no WhatsApp
           </Btn>
         </div>
       </div>

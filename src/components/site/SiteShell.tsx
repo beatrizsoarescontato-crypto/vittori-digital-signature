@@ -20,6 +20,20 @@ export function SiteShell({ children, fab = true }: { children: ReactNode; fab?:
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-phase"] });
     return () => observer.disconnect();
   }, []);
+  // Celular: ao rolar para baixo (lendo) os controles somem; reaparecem ao subir, no topo ou no fim da página.
+  useEffect(() => {
+    const root = document.documentElement;
+    let last = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      const nearEnd = y + window.innerHeight > document.documentElement.scrollHeight - 160;
+      if (y < 120 || nearEnd || y < last - 6) delete root.dataset["dockHidden"];
+      else if (y > last + 6) root.dataset["dockHidden"] = "";
+      last = y;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => { window.removeEventListener("scroll", onScroll); delete root.dataset["dockHidden"]; };
+  }, []);
   return (
     <div className="grain relative min-h-screen bg-preto">
       <div aria-hidden="true" className="stage-fallback pointer-events-none fixed inset-0 z-0">

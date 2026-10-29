@@ -83,8 +83,8 @@
 
   /* Escala tipográfica fluida (editorial) */
   --step-display: clamp(3.1rem, 11vw, 10rem);
-  --step-h1: clamp(2.6rem, 8vw, 7rem);
-  --step-h2: clamp(2.1rem, 5vw, 4.6rem);
+  --step-h1: clamp(2.6rem, 7vw, 6.2rem);
+  --step-h2: clamp(2.1rem, 4.4vw, 4.1rem);
   --step-h3: clamp(1.5rem, 2.6vw, 2.6rem);
 }
 
@@ -136,8 +136,8 @@
 }
 
 @utility label-mono {
-  font-size: 0.58rem;
-  letter-spacing: 0.42em;
+  font-size: 0.7rem;
+  letter-spacing: 0.26em;
   text-transform: uppercase;
   font-weight: 500;
 }
@@ -188,7 +188,7 @@
 }
 
 @utility caption {
-  font-size: 0.6rem;
+  font-size: 0.68rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
    color: color-mix(in oklab, var(--color-marfim) 75%, transparent);
@@ -419,7 +419,7 @@ html:not([data-phase="inside"]) .site-layer { opacity: 0; visibility: hidden; po
 .nav-veil::before {
   content: ""; position: absolute; inset: 0 0 -28px 0; z-index: -1; pointer-events: none;
   background: linear-gradient(to bottom, color-mix(in oklab, var(--color-preto) 78%, transparent), transparent);
-  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   mask-image: linear-gradient(to bottom, #000 55%, transparent); -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent);
   opacity: var(--nav-veil, 0); transition: opacity .6s ease;
 }
@@ -427,4 +427,108 @@ html:not([data-phase="inside"]) .site-layer { opacity: 0; visibility: hidden; po
   content: ""; position: absolute; left: 15%; right: 15%; bottom: 0; height: 1px; pointer-events: none;
   background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--color-dourado) 22%, transparent), transparent);
   opacity: var(--nav-veil, 0); transition: opacity .6s ease;
+}
+
+/* ===== Etapa 4: sistema visual dos componentes ===== */
+:root {
+  --gold-champagne: oklch(0.9 0.05 88);
+  --gold-old: oklch(0.74 0.09 80);
+  --gold-bronze: oklch(0.55 0.08 60);
+  --glass-dark: color-mix(in oklab, var(--preto) 52%, transparent);
+  --glass-bordo: color-mix(in oklab, var(--bordo-dark) 58%, transparent);
+  --hair-gold: color-mix(in oklab, var(--dourado) 26%, transparent);
+}
+
+/* Dourado com acabamento: champanhe, ouro velho e bronze, reflexo lento. */
+.title-shimmer, h1 em.text-dourado, h2 em.text-dourado, .text-gold-rich {
+  background-image:
+    linear-gradient(100deg, var(--gold-bronze) 0%, var(--gold-old) 22%, var(--gold-champagne) 42%, var(--gold-old) 58%, var(--gold-bronze) 82%, var(--gold-old) 100%);
+  background-size: 220% 100%;
+  background-position: 100% 50%;
+  background-clip: text;
+  color: transparent;
+  animation: gold-sweep 16s cubic-bezier(.45,0,.2,1) infinite;
+  text-shadow: none;
+  padding-right: .06em;
+}
+@keyframes gold-sweep { 0%, 70% { background-position: 100% 50%; } 100% { background-position: -20% 50%; } }
+
+/* Escala de leitura */
+.t-label { font-size: .72rem; letter-spacing: .24em; text-transform: uppercase; font-weight: 600; color: var(--dourado); }
+.t-title { font-family: var(--font-serif); font-size: clamp(1.75rem, 2.4vw, 2.4rem); line-height: 1.12; font-weight: 500; color: var(--marfim); }
+.t-body { font-size: 1rem; line-height: 1.8; font-weight: 400; color: color-mix(in oklab, var(--marfim) 90%, transparent); }
+.t-meta { font-size: .875rem; line-height: 1.7; font-weight: 400; color: color-mix(in oklab, var(--marfim) 78%, transparent); }
+
+/* Botões */
+.vbtn {
+  position: relative; isolation: isolate; overflow: hidden;
+  display: inline-flex; align-items: center; justify-content: center; gap: .85rem;
+  min-height: 3.25rem; padding: 0 1.9rem; border-radius: 999px;
+  font-size: .72rem; letter-spacing: .24em; text-transform: uppercase; font-weight: 600;
+  transition: color .5s, border-color .5s, box-shadow .6s, background-color .5s;
+}
+.vbtn svg { transition: transform .5s cubic-bezier(.2,.7,.2,1); }
+.vbtn:hover svg { transform: translateX(4px); }
+.vbtn--primary {
+  color: var(--marfim);
+  background: linear-gradient(135deg, color-mix(in oklab, var(--bordo) 62%, transparent), color-mix(in oklab, var(--bordo-dark) 70%, transparent));
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  box-shadow: inset 0 1px 0 color-mix(in oklab, var(--gold-champagne) 22%, transparent), 0 10px 30px -14px color-mix(in oklab, var(--bordo) 80%, transparent);
+}
+.vbtn--primary::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; z-index: -1; pointer-events: none;
+  background: linear-gradient(120deg, var(--gold-champagne), var(--gold-bronze) 45%, var(--gold-old));
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+.vbtn--primary::after {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(105deg, transparent 35%, color-mix(in oklab, var(--gold-champagne) 22%, transparent) 50%, transparent 65%);
+  transform: translateX(-120%); transition: transform 1.1s cubic-bezier(.2,.7,.2,1);
+}
+.vbtn--primary:hover::after { transform: translateX(120%); }
+.vbtn--primary:hover { box-shadow: inset 0 1px 0 color-mix(in oklab, var(--gold-champagne) 30%, transparent), 0 14px 40px -14px color-mix(in oklab, var(--dourado) 45%, transparent); }
+.vbtn--secondary { color: var(--dourado-claro); border: 1px solid color-mix(in oklab, var(--dourado) 45%, transparent); background: color-mix(in oklab, var(--preto) 25%, transparent); }
+.vbtn--secondary:hover { border-color: var(--dourado); color: var(--marfim); background: color-mix(in oklab, var(--dourado) 10%, transparent); }
+.vlink { position: relative; display: inline-flex; align-items: center; gap: .7rem; min-height: 2.75rem; font-size: .72rem; letter-spacing: .24em; text-transform: uppercase; font-weight: 600; color: var(--dourado); }
+.vlink::after { content: ""; position: absolute; left: 0; right: 1.6rem; bottom: .55rem; height: 1px; background: currentColor; transform: scaleX(.25); transform-origin: left; transition: transform .6s cubic-bezier(.2,.7,.2,1); }
+.vlink:hover::after, .group:hover .vlink::after { transform: scaleX(1); }
+.vlink svg { transition: transform .5s; } .vlink:hover svg, .group:hover .vlink svg { transform: translateX(4px); }
+.vicon { display: inline-flex; align-items: center; justify-content: center; width: 3rem; height: 3rem; border-radius: 999px; color: var(--dourado); border: 1px solid color-mix(in oklab, var(--dourado) 40%, transparent); background: var(--glass-dark); transition: border-color .4s, color .4s, opacity .4s; }
+.vicon:hover:not(:disabled) { border-color: var(--dourado); color: var(--marfim); }
+.vicon:disabled { opacity: .3; cursor: default; }
+
+/* Painel de vidro com luz localizada pelo cursor (só borda, discreto). */
+.glass { position: relative; isolation: isolate; background: linear-gradient(160deg, color-mix(in oklab, var(--marrom) 40%, transparent), var(--glass-dark)); border: 1px solid var(--hair-gold); }
+.glass--bordo { background: linear-gradient(160deg, color-mix(in oklab, var(--bordo) 32%, transparent), color-mix(in oklab, var(--bordo-dark) 38%, transparent) 60%, var(--glass-dark)); border-color: color-mix(in oklab, var(--dourado) 34%, transparent); }
+.glow-edge::before {
+  content: ""; position: absolute; inset: -1px; padding: 1px; border-radius: inherit; pointer-events: none; z-index: 2; opacity: 0; transition: opacity .5s;
+  background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 0%), color-mix(in oklab, var(--gold-champagne) 85%, transparent), transparent 70%);
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+.glow-edge:hover::before { opacity: 1; }
+
+/* Cards dos serviços: cada frente com uma composição própria. */
+.svc-card { transition: transform .7s cubic-bezier(.2,.7,.2,1), border-color .5s; transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); }
+.svc-num { font-family: var(--font-serif); font-weight: 300; line-height: .8; color: transparent; -webkit-text-stroke: 1px color-mix(in oklab, var(--dourado) 32%, transparent); }
+.svc-orn { position: absolute; pointer-events: none; z-index: -1; }
+
+/* Método: fio contínuo e marcos */
+.metodo-node { width: 14px; height: 14px; transform: rotate(45deg); border: 1px solid var(--dourado); background: var(--preto); box-shadow: 0 0 0 6px color-mix(in oklab, var(--preto) 60%, transparent); }
+
+/* Controles flutuantes */
+.float-ctl { border-radius: 999px; background: color-mix(in oklab, var(--preto) 62%, transparent); border: 1px solid color-mix(in oklab, var(--dourado) 34%, transparent); backdrop-filter: blur(10px); transition: opacity .45s, transform .45s cubic-bezier(.2,.7,.2,1), border-color .4s; }
+.float-ctl:hover { border-color: var(--dourado); }
+@media (max-width: 767px) {
+  .float-ctl { backdrop-filter: none; background: color-mix(in oklab, var(--preto) 82%, transparent); }
+  html[data-dock-hidden] .float-ctl { opacity: 0; transform: translateY(18px); pointer-events: none; }
+  /* espaço reservado: o último conteúdo nunca fica sob os controles */
+  .site-layer footer { padding-bottom: calc(5.5rem + env(safe-area-inset-bottom)); }
+  .glass { background: color-mix(in oklab, var(--preto) 70%, transparent); }
+}
+@media (hover: none) { .glow-edge::before { display: none; } .svc-card { transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .title-shimmer, h1 em.text-dourado, h2 em.text-dourado, .text-gold-rich { animation: none; background-position: 40% 50%; }
+  .svc-card { transform: none !important; }
+  .vbtn--primary::after { display: none; }
 }

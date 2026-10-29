@@ -80,7 +80,7 @@ export const LINHAS: Linha[] = [
   {
     slug: "performance",
     linha: "Vittori Performance",
-    titulo: "Anúncio que traz cliente, não só curtida.",
+    titulo: "Campanhas orientadas a oportunidades reais de negócio.",
     curta:
       "Campanhas no Meta Ads e no Google Ads para gerar conversa, agendamento, visita ou venda.",
     descricao:

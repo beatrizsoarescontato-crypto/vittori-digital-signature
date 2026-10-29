@@ -1,13 +1,16 @@
 import type { ReactNode } from "react";
 import type { Linha } from "@/content/servicos";
 import { Line } from "@/components/site/Lines";
+import { Check, Crown, Gem, Layers, Sparkles, Star } from "lucide-react";
 import { Btn, Faq } from "@/components/site/ui";
+
+const PLANO_ICONES = [Star, Layers, Gem, Crown];
 
 export function PageHero({ eyebrow, titulo, texto, children }: { eyebrow: string; titulo: string; texto: string; children?: ReactNode }) {
   return (
-    <section className="relative border-b border-border/50 pb-24 pt-40 md:pb-32 md:pt-52">
+    <section className="relative reading-veil pb-24 pt-40 md:pb-32 md:pt-52">
       <div className="mx-auto max-w-[1440px] px-6 md:px-12">
-        <p className="label-mono mb-8 text-dourado">✦ {eyebrow}</p>
+        <p className="t-label mb-8">✦ {eyebrow}</p>
         <h1 data-lines className="title-1 max-w-5xl text-marfim">
           <Line>{titulo}</Line>
         </h1>
@@ -21,12 +24,12 @@ export function PageHero({ eyebrow, titulo, texto, children }: { eyebrow: string
 }
 
 export function Bloco({ eyebrow, titulo, children, tom = "preto" }: { eyebrow?: string | undefined; titulo: string; children: ReactNode; tom?: "preto" | "marrom" | "bordo" }) {
-  const bg = { preto: "bg-preto/45", marrom: "bg-marrom/55", bordo: "bg-bordo-dark/65" }[tom];
+  const bg = { preto: "", marrom: "", bordo: "finale-glow" }[tom];
   return (
-    <section className={`border-b border-border/50 py-24 md:py-32 ${bg}`}>
+    <section className={`relative section-seam reading-veil py-24 md:py-32 ${bg}`}>
       <div className="mx-auto grid max-w-[1440px] gap-12 px-6 md:grid-cols-12 md:px-12">
         <div className="md:col-span-4">
-          {eyebrow && <p className="label-mono mb-5 text-dourado">{eyebrow}</p>}
+          {eyebrow && <p className="t-label mb-5">{eyebrow}</p>}
           <h2 className="font-serif text-4xl font-light leading-tight text-marfim md:text-5xl">{titulo}</h2>
         </div>
         <div data-reveal className="md:col-span-7 md:col-start-6">{children}</div>
@@ -39,8 +42,8 @@ export function Lista({ itens }: { itens: string[] }) {
   return (
     <ul>
       {itens.map((i) => (
-        <li key={i} className="reveal-item flex gap-4 border-t border-border/60 py-4 text-sm leading-relaxed text-marfim/85">
-          <span className="text-dourado/70">✦</span>
+        <li key={i} className="reveal-item t-body flex gap-4 border-t border-border/60 py-4">
+          <Check aria-hidden="true" className="mt-1.5 size-4 shrink-0 text-dourado" strokeWidth={1.5} />
           {i}
         </li>
       ))}
@@ -54,7 +57,7 @@ export function Passos({ itens }: { itens: string[] }) {
       {itens.map((p, i) => (
         <li key={p} className="reveal-item border-l border-dourado/40 pl-6">
           <span className="font-serif text-4xl font-light text-dourado">0{i + 1}</span>
-          <p className="mt-3 text-sm leading-loose text-marfim/80">{p}</p>
+          <p className="t-body mt-3">{p}</p>
         </li>
       ))}
     </ol>
@@ -88,11 +91,11 @@ export function ServicePage({ l }: { l: Linha }) {
 
       {l.blocos?.map((b, i) => (
         <Bloco key={b.titulo + i} eyebrow={b.eyebrow} titulo={b.titulo} tom={i % 2 ? "preto" : "marrom"}>
-          {b.texto && <p className="reveal-item measure mb-8 text-sm font-normal leading-loose text-marfim/90">{b.texto}</p>}
+          {b.texto && <p className="reveal-item measure t-body mb-8">{b.texto}</p>}
           {b.lista && <Lista itens={b.lista} />}
           {b.para && (
-            <p className="reveal-item mt-8 text-sm font-normal leading-loose text-marfim/85">
-              <span className="label-mono mr-3 text-dourado">Para</span>
+            <p className="reveal-item t-body mt-8">
+              <span className="t-label mr-3">Para</span>
               {b.para}
             </p>
           )}
@@ -100,15 +103,15 @@ export function ServicePage({ l }: { l: Linha }) {
       ))}
 
       {l.cards && (
-        <section className="border-b border-border/50 bg-bordo-dark/65 py-24 md:py-32">
+        <section className="relative section-seam reading-veil finale-glow py-24 md:py-32">
           <div className="mx-auto max-w-[1440px] px-6 md:px-12">
             <h2 className="title-2 max-w-3xl text-marfim">{l.cards.titulo}</h2>
-            <p className="measure mt-8 text-sm leading-loose text-marfim/90">{l.cards.texto}</p>
-            <div data-reveal className={`mt-16 grid gap-px bg-marfim/10 sm:grid-cols-2 ${l.cards.itens.length === 4 ? "lg:grid-cols-4" : "lg:grid-cols-5"}`}>
+            <p className="measure t-body mt-8">{l.cards.texto}</p>
+            <div data-reveal className={`mt-16 grid gap-4 sm:grid-cols-2 ${l.cards.itens.length === 4 ? "lg:grid-cols-4" : "lg:grid-cols-5"}`}>
               {l.cards.itens.map((c) => (
-                <div key={c.titulo} className="reveal-item bg-bordo-dark/80 p-7">
-                  <h3 className="font-serif text-2xl text-dourado">{c.titulo}</h3>
-                  <p className="mt-4 text-sm leading-relaxed text-marfim/90">{c.texto}</p>
+                <div key={c.titulo} className="reveal-item glass glow-edge p-7">
+                  <h3 className="t-title !text-2xl text-dourado-claro">{c.titulo}</h3>
+                  <p className="t-meta mt-4">{c.texto}</p>
                 </div>
               ))}
             </div>
@@ -125,13 +128,18 @@ export function ServicePage({ l }: { l: Linha }) {
 
       {l.planos && (
         <Bloco titulo={l.slug === "digital" ? "Opções" : "Planos"}>
-          <ul>
-            {l.planos.map((p) => (
-              <li key={p.nome} className="reveal-item grid gap-2 border-t border-border/60 py-6 md:grid-cols-2">
-                <span className="font-serif text-3xl font-light text-marfim">{p.nome}</span>
-                {p.detalhe && <span className="text-sm font-normal leading-relaxed text-marfim/85">{p.detalhe}</span>}
-              </li>
-            ))}
+          <ul className="grid gap-4 sm:grid-cols-2">
+            {l.planos.map((p, i) => {
+              const Icon = PLANO_ICONES[i % PLANO_ICONES.length] ?? Sparkles;
+              return (
+                <li key={p.nome} className={`reveal-item glass glow-edge flex flex-col gap-4 p-7 ${i === l.planos!.length - 1 && l.planos!.length > 1 ? "glass--bordo" : ""}`}>
+                  <span className="flex size-12 items-center justify-center rounded-full border border-dourado/35"><Icon aria-hidden="true" className="size-5 text-dourado" strokeWidth={1.25} /></span>
+                  <span className="t-label">Opção 0{i + 1}</span>
+                  <span className="font-serif text-3xl font-medium text-marfim">{p.nome}</span>
+                  {p.detalhe && <span className="t-meta">{p.detalhe}</span>}
+                </li>
+              );
+            })}
           </ul>
         </Bloco>
       )}
@@ -143,17 +151,17 @@ export function ServicePage({ l }: { l: Linha }) {
       )}
 
       {(l.paraQuem || l.paraQuemNao) && (
-        <section className="border-b border-border/50 py-24 md:py-32">
+        <section className="relative section-seam reading-veil py-24 md:py-32">
           <div data-reveal className="mx-auto grid max-w-[1440px] gap-16 px-6 md:grid-cols-2 md:px-12">
             {l.paraQuem && (
               <div className="reveal-item">
-                <p className="label-mono mb-6 text-dourado">Para quem é</p>
+                <p className="t-label mb-6">Para quem é</p>
                 <p className="font-serif text-2xl font-light leading-snug text-marfim md:text-3xl">{l.paraQuem}</p>
               </div>
             )}
             {l.paraQuemNao && (
               <div className="reveal-item">
-                <p className="label-mono mb-6 text-marfim/80">Para quem não é</p>
+                <p className="t-label mb-6 !text-marfim/85">Para quem não é</p>
                 <p className="font-serif text-2xl font-light leading-snug text-marfim/90 md:text-3xl">{l.paraQuemNao}</p>
               </div>
             )}
@@ -170,11 +178,11 @@ export function ServicePage({ l }: { l: Linha }) {
         </Bloco>
       )}
 
-      <section className="bg-bordo/85 py-28 md:py-36">
+      <section className="relative section-seam reading-veil finale-glow py-28 md:py-36">
         <div className="mx-auto max-w-[1440px] px-6 md:px-12">
           <h2 className="title-2 max-w-3xl text-marfim">Conte o que você está construindo.</h2>
           <div className="mt-12">
-            <Btn to="/comece" variant="light">{l.cta ?? "Agendar uma conversa"}</Btn>
+            <Btn to="/comece">{l.cta ?? "Agendar uma conversa"}</Btn>
           </div>
         </div>
       </section>

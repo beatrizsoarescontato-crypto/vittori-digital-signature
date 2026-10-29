@@ -1,13 +1,85 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type PointerEvent, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import useEmblaCarousel from "embla-carousel-react";
 import { ArrowLeft, ArrowRight, Camera, ChartNoAxesCombined, Globe, Megaphone, MessagesSquare, PenTool, Sparkles, type LucideIcon } from "lucide-react";
 import { LINHAS, LINHA_INTELIGENCIA } from "@/content/servicos";
 import { Line } from "@/components/site/Lines";
-import { Button } from "@/components/ui/button";
 
-const CARDS = [...LINHAS.map((l) => ({ ...l, href: `/servicos/${l.slug}` })), { ...LINHA_INTELIGENCIA, href: "/servicos/inteligencia" }];
-const ICONES: Record<string, LucideIcon> = { presenca: MessagesSquare, performance: ChartNoAxesCombined, estudio: Camera, digital: Globe, identidade: PenTool, campanha: Megaphone };
+const CARDS = [...LINHAS.map((l) => ({ ...l, key: l.slug as string, href: `/servicos/${l.slug}` })), { ...LINHA_INTELIGENCIA, key: "inteligencia", href: "/servicos/inteligencia" }];
+const ICONES: Record<string, LucideIcon> = { presenca: MessagesSquare, performance: ChartNoAxesCombined, estudio: Camera, digital: Globe, identidade: PenTool, campanha: Megaphone, inteligencia: Sparkles };
+
+const S = "currentColor";
+/** Ornamento próprio de cada frente: composição distinta, traço fino e discreto. */
+const ORNAMENTOS: Record<string, ReactNode> = {
+  presenca: (
+    <svg viewBox="0 0 200 200" className="svc-orn -right-16 -top-16 size-64 text-dourado/25" fill="none" stroke={S} strokeWidth="0.6">
+      <circle cx="100" cy="100" r="40" /><circle cx="100" cy="100" r="64" /><circle cx="100" cy="100" r="88" strokeDasharray="2 5" />
+      <circle cx="164" cy="100" r="2.5" fill={S} />
+    </svg>
+  ),
+  performance: (
+    <svg viewBox="0 0 200 120" className="svc-orn bottom-24 left-0 right-0 h-28 w-full text-dourado/25" fill="none" stroke={S} strokeWidth="0.7" preserveAspectRatio="none">
+      {[20, 34, 30, 52, 46, 70, 66, 92].map((h, i) => <line key={i} x1={14 + i * 24} x2={14 + i * 24} y1={120} y2={120 - h} />)}
+      <polyline points="14,96 38,84 62,88 86,66 110,72 134,48 158,52 182,26" strokeWidth="1" />
+    </svg>
+  ),
+  estudio: (
+    <svg viewBox="0 0 200 200" className="svc-orn right-6 top-1/2 size-56 -translate-y-1/2 text-dourado/20" fill="none" stroke={S} strokeWidth="0.6">
+      <circle cx="100" cy="100" r="80" />
+      {[0, 60, 120, 180, 240, 300].map((a) => <line key={a} x1="100" y1="100" x2={100 + 80 * Math.cos((a * Math.PI) / 180)} y2={100 + 80 * Math.sin((a * Math.PI) / 180)} transform={`rotate(18 100 100)`} />)}
+      <circle cx="100" cy="100" r="26" />
+    </svg>
+  ),
+  digital: (
+    <svg viewBox="0 0 200 200" className="svc-orn inset-0 size-full text-dourado/12" fill="none" stroke={S} strokeWidth="0.4" preserveAspectRatio="none">
+      {Array.from({ length: 9 }, (_, i) => <line key={`v${i}`} x1={i * 25} x2={i * 25} y1="0" y2="200" />)}
+      {Array.from({ length: 9 }, (_, i) => <line key={`h${i}`} y1={i * 25} y2={i * 25} x1="0" x2="200" />)}
+    </svg>
+  ),
+  identidade: (
+    <span className="svc-orn -bottom-10 -right-2 font-serif text-[15rem] font-light leading-none text-transparent [-webkit-text-stroke:1px_color-mix(in_oklab,var(--dourado)_28%,transparent)]">V</span>
+  ),
+  campanha: (
+    <svg viewBox="0 0 200 200" className="svc-orn -left-10 -top-10 size-72 text-dourado/18" fill="none" stroke={S} strokeWidth="0.5">
+      {Array.from({ length: 9 }, (_, i) => <line key={i} x1="0" y1="0" x2={200} y2={i * 25} />)}
+    </svg>
+  ),
+  inteligencia: (
+    <>
+      <span className="svc-orn inset-0 bg-[radial-gradient(70%_60%_at_80%_10%,color-mix(in_oklab,var(--dourado)_18%,transparent),transparent_70%)]" />
+      <svg viewBox="0 0 200 200" className="svc-orn right-4 top-16 size-48 text-dourado/45" fill={S}>
+        {[[30, 40], [80, 20], [130, 60], [170, 30], [110, 120], [60, 100]].map(([x, y], i) => <circle key={i} cx={x} cy={y} r="1.6" />)}
+      </svg>
+    </>
+  ),
+};
+
+/** Posição do ícone e numeral muda por frente: evita sete caixas iguais. */
+const LAYOUT: Record<string, { num: string; icon: string }> = {
+  presenca: { num: "text-[7rem] self-end", icon: "order-first" },
+  performance: { num: "text-6xl", icon: "" },
+  estudio: { num: "text-[7rem]", icon: "order-first" },
+  digital: { num: "text-6xl self-end", icon: "" },
+  identidade: { num: "text-6xl", icon: "order-first" },
+  campanha: { num: "text-[7rem] self-end", icon: "" },
+  inteligencia: { num: "text-6xl", icon: "order-first" },
+};
+
+function tilt(e: PointerEvent<HTMLElement>) {
+  if (e.pointerType !== "mouse") return;
+  const el = e.currentTarget;
+  const r = el.getBoundingClientRect();
+  const x = (e.clientX - r.left) / r.width;
+  const y = (e.clientY - r.top) / r.height;
+  el.style.setProperty("--mx", `${x * 100}%`);
+  el.style.setProperty("--my", `${y * 100}%`);
+  el.style.setProperty("--ry", `${(x - 0.5) * 4}deg`);
+  el.style.setProperty("--rx", `${(0.5 - y) * 4}deg`);
+}
+function reset(e: PointerEvent<HTMLElement>) {
+  e.currentTarget.style.setProperty("--rx", "0deg");
+  e.currentTarget.style.setProperty("--ry", "0deg");
+}
 
 /** Native vertical page flow with a draggable, keyboard-accessible services carousel. */
 export function ServicosHome() {
@@ -31,30 +103,47 @@ export function ServicosHome() {
       <div className="mx-auto w-full max-w-[1440px] px-6 md:px-12">
         <div className="flex items-end justify-between gap-5">
           <div>
-            <p className="label-mono mb-6 text-dourado">Serviços</p>
+            <p className="t-label mb-6">Serviços</p>
             <h2 data-lines className="title-2 text-marfim">
               <Line>Sete frentes.</Line>
-              <Line><em className="title-shimmer italic text-dourado">Um time só.</em></Line>
+              <Line><em className="italic text-dourado">Um time só.</em></Line>
             </h2>
           </div>
-          <div className="flex shrink-0 gap-2">
-            <Button variant="outline" size="icon" className="size-12 border-dourado/60 bg-transparent text-dourado" disabled={!canPrev} onClick={() => api?.scrollPrev()} aria-label="Serviços anteriores" title="Serviços anteriores"><ArrowLeft /></Button>
-            <Button variant="outline" size="icon" className="size-12 border-dourado/60 bg-transparent text-dourado" disabled={!canNext} onClick={() => api?.scrollNext()} aria-label="Próximos serviços" title="Próximos serviços"><ArrowRight /></Button>
+          <div className="flex shrink-0 gap-3">
+            <button type="button" className="vicon" disabled={!canPrev} onClick={() => api?.scrollPrev()} aria-label="Serviços anteriores" title="Serviços anteriores"><ArrowLeft className="size-5" strokeWidth={1.5} /></button>
+            <button type="button" className="vicon" disabled={!canNext} onClick={() => api?.scrollNext()} aria-label="Próximos serviços" title="Próximos serviços"><ArrowRight className="size-5" strokeWidth={1.5} /></button>
           </div>
         </div>
-        <div ref={viewportRef} className="mt-14 overflow-hidden" role="region" aria-label="Serviços da Vittori" tabIndex={0} onKeyDown={(e) => { if (e.key === "ArrowRight") { e.preventDefault(); api?.scrollNext(); } if (e.key === "ArrowLeft") { e.preventDefault(); api?.scrollPrev(); } }}>
+        <div ref={viewportRef} className="-mx-2 mt-14 overflow-hidden px-2 py-4" role="region" aria-label="Serviços da Vittori" tabIndex={0} onKeyDown={(e) => { if (e.key === "ArrowRight") { e.preventDefault(); api?.scrollNext(); } if (e.key === "ArrowLeft") { e.preventDefault(); api?.scrollPrev(); } }}>
           <div className="flex touch-pan-y gap-5 cursor-grab active:cursor-grabbing">
             {CARDS.map((c, i) => {
-              const Icon = ("slug" in c ? ICONES[c.slug] : undefined) ?? Sparkles;
-              const ia = c.href === "/servicos/inteligencia";
+              const Icon = ICONES[c.key] ?? Sparkles;
+              const ia = c.key === "inteligencia";
+              const lay = LAYOUT[c.key] ?? { num: "text-6xl", icon: "" };
               return (
-                <Link key={c.linha} to={c.href} draggable={false} className={`group flex min-w-0 shrink-0 basis-[88%] flex-col justify-between border border-border/60 p-7 transition-colors duration-500 hover:border-dourado/70 sm:basis-[62%] md:p-9 lg:basis-[calc((100%-2.5rem)/3)] ${ia ? "bg-bordo/90" : i % 2 ? "bg-marrom/80" : "bg-preto/75"}`}>
-                  <div>
-                    <div className="flex items-center justify-between gap-3"><span className="label-mono text-dourado">{c.linha}</span><Icon className="size-6 shrink-0 text-dourado" strokeWidth={1.5} aria-hidden="true" /></div>
-                    <h3 className="mt-10 font-serif text-3xl font-medium leading-tight text-marfim md:text-4xl">{c.titulo}</h3>
-                    <p className="mt-6 text-sm font-normal leading-loose text-marfim/90">{c.curta}</p>
+                <Link
+                  key={c.key}
+                  to={c.href}
+                  draggable={false}
+                  onPointerMove={tilt}
+                  onPointerLeave={reset}
+                  data-service={c.key}
+                  className={`svc-card glow-edge group relative flex min-h-[30rem] min-w-0 shrink-0 basis-[86%] flex-col overflow-hidden p-7 sm:basis-[62%] md:p-9 lg:basis-[calc((100%-2.5rem)/3)] ${ia ? "glass glass--bordo" : "glass"}`}
+                >
+                  {ORNAMENTOS[c.key]}
+                  <div className="flex items-start justify-between gap-4">
+                    <span className={`svc-num ${lay.num}`} aria-hidden="true">0{i + 1}</span>
+                    <span className={`flex size-14 shrink-0 items-center justify-center rounded-full border border-dourado/35 ${lay.icon}`}>
+                      <Icon className="size-6 text-dourado" strokeWidth={1.25} aria-hidden="true" />
+                    </span>
                   </div>
-                  <span className="label-mono mt-10 inline-flex items-center gap-3 text-dourado">Conhecer <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" aria-hidden="true" /></span>
+                  <div className="mt-auto pt-10">
+                    <p className="t-label">{c.linha}</p>
+                    <h3 className="t-title mt-4">{c.titulo}</h3>
+                    <span aria-hidden className="mt-6 block h-px w-12 bg-dourado/50 transition-all duration-700 group-hover:w-24" />
+                    <p className="t-meta mt-5">{c.curta}</p>
+                    <span className="vlink mt-6">Conhecer <ArrowRight className="size-4" aria-hidden="true" /></span>
+                  </div>
                 </Link>
               );
             })}

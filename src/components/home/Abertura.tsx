@@ -3,13 +3,13 @@ import { Btn } from "@/components/site/ui";
 
 export function Abertura() {
   return (
-    <section id="top" className="relative flex min-h-[100svh] items-end overflow-hidden pb-16 pt-36 md:pb-20">
+    <section id="top" className="relative flex min-h-[100svh] items-end overflow-hidden pb-16 pt-36 md:pb-32">
       <div aria-hidden className="vignette pointer-events-none absolute inset-0 z-0" />
 
       <div className="relative z-10 mx-auto w-full max-w-[1440px] px-6 md:px-12">
         <div className="max-w-3xl">
           <p data-reveal className="mb-6">
-            <span className="reveal-item label-mono inline-flex items-center gap-3 text-dourado">
+            <span className="reveal-item t-label inline-flex items-center gap-3">
               <span>✦</span> Vittori Creative House · Brasília
             </span>
           </p>
@@ -25,7 +25,7 @@ export function Abertura() {
             </p>
             <div className="reveal-item mt-8 flex flex-col gap-4 sm:flex-row">
               <Btn to="/comece">Quero uma conversa</Btn>
-              <Btn to="/" hash="servicos" variant="ghost">
+              <Btn to="/" hash="servicos" variant="secondary">
                 Ver serviços
               </Btn>
             </div>
@@ -60,7 +60,7 @@ export function Resolve() {
         <ul data-reveal className="md:col-span-5 md:col-start-8">
           {linhas.map((l, i) => (
             <li key={l} className="reveal-item flex gap-6 border-t border-border/60 py-8">
-              <span className="label-mono pt-2 text-dourado/70">0{i + 1}</span>
+              <span className="t-label pt-1 font-serif !text-2xl !tracking-normal">0{i + 1}</span>
               <span className="font-serif text-2xl font-light leading-snug text-marfim md:text-3xl">{l}</span>
             </li>
           ))}

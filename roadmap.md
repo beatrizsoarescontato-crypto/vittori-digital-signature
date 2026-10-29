@@ -22,6 +22,14 @@
 - [x] Refinamento desta rodada: proteção desde o primeiro paint, preparação dos recursos, diagnóstico de frames, teclado, movimento reduzido e fallback WebGL; oito testes passaram.
 - [x] Provas desta rodada: antes/depois, vídeos da abertura e transição, sessão nova/reentrada e leitura dos Pilares salvos nos Arquivos; sem erros JS no teste local.
 - [ ] Som ouvido: depende de avaliação no aparelho da dona; fluidez da transição já confirmada por ela.
-- [x] Etapa 3: V se afasta dos textos por seção, fundos sólidos trocados por névoa localizada, cabeçalho em véu degradê, texto de campanhas da auditoria. Aguarda aprovação visual.
-- [ ] Etapa 4: botão bordô sólido da hero destoa; refazer todos os CTAs translúcidos com contorno dourado (sem novos botões sólidos). Botões, tipografia, títulos x descrições, Inteligência em destaque, páginas e planos de serviços com ícones, Processo, textos da auditoria.
-- [ ] Etapa 5: portfólio editorial e rodapé refinado.
+- [x] Etapa 3: evolução visual aprovada pela dona (sem blocos opacos, V se afasta dos textos). Itens abaixo seguem em aberto.
+- [x] Etapa 4 implementada (aguarda aprovação visual da dona): botões, dourado com acabamento, escala tipográfica em todas as seções, cards com personalidade por serviço, Método, Inteligência, páginas/planos, controles flutuantes funcionais no celular, textos da auditoria. Aguarda aprovação visual.
+- [ ] Etapa 5 (próxima fase): portfólio editorial e rodapé refinado.
+
+# Pendências para a rodada de refinamento (não corrigir antes)
+- [ ] Etapa 3: movimentos de câmera específicos por seção.
+- [ ] Etapa 3: mudança de atmosfera e nebulosa entre seções.
+- [ ] Etapa 3: gravações completas de validação rolando o site.
+- [ ] Etapa 3: emenda visual entre a hero e a seção seguinte.
+- [ ] Etapas 1 e 2: recuperar reflexos cintilantes sobre o metal do VITTORI como na versão anterior.
+- [ ] Etapas 1 e 2: avaliar reduzir os cerca de 2 s de espera antes do cenário aparecer, sem prejudicar a fluidez.
