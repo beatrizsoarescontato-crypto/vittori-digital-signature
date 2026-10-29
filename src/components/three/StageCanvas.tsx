@@ -2,6 +2,9 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Lightformer } from "@react-three/drei";
 import { Bloom, EffectComposer, Vignette } from "@react-three/postprocessing";
 import { Suspense, useEffect, useMemo, useRef } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { EXPERIENCE, eclipseState, portalLayout } from "./experienceRules";
+import { SceneReadiness } from "./SceneReadiness";
 import * as THREE from "three";
 import { Font } from "three/examples/jsm/loaders/FontLoader.js";
 import { MeshSurfaceSampler } from "three/examples/jsm/math/MeshSurfaceSampler.js";
@@ -32,18 +35,18 @@ const BG = "#12040a";
 const mouse = { x: 0, y: 0 };
 
 function sample(p: number): number[] {
-  let a = KEYS[0]!;
-  let b = KEYS[KEYS.length - 1]!;
+  let a = KEYS[0] ?? { p: 0, v: [0, 0, 0, 0, 0, 1] };
+  let b = KEYS[KEYS.length - 1] ?? a;
   for (let i = 0; i < KEYS.length - 1; i++) {
-    if (p >= KEYS[i]!.p && p <= KEYS[i + 1]!.p) {
-      a = KEYS[i]!;
-      b = KEYS[i + 1]!;
+    if (p >= (KEYS[i]?.p ?? 0) && p <= (KEYS[i + 1]?.p ?? 1)) {
+      a = KEYS[i] ?? a;
+      b = KEYS[i + 1] ?? b;
       break;
     }
   }
   const raw = Math.min(1, Math.max(0, (p - a.p) / (b.p - a.p || 1)));
   const t = raw < 0.5 ? 4 * raw ** 3 : 1 - (-2 * raw + 2) ** 3 / 2;
-  return a.v.map((v, i) => v + (b.v[i]! - v) * t);
+  return a.v.map((v, i) => v + ((b.v[i] ?? v) - v) * t);
 }
 
 const damp = (c: number, t: number, k: number, dt: number) => c + (t - c) * (1 - Math.exp(-k * dt));
@@ -90,14 +93,15 @@ function samplePoints(meshes: THREE.Mesh[], total: number, forward: number, size
   const v = new THREE.Vector3();
   const areas = meshes.map((m) => {
     m.geometry.computeBoundingBox();
-    const b = m.geometry.boundingBox!;
+    const b = m.geometry.boundingBox;
+    if (!b) return 0;
     return (b.max.x - b.min.x) * (b.max.y - b.min.y) * m.scale.x * m.scale.y;
   });
   const sum = areas.reduce((a, b) => a + b, 0);
   let k = 0;
   meshes.forEach((m, mi) => {
     const s = new MeshSurfaceSampler(m).build();
-    const n = mi === meshes.length - 1 ? total - k : Math.round((total * areas[mi]!) / sum);
+    const n = mi === meshes.length - 1 ? total - k : Math.round((total * (areas[mi] ?? 0)) / sum);
     for (let i = 0; i < n && k < total; i++, k++) {
       s.sample(v);
       v.applyMatrix4(m.matrix);
@@ -142,12 +146,11 @@ function fade(mats: THREE.Material[], o: number) {
  * PORTAL: VITTORI em ouro, chanfro fino, estrela ✦ centrada abaixo
  * ------------------------------------------------------------------ */
 function Portal({ mobile }: { mobile: boolean }) {
-  const { viewport, gl, camera } = useThree();
+  const { viewport, size, gl, camera } = useThree();
   const group = useRef<THREE.Group>(null);
   const solid = useRef<THREE.Group>(null);
   const starRef = useRef<THREE.Mesh>(null);
-  const sweep = useRef<THREE.PointLight>(null);
-  const sweep2 = useRef<THREE.SpotLight>(null);
+  const sweepUniforms = useMemo(() => ({ uSweepX: { value: -10 }, uSweepWidth: { value: 1 } }), []);
   const intro = useRef(0);
 
   const mats = useMemo(() => {
@@ -155,13 +158,13 @@ function Portal({ mobile }: { mobile: boolean }) {
     const face = new THREE.MeshPhysicalMaterial({
       color: new THREE.Color("#D8B46C"),
       metalness: 1,
-      roughness: 0.3,
+      roughness: 0.38,
       roughnessMap: brushed,
       emissive: new THREE.Color("#3a2408"),
-      emissiveIntensity: 0.55,
+      emissiveIntensity: 0.12,
       clearcoat: 0.6,
       clearcoatRoughness: 0.15,
-      envMapIntensity: 2.2,
+      envMapIntensity: 1.15,
     });
     const side = new THREE.MeshStandardMaterial({
       color: new THREE.Color("#8F6A2C"),
@@ -169,10 +172,18 @@ function Portal({ mobile }: { mobile: boolean }) {
       roughness: 0.32,
       envMapIntensity: 1.6,
     });
+    face.onBeforeCompile = (shader) => {
+      Object.assign(shader.uniforms, sweepUniforms);
+      shader.vertexShader = "varying float vSweepX;\n" + shader.vertexShader.replace("#include <begin_vertex>", "#include <begin_vertex>\nvSweepX = (modelMatrix * vec4(position, 1.0)).x;");
+      shader.fragmentShader = "varying float vSweepX; uniform float uSweepX; uniform float uSweepWidth;\n" + shader.fragmentShader.replace("#include <emissivemap_fragment>", `#include <emissivemap_fragment>
+float sweepMask = exp(-pow((vSweepX - uSweepX) / uSweepWidth, 2.0));
+totalEmissiveRadiance += vec3(0.84, 0.63, 0.30) * sweepMask * ${EXPERIENCE.sweepStrength.toFixed(2)};`);
+    };
+    face.customProgramCacheKey = () => "vittori-metal-sweep-v2";
     return [face, side];
-  }, []);
+  }, [sweepUniforms]);
 
-  const { letters, width, pts } = useMemo(() => {
+  const { letters, width, wordBottom, wordTop, pts, starPts, starGeo } = useMemo(() => {
     const font = new Font(fontJson as never);
     const tracking = 0.1;
     const glyphs = (fontJson as { glyphs: Record<string, { ha: number }> }).glyphs;
@@ -205,24 +216,21 @@ function Portal({ mobile }: { mobile: boolean }) {
       bevelSize: 0.02,
       bevelSegments: 4,
     }).center();
+    const bounds = new THREE.Box3();
+    tmp.forEach((mesh) => bounds.expandByObject(mesh));
     const sm_ = new THREE.Mesh(starGeo);
-    sm_.position.set(0, -0.84, 0);
     sm_.scale.setScalar(mobile ? 0.34 : 0.2);
     sm_.updateMatrix();
-    const pts = samplePoints([...tmp, sm_], mobile ? 1800 : 7500, 1.8, 22 * gl.getPixelRatio(), "#F3D79A");
-    return { letters: placed, width: w, pts, starGeo };
+    const pts = samplePoints(tmp, mobile ? 1800 : 6500, 1.8, 22 * gl.getPixelRatio(), "#F3D79A");
+    const starPts = samplePoints([sm_], mobile ? 180 : 500, 1.8, 22 * gl.getPixelRatio(), "#F3D79A");
+    return { letters: placed, width: bounds.max.x - bounds.min.x, wordBottom: bounds.min.y, wordTop: bounds.max.y, pts, starPts, starGeo };
   }, [mobile, gl]);
-  const starGeo = useMemo(
-    () =>
-      new THREE.ExtrudeGeometry(createStarShape(0.22), {
-        depth: 0.03,
-        bevelEnabled: true,
-        bevelThickness: 0.02,
-        bevelSize: 0.02,
-        bevelSegments: 4,
-      }).center(),
-    [],
-  );
+  useEffect(() => () => {
+    letters.forEach((l) => l.geo.dispose());
+    starGeo.dispose();
+    [pts, starPts].forEach((p) => { p.geometry.dispose(); (p.material as THREE.Material).dispose(); });
+    mats.forEach((m) => { if (m instanceof THREE.MeshPhysicalMaterial) m.roughnessMap?.dispose(); m.dispose(); });
+  }, [letters, starGeo, pts, starPts, mats]);
 
   useFrame((s, delta) => {
     const dt = Math.min(delta, 0.05);
@@ -230,14 +238,16 @@ function Portal({ mobile }: { mobile: boolean }) {
     const dive = stageScroll.dive;
     const g = group.current;
     if (!g) return;
-    intro.current = damp(intro.current, 1, 0.9, dt);
+    intro.current = sm(0, 2.6, t);
     const i = intro.current;
     g.visible = dive < 0.98;
     if (!g.visible) return;
 
-    const fit = (viewport.width * (mobile ? 0.88 : 0.8)) / width;
-    g.scale.setScalar(fit * (0.92 + 0.08 * i));
-    g.position.set(0, viewport.height * (mobile ? 0.08 : 0.06) + Math.sin(t * 0.45) * 0.03, -1.2 * (1 - i));
+    const layout = portalLayout({ width: size.width, height: size.height, worldWidth: viewport.width, worldHeight: viewport.height, wordWidth: width, wordBottom, wordTop, starRadius: mobile ? 0.34 : 0.2, safeTop: stageScroll.portalSafeTop || size.height * (mobile ? 0.6 : 0.68), mobile });
+    g.scale.setScalar(layout.fit * (0.96 + 0.04 * i));
+    g.position.set(0, layout.groupY + Math.sin(t * 0.45) * 0.012, -0.35 * (1 - i));
+    if (starRef.current) starRef.current.position.y = layout.starY;
+    starPts.position.y = layout.starY;
     g.rotation.x = damp(g.rotation.x, -0.04 + mouse.y * 0.08, 2.2, dt);
     g.rotation.y = damp(g.rotation.y, mouse.x * 0.14, 2.2, dt);
 
@@ -249,22 +259,15 @@ function Portal({ mobile }: { mobile: boolean }) {
       starRef.current.rotation.z = t * 0.05;
     }
 
-    const u = (pts.material as THREE.ShaderMaterial).uniforms;
-    u["uTime"]!.value = t;
-    // Antes do clique: brilho de poeira sobre as letras; no clique: explode rumo à câmera.
-    u["uScatter"]!.value = (1 - i) * 0.5 + sm(0.03, 0.75, dive) * 1.4;
-    u["uAlpha"]!.value = (0.22 * i + 1.3 * sm(0.0, 0.18, dive)) * (1 - sm(0.55, 0.92, dive));
-
-    // Varredura de luz: atravessa o nome a cada ~5,5s, nasce na aparição.
-    const c = ((t + 1.5) % 5.5) / 5.5;
-    if (sweep.current) {
-      sweep.current.position.set((-0.65 + c * 1.3) * width, 0.1, 0.55);
-      sweep.current.intensity = 3.5 * Math.sin(Math.PI * c) * solidO;
+    for (const cloud of [pts, starPts]) {
+      const u = (cloud.material as THREE.ShaderMaterial).uniforms;
+      u["uTime"].value = t;
+      u["uScatter"].value = (1 - i) * 0.5 + sm(0.03, 0.75, dive) * 1.4;
+      u["uAlpha"].value = (0.06 * i + 1.3 * sm(0.0, 0.18, dive)) * (1 - sm(0.55, 0.92, dive));
     }
-    if (sweep2.current) {
-      sweep2.current.position.set((-0.6 + c * 1.2) * width, 1.5, 2.5);
-      sweep2.current.intensity = 10 * Math.sin(Math.PI * c) * solidO;
-    }
+    const c = (t % EXPERIENCE.sweepSeconds) / EXPERIENCE.sweepSeconds;
+    sweepUniforms.uSweepX.value = (-0.6 + c * 1.2) * width * layout.fit;
+    sweepUniforms.uSweepWidth.value = width * layout.fit * 0.16;
 
     // Mergulho da câmera: avança pelo cenário e abre o campo de visão.
     const cam = camera as THREE.PerspectiveCamera;
@@ -283,8 +286,7 @@ function Portal({ mobile }: { mobile: boolean }) {
         <mesh ref={starRef} geometry={starGeo} material={mats} position={[0, -0.84, 0]} scale={mobile ? 0.34 : 0.2} />
       </group>
       <primitive object={pts} />
-      <pointLight ref={sweep} distance={1.6} decay={1.2} color="#FFF4D6" intensity={0} />
-      <spotLight ref={sweep2} angle={0.22} penumbra={1} distance={8} color="#FFF1CC" intensity={0} />
+      <primitive object={starPts} />
     </group>
   );
 }
@@ -300,6 +302,8 @@ varying vec2 vUv;
 uniform float uTime;
 uniform float uAlpha;
 uniform vec2 uOff;
+uniform float uPeak;
+uniform float uSoftness;
 void main() {
   vec2 p = vUv - 0.5;
   float r = length(p);
@@ -307,14 +311,15 @@ void main() {
   float rq = length(q);
   float disc = 0.22;
   float core = smoothstep(disc + 0.004, disc - 0.004, rq);
-  float rim = exp(-pow((rq - disc) * 38.0, 2.0));
+  float rim = exp(-pow((rq - disc) * mix(38.0, 14.0, uSoftness), 2.0));
   float ang = atan(q.y, q.x);
   float rays = 0.55 + 0.45 * sin(ang * 9.0 + uTime * 0.25) * sin(ang * 4.0 - uTime * 0.18);
   float corona = exp(-max(0.0, rq - disc) * 9.0) * (1.0 - core) * rays;
   float halo = exp(-r * 4.2) * 0.35;
   vec3 gold = vec3(0.95, 0.76, 0.42);
-  vec3 col = gold * (rim * 1.2 + corona * 0.7 + halo);
-  float a = max(core * 0.92, clamp(rim * 1.2 + corona * 0.85 + halo, 0.0, 1.0));
+  float arc = mix(0.18 + 0.82 * pow(0.5 + 0.5 * cos(ang - 0.6), 2.0), 1.0, uPeak);
+  vec3 col = gold * (rim * 1.2 * arc + corona * 0.7 + halo);
+  float a = max(core * 0.92, clamp(rim * 1.2 * arc + corona * 0.85 + halo, 0.0, 1.0));
   vec3 dark = vec3(0.05, 0.01, 0.02);
   gl_FragColor = vec4(mix(col, dark, core), a * uAlpha * smoothstep(0.5, 0.36, r));
 }`;
@@ -325,6 +330,18 @@ function Monogram({ mobile }: { mobile: boolean }) {
   const stars = useRef<(THREE.Mesh | null)[]>([]);
   const spin = useRef(0);
   const born = useRef(0);
+  const reading = useRef(0);
+  const haloLevel = useRef(0);
+  useEffect(() => {
+    const elements = [document.getElementById("metodo"), document.getElementById("pilares")].filter((el): el is HTMLElement => el !== null);
+    const ratios = new Map<Element, number>();
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => ratios.set(entry.target, entry.intersectionRatio));
+      reading.current = Math.max(0, ...ratios.values()) > 0.08 ? 1 : 0;
+    }, { threshold: [0, 0.08, 0.2, 0.5] });
+    elements.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
 
   const vPts = useMemo(() => {
     const geo = new THREE.ExtrudeGeometry(createVShape(), { depth: 0.3, bevelEnabled: false }).center();
@@ -340,7 +357,7 @@ function Monogram({ mobile }: { mobile: boolean }) {
         transparent: true,
         depthWrite: false,
         fog: false,
-        uniforms: { uTime: { value: 0 }, uAlpha: { value: 0 }, uOff: { value: new THREE.Vector2(0.4, 0.1) } },
+        uniforms: { uTime: { value: 0 }, uAlpha: { value: 0 }, uOff: { value: new THREE.Vector2(0.4, 0.1) }, uPeak: { value: 0 }, uSoftness: { value: 1 } },
       }),
     [],
   );
@@ -392,17 +409,23 @@ function Monogram({ mobile }: { mobile: boolean }) {
 
     // Partículas: chegam espalhadas do mergulho e se montam; respiram nos Serviços.
     const breathe = sm(0.22, 0.34, p) * (1 - sm(0.5, 0.6, p)) * 0.12;
+    const dispersion = Math.max(sm(0.22, 0.34, p) * (1 - sm(0.5, 0.6, p)), Math.min(1, Math.abs(spin.current) * 1.2));
+    const choreography = eclipseState(appear, dispersion, reading.current);
+    vg.position.z -= reading.current * dt * 0.8;
     const u = (vPts.material as THREE.ShaderMaterial).uniforms;
-    u["uTime"]!.value = t;
-    u["uScatter"]!.value = (1 - born.current) * 0.9 + breathe + Math.abs(spin.current) * 0.1;
-    u["uAlpha"]!.value = appear * (mobile ? 0.8 : 1.25);
+    u["uTime"].value = t;
+    u["uScatter"].value = (1 - born.current) * 0.9 + breathe + Math.abs(spin.current) * 0.1;
+    u["uAlpha"].value = choreography.particleAlpha * (mobile ? 0.8 : 1.25);
 
     // Eclipse: o disco escuro desliza até cobrir o centro, a coroa se acende por trás (contraluz).
     const eu = ecl.uniforms;
-    eu["uTime"]!.value = t;
+    eu["uTime"].value = t;
     const e = born.current;
-    (eu["uOff"]!.value as THREE.Vector2).set(0.42 * (1 - e) + Math.sin(t * 0.2) * 0.012, 0.12 * (1 - e) + Math.cos(t * 0.17) * 0.01);
-    eu["uAlpha"]!.value = appear * (mobile ? 0.6 : 0.85) * (0.75 + 0.25 * Math.sin(t * 0.6)) * (1 - sm(0.7, 0.8, p) * 0.5);
+    (eu["uOff"].value as THREE.Vector2).set(0.42 * (1 - e) + Math.sin(t * 0.2) * 0.012, 0.12 * (1 - e) + Math.cos(t * 0.17) * 0.01);
+    haloLevel.current = damp(haloLevel.current, choreography.halo, 3.5, dt);
+    eu["uAlpha"].value = haloLevel.current;
+    eu["uPeak"].value = choreography.peak;
+    eu["uSoftness"].value = choreography.softness;
 
     stars.current.forEach((m, i) => {
       if (!m) return;
@@ -448,19 +471,19 @@ float n(vec2 p){ vec2 i=floor(p), f=fract(p); f=f*f*(3.0-2.0*f);
 float fbm(vec2 p){ float v=0.0, a=0.5; for(int i=0;i<5;i++){ v+=a*n(p); p*=2.03; a*=0.5; } return v; }
 void main(){
   vec2 uv = vUv - 0.5;
-  vec2 q = uv * 3.0 + vec2(uTime * 0.012, uTravel * 0.04);
-  float f = fbm(q + fbm(q * 1.3 + uTime * 0.02));
-  float r = length(uv);
-  vec3 deep = vec3(0.055, 0.012, 0.024);
-  vec3 bordo = vec3(0.38, 0.035, 0.07);
-  vec3 wine = vec3(0.22, 0.02, 0.05);
-  vec3 gold = vec3(0.55, 0.36, 0.16);
-  vec3 col = mix(deep, wine, smoothstep(0.25, 0.75, f));
-  col = mix(col, bordo, smoothstep(0.55, 0.9, f) * (1.0 - r * 1.2));
-  col += gold * pow(smoothstep(0.62, 0.95, f), 3.0) * 0.12;
-  col += bordo * exp(-r * 3.0) * 0.35;
-  col *= 1.0 - smoothstep(0.3, 0.72, r) * 0.7;
-  col *= 0.78;
+  vec2 q = uv * 3.2 + vec2(uTime * 0.004, uTravel * 0.025);
+  vec2 warp = vec2(fbm(q + vec2(1.7, 8.2)), fbm(q + vec2(8.3, 2.8)));
+  float f = fbm(q + 1.8 * warp);
+  float massA = exp(-length((uv - vec2(-0.28, 0.18)) * vec2(2.0, 3.2)) * 2.0);
+  float massB = exp(-length((uv - vec2(0.30, -0.08)) * vec2(3.4, 1.8)) * 2.0);
+  float massC = exp(-length((uv - vec2(0.08, 0.33)) * 4.0) * 2.0);
+  vec3 deep = vec3(0.013, 0.004, 0.010);
+  vec3 wine = vec3(0.14, 0.018, 0.050);
+  vec3 bordo = vec3(0.25, 0.035, 0.085);
+  float density = smoothstep(0.30, 0.78, f);
+  vec3 col = deep + wine * density * massA + bordo * density * massB * 0.62;
+  col += vec3(0.085, 0.032, 0.045) * pow(f, 3.0) * massC;
+  col *= 1.0 - smoothstep(0.28, 0.75, length(uv)) * 0.55;
   gl_FragColor = vec4(col, 1.0);
 }`;
 
@@ -477,8 +500,8 @@ function Nebula() {
     [],
   );
   useFrame((s) => {
-    mat.uniforms["uTime"]!.value = s.clock.elapsedTime;
-    mat.uniforms["uTravel"]!.value = stageScroll.p * 6 + stageScroll.dive * 2;
+    mat.uniforms["uTime"].value = s.clock.elapsedTime;
+    mat.uniforms["uTravel"].value = stageScroll.p * 6 + stageScroll.dive * 2;
   });
   return (
     <mesh position={[0, 0, -40]} material={mat} renderOrder={-1}>
@@ -522,7 +545,7 @@ function TwinkleField({ count }: { count: number }) {
   }, [count, gl]);
   const ref = useRef<THREE.Points>(pts);
   useFrame((s) => {
-    (pts.material as THREE.ShaderMaterial).uniforms["uTime"]!.value = s.clock.elapsedTime;
+    (pts.material as THREE.ShaderMaterial).uniforms["uTime"].value = s.clock.elapsedTime;
     ref.current.rotation.z = s.clock.elapsedTime * 0.003 + stageScroll.p * 0.15;
     ref.current.position.y = stageScroll.p * 4;
   });
@@ -538,7 +561,8 @@ function ShootingStars() {
     const c = document.createElement("canvas");
     c.width = 256;
     c.height = 8;
-    const x = c.getContext("2d")!;
+    const x = c.getContext("2d");
+    if (!x) return new THREE.CanvasTexture(c);
     const g = x.createLinearGradient(0, 0, 256, 0);
     g.addColorStop(0, "rgba(242,239,230,0)");
     g.addColorStop(0.85, "rgba(240,211,148,0.7)");
@@ -568,7 +592,8 @@ function ShootingStars() {
       const i = pool.findIndex((o) => o.life < 0);
       const m = refs.current[i];
       if (i >= 0 && m) {
-        const o = pool[i]!;
+        const o = pool[i];
+        if (!o) return;
         o.life = 0;
         const W = viewport.width * 2.2;
         m.position.set((Math.random() * 0.8 - 0.2) * W, viewport.height * (0.9 + Math.random() * 0.5), -10 - Math.random() * 6);
@@ -684,9 +709,9 @@ function DustLayer({ count, size, speed, color, spread }: { count: number; size:
     const warp = Math.sin(Math.PI * Math.min(1, stageScroll.dive));
     travel.current += dt * (0.35 + warp * 14) * speed;
     const u = (points.material as THREE.ShaderMaterial).uniforms;
-    u["uTime"]!.value = s.clock.elapsedTime;
-    u["uTravel"]!.value = travel.current + stageScroll.p * 90 * speed;
-    u["uStretch"]!.value = warp * 0.8;
+    u["uTime"].value = s.clock.elapsedTime;
+    u["uTravel"].value = travel.current + stageScroll.p * 90 * speed;
+    u["uStretch"].value = warp * 0.8;
     points.position.x = damp(points.position.x, -mouse.x * 0.6 * speed, 2, dt);
     points.position.y = damp(points.position.y, mouse.y * 0.4 * speed, 2, dt);
   });
@@ -704,7 +729,7 @@ function CursorLight() {
     l.position.x = damp(l.position.x, mouse.x * viewport.width, 3, dt);
     l.position.y = damp(l.position.y, -mouse.y * viewport.height, 3, dt);
   });
-  return <pointLight ref={ref} position={[0, 0, 3]} intensity={10} distance={12} color="#F3D79A" />;
+  return <pointLight ref={ref} position={[0, 0, 3]} intensity={1.2} distance={12} color="#F3D79A" />;
 }
 
 function Rig() {
@@ -721,28 +746,31 @@ function Rig() {
 }
 
 export default function StageCanvas() {
-  const mobile = typeof window !== "undefined" && window.innerWidth < 768;
+  const mobile = useIsMobile();
+  const signalReady = () => {
+    wrap.current?.setAttribute("data-scene-ready", "true");
+    window.dispatchEvent(new Event("vittori-scene-ready"));
+  };
   const wrap = useRef<HTMLDivElement>(null);
 
   return (
     <div ref={wrap} className="absolute inset-0">
       <Canvas
-        dpr={mobile ? [1, 1.4] : [1, 1.75]}
+        dpr={mobile ? [1, 1.2] : [1, 1.5]}
         camera={{ position: [0, 0, 8], fov: 45, near: 0.1, far: 90 }}
-        gl={{ antialias: !mobile, powerPreference: "high-performance" }}
+        gl={{ antialias: false, powerPreference: "high-performance" }}
         style={{ pointerEvents: "none" }}
-        onCreated={() => {
-          requestAnimationFrame(() => wrap.current?.setAttribute("data-scene-ready", "true"));
-        }}
+        fallback={<span role="status" className="sr-only">Visualização simplificada</span>}
       >
         <color attach="background" args={[BG]} />
         <fogExp2 attach="fog" args={[BG, 0.035]} />
         <Rig />
+        <SceneReadiness onReady={signalReady} />
         <ambientLight intensity={0.2} />
         <directionalLight position={[2, 3, 7]} intensity={1.8} color="#F2DDAA" />
         <directionalLight position={[-3, 1, 8]} intensity={2.2} color="#F6E2B4" />
-        <spotLight position={[-6, 4, 6]} angle={0.6} penumbra={1} intensity={60} color="#F2EFE6" />
-        <spotLight position={[6, -3, 4]} angle={0.7} penumbra={1} intensity={40} color="#C8203A" />
+        <spotLight position={[-6, 4, 6]} angle={0.6} penumbra={1} intensity={6} color="#F2EFE6" />
+        <spotLight position={[6, -3, 4]} angle={0.7} penumbra={1} intensity={4} color="#C8203A" />
         <CursorLight />
         <Nebula />
         <TwinkleField count={mobile ? 260 : 650} />
@@ -752,10 +780,10 @@ export default function StageCanvas() {
         <DustLayer count={mobile ? 50 : 120} size={110} speed={1.8} color="#D9485A" spread={16} />
         <Suspense fallback={null}>
           <Environment resolution={256}>
-            <Lightformer intensity={7} position={[0, 4, 4]} scale={[12, 3, 1]} color="#FFF0CF" />
-            <Lightformer intensity={4} position={[-4, 1, 6]} scale={[10, 4, 1]} color="#F6DDA6" />
-            <Lightformer intensity={4} position={[4, 1, 6]} scale={[10, 4, 1]} color="#F6DDA6" />
-            <Lightformer intensity={3} position={[3, -2, 4]} scale={[8, 8, 1]} color="#E4C98F" />
+            <Lightformer intensity={2.5} position={[0, 4, 4]} scale={[12, 3, 1]} color="#FFF0CF" />
+            <Lightformer intensity={1.6} position={[-4, 1, 6]} scale={[10, 4, 1]} color="#F6DDA6" />
+            <Lightformer intensity={1.6} position={[4, 1, 6]} scale={[10, 4, 1]} color="#F6DDA6" />
+            <Lightformer intensity={1.4} position={[3, -2, 4]} scale={[8, 8, 1]} color="#E4C98F" />
             <Lightformer intensity={2.5} color="#E0C48A" position={[-5, 0, 1]} rotation-y={Math.PI / 2} scale={[14, 1.5, 1]} />
             <Lightformer intensity={2.4} color="#8B0F1A" position={[5, -1, 1]} rotation-y={-Math.PI / 2} scale={[14, 3, 1]} />
             <Lightformer intensity={1.2} color="#3a0610" position={[0, -5, 0]} rotation-x={-Math.PI / 2} scale={[20, 20, 1]} />
@@ -764,7 +792,7 @@ export default function StageCanvas() {
           <Monogram mobile={mobile} />
         </Suspense>
         <EffectComposer multisampling={0} enableNormalPass={false}>
-          <Bloom mipmapBlur intensity={mobile ? 0.5 : 0.7} luminanceThreshold={0.72} luminanceSmoothing={0.25} />
+          <Bloom mipmapBlur intensity={EXPERIENCE.bloomStrength} luminanceThreshold={1.05} luminanceSmoothing={0.25} />
           <Vignette offset={0.25} darkness={0.7} />
         </EffectComposer>
       </Canvas>
