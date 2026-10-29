@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { PRODUTOS_IA } from "@/content/servicos";
 import { henriqueLink } from "@/lib/contato";
 import { Line } from "@/components/site/Lines";
+import { Bot, LayoutDashboard, PanelsTopLeft, ArrowUpRight } from "lucide-react";
 import { Btn } from "@/components/site/ui";
 
 type Msg = { de: "cliente" | "ia"; texto: string; audio?: boolean };
@@ -55,7 +56,7 @@ export function ConversaIlustrativa() {
         <span className="h-2 w-2 rounded-full bg-dourado" />
         <span className="label-mono text-marfim/80">WhatsApp da sua empresa</span>
       </div>
-      <div className="flex min-h-[380px] flex-col gap-3 p-5" aria-live="polite">
+      <div className="flex min-h-[480px] sm:min-h-[380px] flex-col gap-3 p-5" aria-live="polite">
         {CONVERSA.slice(0, n).map((m, i) => (
           <div
             key={i}
@@ -92,27 +93,21 @@ export function InteligenciaDestaque() {
           </Line>
         </h2>
 
-        <div className="mt-20 grid gap-16 lg:grid-cols-12">
-          <ul data-reveal className="lg:col-span-7">
-            {PRODUTOS_IA.map((p) => (
-              <li key={p.slug} className="reveal-item border-t border-marfim/15 py-10">
-                <p className="label-mono text-dourado">{p.nome}</p>
-                <h3 className="mt-4 font-serif text-3xl font-light text-marfim">{p.titulo}</h3>
-                <p className="measure mt-4 text-sm leading-loose text-marfim/75">{p.resumo}</p>
-                <Link
-                  to={p.to}
-                  className="label-mono mt-6 inline-flex min-h-11 items-center gap-3 text-dourado"
-                >
-                  Saiba mais <span className="h-px w-8 bg-dourado" />
-                </Link>
-              </li>
-            ))}
-          </ul>
-          <div className="lg:col-span-5">
-            <div className="lg:sticky lg:top-28">
-              <ConversaIlustrativa />
-            </div>
-          </div>
+        <div className="mt-20">
+          {PRODUTOS_IA.map((p, i) => {
+            const Icon = [Bot, LayoutDashboard, PanelsTopLeft][i] ?? Bot;
+            return (
+              <div key={p.slug} className="grid items-start gap-10 border-t border-marfim/25 py-12 lg:grid-cols-12 lg:gap-16">
+                <div className="lg:col-span-7">
+                  <p className="label-mono flex items-center gap-3 text-dourado"><Icon aria-hidden="true" className="size-5" strokeWidth={1.5} />{p.nome}</p>
+                  <h3 className="mt-4 font-serif text-3xl font-medium text-marfim">{p.titulo}</h3>
+                  <p className="measure mt-4 text-sm font-normal leading-loose text-marfim/90">{p.resumo}</p>
+                  <Link to={p.to} className="label-mono mt-6 inline-flex min-h-11 items-center gap-3 text-dourado">Saiba mais <ArrowUpRight aria-hidden="true" className="size-4" /></Link>
+                </div>
+                {i === 0 && <div className="min-w-0 lg:col-span-5"><ConversaIlustrativa /></div>}
+              </div>
+            );
+          })}
         </div>
 
         <div className="mt-16">
