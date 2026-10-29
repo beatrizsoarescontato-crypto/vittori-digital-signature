@@ -16,9 +16,12 @@ O pacote traz uma auditoria completa e um código de referência (portal, cena 3
 
 ## Etapa 2 — Transição e abertura do site (esta rodada)
 - Só o clique dispara: VITTORI e estrela se dissolvem em partículas, a câmera mergulha pelo cenário e revela a hero. Não é fade, blur nem camada HTML sumindo.
-- O V surge formado por partículas douradas, com animação própria de eclipse e contraluz. Nenhum V sólido gigante em nenhuma seção; o VITTORI 3D nunca reaparece.
+- O V surge formado por partículas douradas, com animação própria de eclipse e contraluz. Nenhum V sólido gigante em nenhum momento nem seção; o VITTORI 3D nunca reaparece.
+- O fundo mantém profundidade contínua dentro do site, nunca vira só fundo escuro com partículas soltas.
+- Composição própria para computador e para celular, com impacto nos dois.
 - Remover as constelações em linhas.
 - Preservar conteúdos, projetos e funções corretos existentes.
+- Checkpoint final: gravação em vídeo do portal e da transição completa, além de capturas, antes de considerar concluído.
 
 ## Etapas seguintes (obrigatórias, próximas rodadas, uma por vez)
 3. Transições reais por seção (Serviços, Método, Portfólio etc. mudam a cena) e fim dos fundos sólidos repetitivos.
