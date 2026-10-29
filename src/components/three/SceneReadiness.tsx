@@ -20,9 +20,10 @@ export function SceneReadiness({ onReady }: { onReady: () => void }) {
   const reduced = useRef(false);
   useEffect(() => {
     let active = true;
+    gl.info.autoReset = false;
     gl.compileAsync(scene, camera).then(() => { if (active) warm.current = true; }).catch(() => { if (active) warm.current = true; });
     if (import.meta.env.DEV) window.__vittori = { report: () => reports.current.slice(), state: () => ({ ...stageScroll }) };
-    return () => { active = false; if (import.meta.env.DEV) delete window.__vittori; };
+    return () => { active = false; gl.info.autoReset = true; if (import.meta.env.DEV) delete window.__vittori; };
   }, [gl, scene, camera]);
   useFrame(() => {
     const now = performance.now();
@@ -40,6 +41,7 @@ export function SceneReadiness({ onReady }: { onReady: () => void }) {
         setDpr(1);
       }
     }
-  });
+    gl.info.reset();
+  }, -100);
   return null;
 }

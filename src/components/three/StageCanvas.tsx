@@ -164,11 +164,11 @@ function Portal({ mobile }: { mobile: boolean }) {
     const face = new THREE.MeshPhysicalMaterial({
       color: new THREE.Color("#D8B46C"),
       metalness: 1,
-      roughness: 0.38,
+      roughness: 0.62,
       roughnessMap: brushed,
       emissive: new THREE.Color("#3a2408"),
       emissiveIntensity: 0.12,
-      clearcoat: 0.6,
+      clearcoat: 0.15,
       clearcoatRoughness: 0.15,
       envMapIntensity: 1.15,
     });
@@ -336,6 +336,7 @@ function Monogram({ mobile }: { mobile: boolean }) {
   const stars = useRef<(THREE.Mesh | null)[]>([]);
   const spin = useRef(0);
   const born = useRef(0);
+  const formationStart = useRef<number | null>(null);
   const reading = useRef(0);
   const haloLevel = useRef(0);
   useEffect(() => {
@@ -353,7 +354,9 @@ function Monogram({ mobile }: { mobile: boolean }) {
     const geo = new THREE.ExtrudeGeometry(createVShape(), { depth: 0.3, bevelEnabled: false }).center();
     const m = new THREE.Mesh(geo);
     m.updateMatrix();
-    return samplePoints([m], mobile ? 2600 : 6000, 0, 58 * gl.getPixelRatio(), "#F3D79A");
+    const points = samplePoints([m], mobile ? 2600 : 6000, 0, 40 * gl.getPixelRatio(), "#F3D79A");
+    geo.dispose();
+    return points;
   }, [mobile, gl]);
   const ecl = useMemo(
     () =>
@@ -400,7 +403,8 @@ function Monogram({ mobile }: { mobile: boolean }) {
     const appear = sm(0.5, 1, stageScroll.dive);
     vg.visible = appear > 0.001;
     if (!vg.visible) return;
-    born.current = damp(born.current, appear >= 1 ? 1 : 0, 1.8, dt);
+    if (stageScroll.dive > 0.65 && formationStart.current === null) formationStart.current = t;
+    born.current = formationStart.current === null ? 0 : sm(0, 2.1, t - formationStart.current);
     spin.current = damp(spin.current, stageScroll.vel, 2.2, dt);
     stageScroll.vel = damp(stageScroll.vel, 0, 3, dt);
 
@@ -409,7 +413,7 @@ function Monogram({ mobile }: { mobile: boolean }) {
     vg.scale.setScalar(damp(vg.scale.x || base, base * (sc ?? 1), 3, dt));
     vg.position.x = damp(vg.position.x, viewport.width * (mobile ? KEYS_MOBILE_X : x ?? 0), 2.6, dt);
     vg.position.y = damp(vg.position.y, viewport.height * ((y ?? 0) + (mobile ? 0.12 : 0)) + Math.sin(t * 0.5) * 0.06, 2.6, dt);
-    vg.position.z = damp(vg.position.z, (z ?? 0) - Math.abs(spin.current) * 0.8, 2.4, dt);
+    vg.position.z = damp(vg.position.z, (z ?? 0) - Math.abs(spin.current) * 0.8 - reading.current * 5, 2.4, dt);
     vg.rotation.x = damp(vg.rotation.x, (rx ?? 0) + mouse.y * 0.18, 2.6, dt);
     vg.rotation.y = damp(vg.rotation.y, (ry ?? 0) + mouse.x * 0.32 + spin.current * 0.35, 2.4, dt);
 
@@ -417,7 +421,6 @@ function Monogram({ mobile }: { mobile: boolean }) {
     const breathe = sm(0.22, 0.34, p) * (1 - sm(0.5, 0.6, p)) * 0.12;
     const dispersion = Math.max(sm(0.22, 0.34, p) * (1 - sm(0.5, 0.6, p)), Math.min(1, Math.abs(spin.current) * 1.2));
     const choreography = eclipseState(appear, dispersion, reading.current);
-    vg.position.z -= reading.current * dt * 0.8;
     const u = (vPts.material as THREE.ShaderMaterial).uniforms;
     setUniform(u, "uTime", t);
     setUniform(u, "uScatter", (1 - born.current) * 0.9 + breathe + Math.abs(spin.current) * 0.1);
