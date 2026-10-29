@@ -84,6 +84,29 @@ export function useScrollReveal() {
           });
         });
 
+        // Mergulho entre seções: a próxima chega do fundo, a anterior se desfaz no desfoque.
+        gsap.utils.toArray<HTMLElement>("main > section").forEach((sec, i) => {
+          if (i === 0) return;
+          gsap.fromTo(
+            sec,
+            { opacity: 0.15, scale: 0.94, filter: "blur(10px)" },
+            {
+              opacity: 1,
+              scale: 1,
+              filter: "blur(0px)",
+              ease: "none",
+              scrollTrigger: { trigger: sec, start: "top 100%", end: "top 55%", scrub: 0.6 },
+            },
+          );
+          gsap.to(sec, {
+            opacity: 0.25,
+            filter: "blur(6px)",
+            ease: "none",
+            immediateRender: false,
+            scrollTrigger: { trigger: sec, start: "bottom 35%", end: "bottom 0%", scrub: 0.6 },
+          });
+        });
+
         const watermark = document.querySelector<HTMLElement>("[data-watermark]");
         if (watermark) {
           gsap.to(watermark, {
