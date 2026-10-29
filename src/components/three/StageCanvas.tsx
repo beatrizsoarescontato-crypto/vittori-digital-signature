@@ -259,11 +259,11 @@ function Portal({ mobile }: { mobile: boolean }) {
     const c = ((t + 1.5) % 5.5) / 5.5;
     if (sweep.current) {
       sweep.current.position.set((-0.65 + c * 1.3) * width, 0.1, 0.55);
-      sweep.current.intensity = 9 * Math.sin(Math.PI * c) * solidO;
+      sweep.current.intensity = 3.5 * Math.sin(Math.PI * c) * solidO;
     }
     if (sweep2.current) {
       sweep2.current.position.set((-0.6 + c * 1.2) * width, 1.5, 2.5);
-      sweep2.current.intensity = 16 * Math.sin(Math.PI * c) * solidO;
+      sweep2.current.intensity = 10 * Math.sin(Math.PI * c) * solidO;
     }
 
     // Mergulho da câmera: avança pelo cenário e abre o campo de visão.
@@ -764,7 +764,7 @@ export default function StageCanvas() {
           <Monogram mobile={mobile} />
         </Suspense>
         <EffectComposer multisampling={0} enableNormalPass={false}>
-          <Bloom mipmapBlur intensity={mobile ? 0.6 : 0.85} luminanceThreshold={0.55} luminanceSmoothing={0.25} />
+          <Bloom mipmapBlur intensity={mobile ? 0.5 : 0.7} luminanceThreshold={0.72} luminanceSmoothing={0.25} />
           <Vignette offset={0.25} darkness={0.7} />
         </EffectComposer>
       </Canvas>
