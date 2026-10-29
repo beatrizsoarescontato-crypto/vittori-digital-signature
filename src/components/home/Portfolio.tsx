@@ -19,7 +19,7 @@ export function PortfolioGrid() {
               {p.imagem ? (
                 <img
                   src={p.imagem}
-                  alt={`Site ${p.nome}`}
+                  alt={`Projeto ${p.nome}`}
                   loading="lazy"
                   className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
                 />
@@ -33,9 +33,9 @@ export function PortfolioGrid() {
               <p className="label-mono text-dourado">{p.tipo}</p>
               <h3 className="mt-3 font-serif text-3xl text-marfim">{p.nome}</h3>
               <p className="mt-3 text-sm leading-relaxed text-marfim/70">{p.resumo}</p>
-              <Button variant="ghost" className="mt-5 h-auto min-h-11 max-w-full justify-start whitespace-normal px-0 text-dourado hover:bg-transparent hover:text-marfim" onClick={() => setAberto(p.nome)} aria-label={`Visualizar projeto ${p.nome}`}>
+              {(p.imagem || p.midias?.length) ? <Button variant="ghost" className="mt-5 h-auto min-h-11 max-w-full justify-start whitespace-normal px-0 text-dourado hover:bg-transparent hover:text-marfim" onClick={() => setAberto(p.nome)} aria-label={`Visualizar projeto ${p.nome}`}>
                 <Maximize2 aria-hidden="true" /> Visualizar projeto
-              </Button>
+              </Button> : null}
             </div>
           </>
         );
