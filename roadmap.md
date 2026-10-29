@@ -1,4 +1,5 @@
 # Ajustes solicitados
+- [ ] Intervenção direcionada: medir partículas, Bloom e compilação separadamente; corrigir GLSL indefinido e recuperar reflexos pontuais sem alterar halo/fundo. Fluidez real requer confirmação na prévia da dona.
 - [x] Fotos inteiras e centralizadas; BSB conferida sem domínio ou link externo na captura atual.
 - [x] Beatriz Soares identificada no contato de Brasília.
 - [x] Serviços com arraste e setas sem travar rolagem; exemplo apenas no produto Atendente.
