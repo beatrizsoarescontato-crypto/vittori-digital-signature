@@ -13,3 +13,4 @@
 - Portfolio content lives in `src/content/portfolio.ts` and opens bundled screenshot/media previews in an accessible dialog, never outbound client-site links. Why: visitors inspect work without leaving Vittori or depending on client-site availability.
 - Internal price documents and legal review notes stay outside the public app and client imports. Why: confidential costs and unverified operational claims must not be exposed as public content.
 - Eagerly prebundle the portfolio's Radix dialog and slot in Vite while preserving the template's React deduplication. Why: late dependency discovery can mix optimized React generations in an already open preview and crash hooks.
+- Home services use Embla for horizontal dragging and arrow navigation without pinning vertical scroll; the WhatsApp demo belongs only to the attendant product row. Why: browsing services must not trap page scrolling or associate the demo with unrelated products.

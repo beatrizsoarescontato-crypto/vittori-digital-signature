@@ -12,7 +12,14 @@ export function SiteShell({ children, fab = true }: { children: ReactNode; fab?:
     <div className="grain relative min-h-screen bg-preto">
       <Nav />
       <Cursor />
-      <main className="relative z-10">{children}</main>
+       <main className="relative z-10">
+         <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+           <span className="signature-sparkle text-2xl">✦</span>
+           <span className="signature-sparkle text-lg">✦</span>
+           <span className="signature-sparkle text-xl">✦</span>
+         </div>
+         {children}
+       </main>
       <Footer />
       {fab && <WhatsAppFab />}
       <div aria-hidden className="grain-layer fixed z-[60]" />
