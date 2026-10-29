@@ -37,3 +37,11 @@ describe("approved experience rules", () => {
     expect(eclipseState(1, 1, 1).halo).toBeCloseTo(0.205);
   });
 });
+import { sectionChoreography as sc } from "./experienceRules";
+describe("sectionChoreography", () => {
+  it("moves the V opposite to left-aligned text on desktop", () => expect(sc("left", false).x).toBe(0.3));
+  it("moves the V opposite to right-aligned text on desktop", () => expect(sc("right", false).x).toBe(-0.3));
+  it("pushes the V deep and dim behind wide text", () => { const r = sc("wide", false); expect(r.zOffset).toBe(-6); expect(r.readingSafety).toBe(1); });
+  it("never centers the V close behind text on mobile", () => expect(sc("left", true).zOffset).toBe(-6));
+  it("leaves the V free between sections", () => expect(sc("none", false).active).toBe(false));
+});

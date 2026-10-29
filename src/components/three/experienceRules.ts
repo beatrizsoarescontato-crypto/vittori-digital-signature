@@ -50,3 +50,11 @@ export function eclipseState(formation: number, dispersion: number, readingSafet
     particleAlpha: formation * (1 - 0.28 * dispersion),
   };
 }
+export type TextSide = "left" | "right" | "wide" | "none";
+
+/** Where the interior V sits while a section is read. x is a viewport fraction. */
+export function sectionChoreography(side: TextSide, mobile: boolean) {
+  if (side === "none") return { active: false, x: 0, zOffset: 0, scale: 1, readingSafety: 0 };
+  if (mobile || side === "wide") return { active: true, x: 0, zOffset: -6, scale: 0.6, readingSafety: 1 };
+  return { active: true, x: side === "left" ? 0.3 : -0.3, zOffset: -2.5, scale: 0.75, readingSafety: 0.6 };
+}
