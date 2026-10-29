@@ -5,6 +5,24 @@ import { retornoPara } from "@/lib/navContexto";
 
 const CHAVE = "vittori:origem";
 
+/** Quando a rolagem parar, corrige um eventual deslocamento causado por conteúdo que cresceu no caminho. */
+function corrigirAoParar(el: HTMLElement) {
+  let y = NaN, parado = 0, n = 0;
+  const alvo = () => parseFloat(getComputedStyle(el).scrollMarginTop) || 0;
+  const passo = () => {
+    n++;
+    parado = Math.abs(window.scrollY - y) < 1 ? parado + 1 : 0;
+    y = window.scrollY;
+    if (parado >= 6) {
+      const desvio = el.getBoundingClientRect().top - alvo();
+      if (Math.abs(desvio) > 6) window.scrollTo({ top: window.scrollY + desvio, behavior: "auto" });
+      return;
+    }
+    if (n < 600) requestAnimationFrame(passo);
+  };
+  requestAnimationFrame(passo);
+}
+
 /** Rola até a seção esperando o elemento existir e a posição estabilizar (sem atraso fixo). */
 export function rolarParaSecao(id: string, suave = true) {
   let ultimo = NaN, estavel = 0, frames = 0;
@@ -18,6 +36,7 @@ export function rolarParaSecao(id: string, suave = true) {
       if (estavel >= 3 || frames > 240) {
         const reduz = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         el.scrollIntoView({ behavior: suave && !reduz ? "smooth" : "auto", block: "start" });
+        corrigirAoParar(el);
         return;
       }
     } else if (frames > 240) return;
