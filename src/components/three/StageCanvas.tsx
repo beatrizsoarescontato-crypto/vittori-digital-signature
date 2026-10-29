@@ -313,7 +313,7 @@ void main() {
   float corona = exp(-max(0.0, rq - disc) * 9.0) * (1.0 - core) * rays;
   float halo = exp(-r * 4.2) * 0.35;
   vec3 gold = vec3(0.95, 0.76, 0.42);
-  vec3 col = gold * (rim * 1.8 + corona * 0.9 + halo);
+  vec3 col = gold * (rim * 1.2 + corona * 0.7 + halo);
   float a = max(core * 0.92, clamp(rim * 1.2 + corona * 0.85 + halo, 0.0, 1.0));
   vec3 dark = vec3(0.05, 0.01, 0.02);
   gl_FragColor = vec4(mix(col, dark, core), a * uAlpha * smoothstep(0.5, 0.36, r));
@@ -377,7 +377,7 @@ function Monogram({ mobile }: { mobile: boolean }) {
     const appear = sm(0.5, 1, stageScroll.dive);
     vg.visible = appear > 0.001;
     if (!vg.visible) return;
-    born.current = damp(born.current, appear >= 1 ? 1 : 0, 0.8, dt);
+    born.current = damp(born.current, appear >= 1 ? 1 : 0, 1.8, dt);
     spin.current = damp(spin.current, stageScroll.vel, 2.2, dt);
     stageScroll.vel = damp(stageScroll.vel, 0, 3, dt);
 
@@ -394,15 +394,15 @@ function Monogram({ mobile }: { mobile: boolean }) {
     const breathe = sm(0.22, 0.34, p) * (1 - sm(0.5, 0.6, p)) * 0.12;
     const u = (vPts.material as THREE.ShaderMaterial).uniforms;
     u["uTime"]!.value = t;
-    u["uScatter"]!.value = (1 - appear) * 1.2 + breathe + Math.abs(spin.current) * 0.12 + (1 - born.current) * 0.05;
-    u["uAlpha"]!.value = appear * 1.25;
+    u["uScatter"]!.value = (1 - born.current) * 0.9 + breathe + Math.abs(spin.current) * 0.1;
+    u["uAlpha"]!.value = appear * (mobile ? 0.8 : 1.25);
 
     // Eclipse: o disco escuro desliza até cobrir o centro, a coroa se acende por trás (contraluz).
     const eu = ecl.uniforms;
     eu["uTime"]!.value = t;
     const e = born.current;
     (eu["uOff"]!.value as THREE.Vector2).set(0.42 * (1 - e) + Math.sin(t * 0.2) * 0.012, 0.12 * (1 - e) + Math.cos(t * 0.17) * 0.01);
-    eu["uAlpha"]!.value = appear * (0.75 + 0.25 * Math.sin(t * 0.6)) * (1 - sm(0.7, 0.8, p) * 0.5);
+    eu["uAlpha"]!.value = appear * (mobile ? 0.6 : 0.85) * (0.75 + 0.25 * Math.sin(t * 0.6)) * (1 - sm(0.7, 0.8, p) * 0.5);
 
     stars.current.forEach((m, i) => {
       if (!m) return;
@@ -416,7 +416,7 @@ function Monogram({ mobile }: { mobile: boolean }) {
 
   return (
     <group ref={vGroup} visible={false}>
-      <mesh position={[0, 0.05, -0.6]} material={ecl} scale={4.6}>
+      <mesh position={[0, 0.05, -0.6]} material={ecl} scale={3.4}>
         <planeGeometry args={[1, 1]} />
       </mesh>
       <primitive object={vPts} />
