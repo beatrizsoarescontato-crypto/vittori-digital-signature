@@ -1,5 +1,7 @@
 # Ajustes solicitados
-- [ ] Mostrar os três sites como visualizações internas, sem links para seus domínios e sem avisos de publicação.
-- [ ] Incorporar fotos e vídeos reais disponíveis com títulos dos projetos, sem legendas individuais nas fotos.
-- [ ] Revisar os textos legais e a tabela interna de preços, sem publicar valores confidenciais.
-- [ ] Entregar a lista de pendências em português e verificar a visualização.
+- [x] BSB abre visualização interna; removidos links aos domínios e avisos de publicação de todos os projetos.
+- [ ] Visualizações completas de Roberta e Dayane: aguardam capturas da dona; versões públicas/manutenção e acesso aos assets externos impedem captura real.
+- [x] Quatro fotos e três vídeos identificados exibidos por projeto, sem legendas individuais; reprodução verificada em computador e celular.
+- [ ] Quarto vídeo: aguarda identificação do projeto da mulher falando em reunião e autorização dos titulares para uso das mídias.
+- [x] Revisados os textos legais e as contas da tabela interna, sem publicar valores confidenciais; correções comunicadas.
+- [x] Lista de pendências entregue em português e visualização interna verificada.
