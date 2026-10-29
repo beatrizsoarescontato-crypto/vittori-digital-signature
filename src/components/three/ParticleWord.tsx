@@ -112,10 +112,10 @@ export function ParticleWord({ mobile }: { mobile: boolean }) {
     const t = s.clock.elapsedTime;
     if (start.current === null) start.current = t;
     const u = material.uniforms;
-    u.uTime!.value = t;
-    u.uAssemble!.value = Math.min(1, (t - start.current) / 4.5);
+    u["uTime"]!.value = t;
+    u["uAssemble"]!.value = Math.min(1, (t - start.current) / 4.5);
     const sc = Math.min(1, Math.max(0, window.scrollY / window.innerHeight));
-    u.uScatter!.value += (sc - u.uScatter!.value) * 0.08;
+    u["uScatter"]!.value += (sc - u["uScatter"]!.value) * 0.08;
     if (ref.current) {
       ref.current.rotation.y = Math.sin(t * 0.15) * 0.08;
       ref.current.rotation.x = Math.cos(t * 0.12) * 0.04;
