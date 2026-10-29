@@ -54,7 +54,7 @@ export function SectionTitle({
 }) {
   return (
     <div className={className}>
-      {eyebrow && <p className="label-mono mb-6 text-dourado">{eyebrow}</p>}
+      {eyebrow && <p className="t-label mb-6">{eyebrow}</p>}
       <h2 data-lines className="title-2 text-marfim">
         {lines.map((l, i) => (
           <Line key={i}>{l}</Line>
@@ -76,10 +76,10 @@ export function Faq({ itens }: { itens: { q: string; a: string }[] }) {
             onClick={() => setAberto(aberto === i ? null : i)}
             className="flex min-h-14 w-full items-center justify-between gap-6 py-6 text-left"
           >
-            <span className="font-serif text-xl font-light text-marfim md:text-2xl">{f.q}</span>
+            <span className="font-serif text-xl font-medium text-marfim md:text-2xl">{f.q}</span>
             <span
               aria-hidden
-              className={`text-dourado transition-transform duration-500 ${aberto === i ? "rotate-45" : ""}`}
+              className={`flex size-9 shrink-0 items-center justify-center rounded-full border border-dourado/35 text-lg text-dourado transition-transform duration-500 ${aberto === i ? "rotate-45" : ""}`}
             >
               +
             </span>
@@ -90,7 +90,7 @@ export function Faq({ itens }: { itens: { q: string; a: string }[] }) {
             }`}
           >
             <div className="overflow-hidden">
-              <p className="measure pb-7 text-sm leading-loose text-marfim/70">{f.a}</p>
+              <p className="measure t-body pb-7">{f.a}</p>
             </div>
           </div>
         </li>
