@@ -34,6 +34,16 @@ const KEYS_MOBILE_X = 0; // no celular o V fica centrado atrás do texto
 const BG = "#12040a";
 const mouse = { x: 0, y: 0 };
 
+function setUniform(uniforms: Record<string, THREE.IUniform>, name: string, value: number) {
+  const uniform = uniforms[name];
+  if (uniform) uniform.value = value;
+}
+
+function WebGLFallback() {
+  useEffect(() => { window.dispatchEvent(new Event("vittori-scene-unavailable")); }, []);
+  return null;
+}
+
 function sample(p: number): number[] {
   let a = KEYS[0] ?? { p: 0, v: [0, 0, 0, 0, 0, 1] };
   let b = KEYS[KEYS.length - 1] ?? a;
@@ -261,9 +271,9 @@ totalEmissiveRadiance += vec3(0.84, 0.63, 0.30) * sweepMask * ${EXPERIENCE.sweep
 
     for (const cloud of [pts, starPts]) {
       const u = (cloud.material as THREE.ShaderMaterial).uniforms;
-      u["uTime"].value = t;
-      u["uScatter"].value = (1 - i) * 0.5 + sm(0.03, 0.75, dive) * 1.4;
-      u["uAlpha"].value = (0.06 * i + 1.3 * sm(0.0, 0.18, dive)) * (1 - sm(0.55, 0.92, dive));
+      setUniform(u, "uTime", t);
+      setUniform(u, "uScatter", (1 - i) * 0.5 + sm(0.03, 0.75, dive) * 1.4);
+      setUniform(u, "uAlpha", (0.06 * i + 1.3 * sm(0.0, 0.18, dive)) * (1 - sm(0.55, 0.92, dive)));
     }
     const c = (t % EXPERIENCE.sweepSeconds) / EXPERIENCE.sweepSeconds;
     sweepUniforms.uSweepX.value = (-0.6 + c * 1.2) * width * layout.fit;
@@ -413,19 +423,20 @@ function Monogram({ mobile }: { mobile: boolean }) {
     const choreography = eclipseState(appear, dispersion, reading.current);
     vg.position.z -= reading.current * dt * 0.8;
     const u = (vPts.material as THREE.ShaderMaterial).uniforms;
-    u["uTime"].value = t;
-    u["uScatter"].value = (1 - born.current) * 0.9 + breathe + Math.abs(spin.current) * 0.1;
-    u["uAlpha"].value = choreography.particleAlpha * (mobile ? 0.8 : 1.25);
+    setUniform(u, "uTime", t);
+    setUniform(u, "uScatter", (1 - born.current) * 0.9 + breathe + Math.abs(spin.current) * 0.1);
+    setUniform(u, "uAlpha", choreography.particleAlpha * (mobile ? 0.8 : 1.25));
 
     // Eclipse: o disco escuro desliza até cobrir o centro, a coroa se acende por trás (contraluz).
     const eu = ecl.uniforms;
-    eu["uTime"].value = t;
+    setUniform(eu, "uTime", t);
     const e = born.current;
-    (eu["uOff"].value as THREE.Vector2).set(0.42 * (1 - e) + Math.sin(t * 0.2) * 0.012, 0.12 * (1 - e) + Math.cos(t * 0.17) * 0.01);
+    const offset = eu["uOff"]?.value;
+    if (offset instanceof THREE.Vector2) offset.set(0.42 * (1 - e) + Math.sin(t * 0.2) * 0.012, 0.12 * (1 - e) + Math.cos(t * 0.17) * 0.01);
     haloLevel.current = damp(haloLevel.current, choreography.halo, 3.5, dt);
-    eu["uAlpha"].value = haloLevel.current;
-    eu["uPeak"].value = choreography.peak;
-    eu["uSoftness"].value = choreography.softness;
+    setUniform(eu, "uAlpha", haloLevel.current);
+    setUniform(eu, "uPeak", choreography.peak);
+    setUniform(eu, "uSoftness", choreography.softness);
 
     stars.current.forEach((m, i) => {
       if (!m) return;
@@ -500,8 +511,8 @@ function Nebula() {
     [],
   );
   useFrame((s) => {
-    mat.uniforms["uTime"].value = s.clock.elapsedTime;
-    mat.uniforms["uTravel"].value = stageScroll.p * 6 + stageScroll.dive * 2;
+    setUniform(mat.uniforms, "uTime", s.clock.elapsedTime);
+    setUniform(mat.uniforms, "uTravel", stageScroll.p * 6 + stageScroll.dive * 2);
   });
   return (
     <mesh position={[0, 0, -40]} material={mat} renderOrder={-1}>
@@ -545,7 +556,7 @@ function TwinkleField({ count }: { count: number }) {
   }, [count, gl]);
   const ref = useRef<THREE.Points>(pts);
   useFrame((s) => {
-    (pts.material as THREE.ShaderMaterial).uniforms["uTime"].value = s.clock.elapsedTime;
+    setUniform((pts.material as THREE.ShaderMaterial).uniforms, "uTime", s.clock.elapsedTime);
     ref.current.rotation.z = s.clock.elapsedTime * 0.003 + stageScroll.p * 0.15;
     ref.current.position.y = stageScroll.p * 4;
   });
@@ -709,9 +720,9 @@ function DustLayer({ count, size, speed, color, spread }: { count: number; size:
     const warp = Math.sin(Math.PI * Math.min(1, stageScroll.dive));
     travel.current += dt * (0.35 + warp * 14) * speed;
     const u = (points.material as THREE.ShaderMaterial).uniforms;
-    u["uTime"].value = s.clock.elapsedTime;
-    u["uTravel"].value = travel.current + stageScroll.p * 90 * speed;
-    u["uStretch"].value = warp * 0.8;
+    setUniform(u, "uTime", s.clock.elapsedTime);
+    setUniform(u, "uTravel", travel.current + stageScroll.p * 90 * speed);
+    setUniform(u, "uStretch", warp * 0.8);
     points.position.x = damp(points.position.x, -mouse.x * 0.6 * speed, 2, dt);
     points.position.y = damp(points.position.y, mouse.y * 0.4 * speed, 2, dt);
   });
@@ -760,15 +771,16 @@ export default function StageCanvas() {
         camera={{ position: [0, 0, 8], fov: 45, near: 0.1, far: 90 }}
         gl={{ antialias: false, powerPreference: "high-performance" }}
         style={{ pointerEvents: "none" }}
-        fallback={<span role="status" className="sr-only">Visualização simplificada</span>}
+        fallback={<WebGLFallback />}
+        onCreated={({ gl }) => { gl.toneMappingExposure = 0.7; }}
       >
         <color attach="background" args={[BG]} />
         <fogExp2 attach="fog" args={[BG, 0.035]} />
         <Rig />
         <SceneReadiness onReady={signalReady} />
         <ambientLight intensity={0.2} />
-        <directionalLight position={[2, 3, 7]} intensity={1.8} color="#F2DDAA" />
-        <directionalLight position={[-3, 1, 8]} intensity={2.2} color="#F6E2B4" />
+        <directionalLight position={[2, 3, 7]} intensity={0.8} color="#F2DDAA" />
+        <directionalLight position={[-3, 1, 8]} intensity={0.8} color="#F6E2B4" />
         <spotLight position={[-6, 4, 6]} angle={0.6} penumbra={1} intensity={6} color="#F2EFE6" />
         <spotLight position={[6, -3, 4]} angle={0.7} penumbra={1} intensity={4} color="#C8203A" />
         <CursorLight />

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { eclipseState, portalLayout } from "./experienceRules";
 
 describe("approved experience rules", () => {
-  for (const [width, height] of [[1910, 861], [1440, 900], [1280, 720], [390, 844], [360, 740]]) {
+  for (const [width, height] of [[1910, 861], [1440, 900], [1280, 720], [390, 844], [360, 740]] as const) {
     it(`keeps the star below the word and above controls at ${width}×${height}`, () => {
       const mobile = width < 768;
       const worldHeight = 16 * Math.tan(Math.PI / 8);

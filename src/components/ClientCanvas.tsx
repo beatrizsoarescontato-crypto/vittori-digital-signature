@@ -3,10 +3,10 @@ import { Component, lazy, Suspense, useEffect, useState, type ReactNode } from "
 const StageCanvas = lazy(() => import("./three/StageCanvas"));
 
 class SceneBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
-  state = { failed: false };
+  override state = { failed: false };
   static getDerivedStateFromError() { return { failed: true }; }
-  componentDidCatch() { window.dispatchEvent(new Event("vittori-scene-unavailable")); }
-  render() { return this.state.failed ? null : this.props.children; }
+  override componentDidCatch() { window.dispatchEvent(new Event("vittori-scene-unavailable")); }
+  override render() { return this.state.failed ? null : this.props.children; }
 }
 
 /**
@@ -18,12 +18,6 @@ export function ClientStage() {
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const canvas = document.createElement("canvas");
-    try {
-      const context = canvas.getContext("webgl2");
-      if (!context) { window.dispatchEvent(new Event("vittori-scene-unavailable")); return; }
-      context.getExtension("WEBGL_lose_context")?.loseContext();
-    } catch { window.dispatchEvent(new Event("vittori-scene-unavailable")); return; }
     // Monta logo: o portal é a própria cena 3D.
     const id = window.setTimeout(() => setReady(true), 0);
     return () => clearTimeout(id);
