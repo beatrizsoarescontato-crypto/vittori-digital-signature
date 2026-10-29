@@ -18,6 +18,12 @@ export function ClientStage() {
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const probe = document.createElement("canvas");
+    try {
+      const context = probe.getContext("webgl2");
+      if (!context) { window.setTimeout(() => window.dispatchEvent(new Event("vittori-scene-unavailable")), 0); return; }
+      context.getExtension("WEBGL_lose_context")?.loseContext();
+    } catch { window.setTimeout(() => window.dispatchEvent(new Event("vittori-scene-unavailable")), 0); return; }
     // Monta logo: o portal é a própria cena 3D.
     const id = window.setTimeout(() => setReady(true), 0);
     return () => clearTimeout(id);

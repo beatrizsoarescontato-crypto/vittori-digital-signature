@@ -39,10 +39,6 @@ function setUniform(uniforms: Record<string, THREE.IUniform>, name: string, valu
   if (uniform) uniform.value = value;
 }
 
-function WebGLFallback() {
-  useEffect(() => { window.dispatchEvent(new Event("vittori-scene-unavailable")); }, []);
-  return null;
-}
 
 function sample(p: number): number[] {
   let a = KEYS[0] ?? { p: 0, v: [0, 0, 0, 0, 0, 1] };
@@ -771,7 +767,7 @@ export default function StageCanvas() {
         camera={{ position: [0, 0, 8], fov: 45, near: 0.1, far: 90 }}
         gl={{ antialias: false, powerPreference: "high-performance" }}
         style={{ pointerEvents: "none" }}
-        fallback={<WebGLFallback />}
+        fallback={<span>Visualização simplificada</span>}
         onCreated={({ gl }) => { gl.toneMappingExposure = 0.7; }}
       >
         <color attach="background" args={[BG]} />
