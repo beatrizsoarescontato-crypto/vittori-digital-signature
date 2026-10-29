@@ -1,13 +1,9 @@
-import { ClientStage } from "@/components/ClientCanvas";
 import { Line } from "@/components/site/Lines";
 import { Btn } from "@/components/site/ui";
 
 export function Abertura() {
   return (
-    <section id="top" className="relative flex min-h-[100svh] items-end overflow-hidden pb-20 pt-36 md:items-center md:pb-0">
-      <div aria-hidden className="pointer-events-none absolute inset-0 z-0">
-        <ClientStage />
-      </div>
+    <section id="top" className="relative flex min-h-[100svh] items-end overflow-hidden pb-16 pt-36 md:pb-20">
       <div aria-hidden className="vignette pointer-events-none absolute inset-0 z-0" />
 
       <div className="relative z-10 mx-auto w-full max-w-[1440px] px-6 md:px-12">
@@ -17,14 +13,14 @@ export function Abertura() {
               <span>✦</span> Brasília · Casa criativa
             </span>
           </p>
-          <h1 data-lines className="display text-marfim">
+          <h1 data-lines className="title-1 text-marfim">
             <Line>Criamos</Line>
             <Line>
               <em className="italic text-dourado">presença.</em>
             </Line>
           </h1>
           <div data-reveal className="mt-10 max-w-xl">
-            <p className="reveal-item text-base leading-loose text-marfim/75 md:text-lg">
+            <p className="reveal-item text-base leading-loose text-marfim/90 md:text-lg">
               Social media, tráfego pago, audiovisual, sites e inteligência artificial para negócios
               que querem ser escolhidos pela qualidade.
             </p>
@@ -36,6 +32,9 @@ export function Abertura() {
             </div>
           </div>
         </div>
+        <p aria-hidden className="label-mono absolute bottom-0 right-6 hidden items-center gap-3 text-dourado md:right-12 md:flex">
+          Role para mergulhar <span className="scroll-cue inline-block">↓</span>
+        </p>
       </div>
     </section>
   );
