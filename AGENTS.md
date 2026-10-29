@@ -12,3 +12,4 @@
 - Contacts and proof flags (`SHOW_PROOF`, etc.) live in `src/lib/contato.ts`; empty email/Instagram hide themselves. Why: placeholders must never show invented data.
 - Portfolio content lives in `src/content/portfolio.ts` and opens bundled screenshot/media previews in an accessible dialog, never outbound client-site links. Why: visitors inspect work without leaving Vittori or depending on client-site availability.
 - Internal price documents and legal review notes stay outside the public app and client imports. Why: confidential costs and unverified operational claims must not be exposed as public content.
+- Eagerly prebundle the portfolio's Radix dialog and slot in Vite while preserving the template's React deduplication. Why: late dependency discovery can mix optimized React generations in an already open preview and crash hooks.
