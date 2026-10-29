@@ -17,6 +17,7 @@ export function SiteShell({ children, fab = true }: { children: ReactNode; fab?:
       <div aria-hidden="true" className="stage-fallback pointer-events-none fixed inset-0 z-0">
         <ClientStage />
       </div>
+      <div className="site-layer">
       <Nav />
       <DepthHud />
       <Cursor />
@@ -31,6 +32,7 @@ export function SiteShell({ children, fab = true }: { children: ReactNode; fab?:
       <Footer />
       {fab && <WhatsAppFab />}
       <SoundToggle />
+      </div>
       <EntryGate />
       <div aria-hidden className="grain-layer fixed z-[60]" />
     </div>
