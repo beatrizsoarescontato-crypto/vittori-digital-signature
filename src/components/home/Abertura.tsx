@@ -42,11 +42,11 @@ export function Abertura() {
 export function Resolve() {
   const linhas = [
     "Um Instagram que parece do tamanho do seu trabalho.",
-    "Anúncios que trazem cliente, não só curtida.",
+    "Campanhas orientadas a oportunidades reais de negócio.",
     "Atendimento e números organizados para você decidir com clareza.",
   ];
   return (
-    <section className="relative border-t border-border/50 bg-marrom/50 py-28 md:py-40">
+    <section data-stage-section="wide" className="relative section-seam py-28 md:py-40 reading-veil">
       <div className="mx-auto grid max-w-[1440px] gap-16 px-6 md:grid-cols-12 md:px-12">
         <h2 data-lines className="title-2 text-marfim md:col-span-6">
           <Line>Você é bom no que faz.</Line>

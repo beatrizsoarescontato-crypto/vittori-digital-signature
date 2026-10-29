@@ -83,7 +83,7 @@ export function ConversaIlustrativa() {
 
 export function InteligenciaDestaque() {
   return (
-    <section id="inteligencia" className="relative border-t border-border/50 bg-bordo-dark/65 py-28 md:py-40">
+    <section data-stage-section="wide" id="inteligencia" className="relative section-seam py-28 md:py-40 reading-veil">
       <div className="mx-auto max-w-[1440px] px-6 md:px-12">
         <p className="label-mono mb-6 text-dourado">Vittori Inteligência</p>
         <h2 data-lines className="title-2 max-w-4xl text-marfim">

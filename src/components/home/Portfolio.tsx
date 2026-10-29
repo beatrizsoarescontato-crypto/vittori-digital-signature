@@ -68,7 +68,7 @@ export function PortfolioGrid() {
 
 export function PortfolioHome() {
   return (
-    <section id="portfolio" className="border-t border-border/50 bg-preto/50 py-28 md:py-40">
+    <section data-stage-section="wide" id="portfolio" className="section-seam py-28 md:py-40 reading-veil">
       <div className="mx-auto max-w-[1440px] px-6 md:px-12">
         <div className="mb-16 flex flex-wrap items-end justify-between gap-8">
           <SectionTitle eyebrow="Portfólio" lines={["Alguns projetos", <em key="e" className="italic text-dourado">que assinamos.</em>]} />
