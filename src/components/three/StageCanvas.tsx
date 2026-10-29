@@ -155,8 +155,10 @@ function Portal({ mobile }: { mobile: boolean }) {
     const face = new THREE.MeshPhysicalMaterial({
       color: new THREE.Color("#D8B46C"),
       metalness: 1,
-      roughness: 0.2,
+      roughness: 0.3,
       roughnessMap: brushed,
+      emissive: new THREE.Color("#3a2408"),
+      emissiveIntensity: 0.35,
       clearcoat: 0.6,
       clearcoatRoughness: 0.15,
       envMapIntensity: 2.2,
@@ -204,8 +206,8 @@ function Portal({ mobile }: { mobile: boolean }) {
       bevelSegments: 4,
     }).center();
     const sm_ = new THREE.Mesh(starGeo);
-    sm_.position.set(0, -0.82, 0);
-    sm_.scale.setScalar(0.17);
+    sm_.position.set(0, -0.84, 0);
+    sm_.scale.setScalar(mobile ? 0.26 : 0.2);
     sm_.updateMatrix();
     const pts = samplePoints([...tmp, sm_], mobile ? 3200 : 7500, 1.8, 22 * gl.getPixelRatio(), "#F3D79A");
     return { letters: placed, width: w, pts, starGeo };
@@ -233,7 +235,7 @@ function Portal({ mobile }: { mobile: boolean }) {
     g.visible = dive < 0.98;
     if (!g.visible) return;
 
-    const fit = (viewport.width * (mobile ? 0.9 : 0.8)) / width;
+    const fit = (viewport.width * (mobile ? 0.84 : 0.8)) / width;
     g.scale.setScalar(fit * (0.92 + 0.08 * i));
     g.position.set(0, viewport.height * (mobile ? 0.08 : 0.06) + Math.sin(t * 0.45) * 0.03, -1.2 * (1 - i));
     g.rotation.x = damp(g.rotation.x, -0.04 + mouse.y * 0.08, 2.2, dt);
@@ -243,7 +245,7 @@ function Portal({ mobile }: { mobile: boolean }) {
     fade(mats, solidO);
     if (solid.current) solid.current.visible = solidO > 0.01;
     if (starRef.current) {
-      starRef.current.rotation.y = Math.sin(t * 0.6) * 0.5;
+      starRef.current.rotation.y = Math.sin(t * 0.6) * 0.3;
       starRef.current.rotation.z = t * 0.05;
     }
 
@@ -278,7 +280,7 @@ function Portal({ mobile }: { mobile: boolean }) {
         {letters.map((l, i) => (
           <mesh key={i} geometry={l.geo} material={mats} position={[l.x, -0.32, -0.03]} />
         ))}
-        <mesh ref={starRef} geometry={starGeo} material={mats} position={[0, -0.82, 0]} scale={0.17} />
+        <mesh ref={starRef} geometry={starGeo} material={mats} position={[0, -0.84, 0]} scale={mobile ? 0.26 : 0.2} />
       </group>
       <primitive object={pts} />
       <pointLight ref={sweep} distance={1.6} decay={1.2} color="#FFF4D6" intensity={0} />
@@ -457,7 +459,8 @@ void main(){
   col = mix(col, bordo, smoothstep(0.55, 0.9, f) * (1.0 - r * 1.2));
   col += gold * pow(smoothstep(0.62, 0.95, f), 3.0) * 0.12;
   col += bordo * exp(-r * 3.0) * 0.35;
-  col *= 1.0 - smoothstep(0.3, 0.72, r) * 0.65;
+  col *= 1.0 - smoothstep(0.3, 0.72, r) * 0.7;
+  col *= 0.78;
   gl_FragColor = vec4(col, 1.0);
 }`;
 
@@ -749,6 +752,8 @@ export default function StageCanvas() {
         <Suspense fallback={null}>
           <Environment resolution={256}>
             <Lightformer intensity={7} position={[0, 4, 4]} scale={[12, 3, 1]} color="#FFF0CF" />
+            <Lightformer intensity={4} position={[-4, 1, 6]} scale={[10, 4, 1]} color="#F6DDA6" />
+            <Lightformer intensity={4} position={[4, 1, 6]} scale={[10, 4, 1]} color="#F6DDA6" />
             <Lightformer intensity={3} position={[3, -2, 4]} scale={[8, 8, 1]} color="#E4C98F" />
             <Lightformer intensity={2.5} color="#E0C48A" position={[-5, 0, 1]} rotation-y={Math.PI / 2} scale={[14, 1.5, 1]} />
             <Lightformer intensity={2.4} color="#8B0F1A" position={[5, -1, 1]} rotation-y={-Math.PI / 2} scale={[14, 3, 1]} />
