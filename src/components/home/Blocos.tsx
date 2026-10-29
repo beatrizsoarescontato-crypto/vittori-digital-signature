@@ -11,7 +11,7 @@ export function Metodo() {
     ["Leitura", "Relatório, reunião e ajuste do próximo mês."],
   ];
   return (
-    <section id="metodo" className="relative border-t border-border/50 bg-preto/40 py-28 text-marfim backdrop-blur-[2px] md:py-40">
+    <section data-stage-section="wide" id="metodo" className="relative section-seam py-28 text-marfim md:py-40 reading-veil">
       <div className="mx-auto max-w-[1440px] px-6 md:px-12">
         <p className="label-mono mb-6 text-dourado">Como trabalhamos</p>
         <h2 data-lines className="title-1">
@@ -50,7 +50,7 @@ export function Pilares() {
     ["Presença", "constância que vira lembrança."],
   ];
   return (
-    <section id="pilares" className="relative border-t border-border/50 bg-preto/45 py-24 md:py-32">
+    <section data-stage-section="wide" id="pilares" className="relative section-seam py-24 md:py-32 reading-veil">
       <ul data-reveal className="mx-auto max-w-[1440px] px-6 md:px-12">
         {p.map(([t, d], i) => (
           <li key={t} className="reveal-item grid items-baseline gap-2 border-t border-border/60 py-8 md:grid-cols-12">
@@ -78,7 +78,7 @@ export function ParaQuem() {
     "Espera que o anúncio venda sozinho, sem atendimento.",
   ];
   return (
-    <section className="relative border-t border-border/50 bg-marrom/55 py-28 md:py-40">
+    <section data-stage-section="wide" className="relative section-seam py-28 md:py-40 reading-veil">
       <div className="mx-auto max-w-[1440px] px-6 md:px-12">
         <h2 data-lines className="title-2 max-w-4xl text-marfim">
           <Line>A Vittori é para quem pensa</Line>
@@ -119,7 +119,7 @@ export function OQueEsperar() {
     ["Meses 4 a 6", "Escala do que dá certo."],
   ];
   return (
-    <section className="relative border-t border-border/50 bg-preto/45 py-28 md:py-40">
+    <section data-stage-section="wide" className="relative section-seam py-28 md:py-40 reading-veil">
       <div className="mx-auto max-w-[1440px] px-6 md:px-12">
         <h2 data-lines className="title-2 max-w-3xl text-marfim">
           <Line>O que acontece</Line>
@@ -150,7 +150,7 @@ export function OQueEsperar() {
 
 export function Bastidores() {
   return (
-    <section className="relative overflow-hidden border-t border-border/50 bg-marrom/55 py-36 md:py-56">
+    <section data-stage-section="left" className="relative overflow-hidden section-seam py-36 md:py-56 reading-veil">
       {!SHOW_BACKSTAGE_VIDEO && (
         <div
           aria-hidden
@@ -200,7 +200,7 @@ const FAQ = [
 
 export function Perguntas() {
   return (
-    <section className="relative border-t border-border/50 bg-preto/45 py-28 md:py-40">
+    <section data-stage-section="wide" className="relative section-seam py-28 md:py-40 reading-veil">
       <div className="mx-auto grid max-w-[1440px] gap-12 px-6 md:grid-cols-12 md:px-12">
         <div className="md:col-span-4">
           <p className="label-mono mb-6 text-dourado">Perguntas frequentes</p>
@@ -221,7 +221,7 @@ export function Perguntas() {
 
 export function ChamadaFinal() {
   return (
-    <section id="contato" className="relative overflow-hidden border-t border-border/50 bg-bordo/80 py-32 md:py-48">
+    <section data-stage-section="left" id="contato" className="relative overflow-hidden section-seam py-32 md:py-48 reading-veil finale-glow">
       <div className="mx-auto max-w-[1440px] px-6 md:px-12">
         <span className="font-serif text-3xl text-dourado">✦</span>
         <h2 data-lines className="title-1 mt-8 max-w-5xl text-marfim">

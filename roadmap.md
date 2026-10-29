@@ -22,6 +22,6 @@
 - [x] Refinamento desta rodada: proteção desde o primeiro paint, preparação dos recursos, diagnóstico de frames, teclado, movimento reduzido e fallback WebGL; oito testes passaram.
 - [x] Provas desta rodada: antes/depois, vídeos da abertura e transição, sessão nova/reentrada e leitura dos Pilares salvos nos Arquivos; sem erros JS no teste local.
 - [ ] Som ouvido: depende de avaliação no aparelho da dona; fluidez da transição já confirmada por ela.
-- [ ] Etapa 3: transições por seção e fim dos fundos sólidos.
-- [ ] Etapa 4: botões, tipografia, títulos x descrições, Inteligência em destaque, páginas e planos de serviços com ícones, Processo, textos da auditoria.
+- [x] Etapa 3: V se afasta dos textos por seção, fundos sólidos trocados por névoa localizada, cabeçalho em véu degradê, texto de campanhas da auditoria. Aguarda aprovação visual.
+- [ ] Etapa 4: botão bordô sólido da hero destoa; refazer todos os CTAs translúcidos com contorno dourado (sem novos botões sólidos). Botões, tipografia, títulos x descrições, Inteligência em destaque, páginas e planos de serviços com ícones, Processo, textos da auditoria.
 - [ ] Etapa 5: portfólio editorial e rodapé refinado.

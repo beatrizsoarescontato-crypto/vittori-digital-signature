@@ -27,7 +27,7 @@ export function ServicosHome() {
   }, [api, update]);
 
   return (
-    <section id="servicos" className="relative border-t border-border/50 bg-preto/35 py-24 md:py-32">
+    <section data-stage-section="wide" id="servicos" className="relative section-seam py-24 md:py-32 reading-veil">
       <div className="mx-auto w-full max-w-[1440px] px-6 md:px-12">
         <div className="flex items-end justify-between gap-5">
           <div>
