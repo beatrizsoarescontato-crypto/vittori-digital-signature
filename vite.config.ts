@@ -19,6 +19,8 @@ export default defineConfig({
         "three/examples/jsm/math/MeshSurfaceSampler.js",
         "@react-three/fiber",
         "@react-three/drei",
+        "@react-three/postprocessing",
+        "postprocessing",
         "gsap",
         "gsap/ScrollTrigger",
         "embla-carousel-react",
