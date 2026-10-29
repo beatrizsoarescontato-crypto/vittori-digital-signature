@@ -279,30 +279,37 @@
 }
 @keyframes month-spin { to { transform: rotate(360deg); } }
 
-/* Entrada */
-.entry-stars {
-  background-image:
-    radial-gradient(1px 1px at 12% 18%, var(--dourado-claro), transparent),
-    radial-gradient(1px 1px at 72% 32%, var(--marfim), transparent),
-    radial-gradient(1.5px 1.5px at 38% 74%, var(--dourado), transparent),
-    radial-gradient(1px 1px at 86% 82%, var(--dourado-claro), transparent),
-    radial-gradient(1px 1px at 52% 12%, var(--marfim), transparent),
-    radial-gradient(1.5px 1.5px at 22% 58%, var(--dourado), transparent),
-    radial-gradient(1px 1px at 64% 62%, var(--marfim), transparent);
-  background-size: 260px 260px;
-  animation: entry-drift 40s linear infinite;
-  opacity: .8;
+/* Portal: só controles sobre a cena 3D (o nome é 3D, nunca HTML) */
+.portal-line { opacity: 0; animation: portal-in 1.6s 1.4s cubic-bezier(.2,.7,.2,1) forwards; text-shadow: 0 2px 24px oklch(0.1 0.05 20 / .8); }
+.portal-actions { opacity: 0; transform: translateY(10px); transition: opacity 1.2s ease, transform 1.2s cubic-bezier(.2,.7,.2,1); }
+.portal-actions.is-ready { opacity: 1; transform: none; }
+.portal-ui[data-saindo] .portal-line,
+.portal-ui[data-saindo] .portal-actions,
+.portal-ui[data-saindo] > p { opacity: 0 !important; transition: opacity .5s ease; animation: none; }
+@keyframes portal-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.portal-btn {
+  position: relative; display: inline-flex; align-items: center; justify-content: center; gap: .6rem;
+  min-height: 3.1rem; padding: 0 2rem; border-radius: 999px;
+  font-family: var(--font-sans, Montserrat, sans-serif); font-size: .72rem; letter-spacing: .28em; text-transform: uppercase;
+  color: var(--marfim);
+  background: color-mix(in oklab, var(--preto) 35%, transparent);
+  border: 1px solid color-mix(in oklab, var(--dourado) 45%, transparent);
+  backdrop-filter: blur(8px);
+  transition: border-color .4s, color .4s, box-shadow .4s, background .4s;
 }
-@keyframes entry-drift { to { background-position: 260px -520px; } }
-.entry-word {
-  background: linear-gradient(110deg, var(--marfim) 20%, var(--dourado-claro) 45%, var(--dourado) 55%, var(--marfim) 80%);
-  background-size: 250% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: title-sheen 7s ease-in-out infinite, entry-rise 2.4s cubic-bezier(.2,.7,.2,1) both;
+.portal-btn:hover, .portal-btn:focus-visible {
+  border-color: var(--dourado-claro); color: var(--dourado-claro);
+  box-shadow: 0 0 28px -6px color-mix(in oklab, var(--dourado) 70%, transparent);
+  outline: none;
 }
-@keyframes entry-rise { from { opacity: 0; letter-spacing: .5em; filter: blur(14px); } to { opacity: 1; filter: blur(0); } }
+.portal-btn--primary {
+  background: linear-gradient(120deg, color-mix(in oklab, var(--dourado) 22%, transparent), color-mix(in oklab, var(--bordo) 30%, transparent));
+  border-color: color-mix(in oklab, var(--dourado) 75%, transparent);
+}
+/* Durante o portal e o mergulho, o site fica escondido (a cena 3D é a experiência). */
+html[data-phase="portal"] .site-layer,
+html[data-phase="diving"] .site-layer { opacity: 0; pointer-events: none; }
+.site-layer { transition: opacity 1.4s cubic-bezier(.2,.7,.2,1); }
 
 /* Barras do som */
 .sound-bars { display: inline-flex; align-items: flex-end; gap: 2px; height: 14px; }
@@ -348,8 +355,7 @@
 @keyframes calc-in { from { opacity: .3; transform: translateY(6px); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
 
 @media (prefers-reduced-motion: reduce) {
-  .title-shimmer, .signature-sparkle, .month-card-glow, .entry-stars, .entry-word, .calc-badge, .calc-result { animation: none; }
-  .entry-word { color: var(--marfim); }
+  .title-shimmer, .signature-sparkle, .month-card-glow, .calc-badge, .calc-result { animation: none; }
   .title-shimmer { background: none; color: var(--dourado); }
   html {
     scroll-behavior: auto;

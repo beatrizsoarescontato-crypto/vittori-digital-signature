@@ -1,89 +1,74 @@
 import { useEffect, useState } from "react";
 import { setSound } from "@/lib/ambientAudio";
-import { stageScroll } from "@/components/three/stageScroll";
+import { onPhase, skipPortal, stageScroll, startDive } from "@/components/three/stageScroll";
 
 const KEY = "vittori-entrada";
 
-/** Prólogo cinematográfico: contador, nome e escolha de som. Uma vez por sessão. */
+/**
+ * Controles do portal. Não desenha nenhum nome nem cortina: o VITTORI é o 3D
+ * da cena única atrás. Só os dois botões e uma linha discreta ficam por cima.
+ */
 export function EntryGate() {
-  const [aberto, setAberto] = useState(true);
+  const [visivel, setVisivel] = useState(false);
+  const [pronto, setPronto] = useState(false);
   const [saindo, setSaindo] = useState(false);
-  const [pct, setPct] = useState(0);
 
   useEffect(() => {
-    if (sessionStorage.getItem(KEY)) {
-      stageScroll.entered = true;
-      setAberto(false);
+    const reduz = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (sessionStorage.getItem(KEY) || reduz) {
+      skipPortal();
+      document.documentElement.dataset["phase"] = "inside";
       return;
     }
+    document.documentElement.dataset["phase"] = "portal";
     document.documentElement.style.overflow = "hidden";
-    let n = 0;
-    const id = window.setInterval(() => {
-      n = Math.min(100, n + Math.ceil(Math.random() * 7));
-      setPct(n);
-      if (n >= 100) window.clearInterval(id);
-    }, 60);
+    window.scrollTo(0, 0);
+    setVisivel(true);
+    const id = window.setTimeout(() => setPronto(true), 2200);
+    const off = onPhase(() => {
+      if (stageScroll.phase === "inside") {
+        document.documentElement.dataset["phase"] = "inside";
+        document.documentElement.style.overflow = "";
+        setVisivel(false);
+      }
+    });
     return () => {
-      window.clearInterval(id);
+      window.clearTimeout(id);
+      off();
       document.documentElement.style.overflow = "";
     };
   }, []);
 
   const entrar = (som: boolean) => {
+    if (saindo) return;
     sessionStorage.setItem(KEY, "1");
-    stageScroll.entered = true;
     if (som) void setSound(true);
     setSaindo(true);
-    document.documentElement.style.overflow = "";
-    window.setTimeout(() => setAberto(false), 1400);
+    document.documentElement.dataset["phase"] = "diving";
+    startDive();
   };
 
-  if (!aberto) return null;
-  const pronto = pct >= 100;
+  if (!visivel) return null;
 
   return (
     <div
       role="dialog"
       aria-modal="true"
-      aria-label="Entrada do site Vittori"
-      className={`entry-gate fixed inset-0 z-[100] flex flex-col items-center justify-center bg-preto px-6 transition-all duration-[1400ms] ease-out ${
-        saindo ? "pointer-events-none opacity-0 [filter:blur(12px)]" : "opacity-100"
-      }`}
+      aria-label="Entrada do site Vittori Creative House"
+      className="portal-ui pointer-events-none fixed inset-0 z-[100] flex flex-col items-center justify-end px-6 pb-[12svh] md:pb-[11vh]"
+      data-saindo={saindo || undefined}
     >
-      <div aria-hidden className="entry-stars absolute inset-0" />
-      <div aria-hidden className="absolute inset-0" style={{ background: "radial-gradient(55% 55% at 50% 50%, color-mix(in oklab, var(--bordo) 45%, transparent), transparent 75%)" }} />
-
-      <p className="label-mono relative text-dourado">✦ Casa criativa · Brasília</p>
-      <p className="entry-word relative mt-8 font-serif text-[clamp(3.5rem,14vw,11rem)] font-light leading-none tracking-[0.12em] text-marfim">
-        VITTORI
-      </p>
-      <p className="relative mt-6 font-serif text-xl italic text-marfim/90 md:text-2xl">Mais que uma agência. Uma assinatura.</p>
-
-      <div className="relative mt-14 min-h-12">
-        {!pronto ? (
-          <p className="label-mono tabular-nums text-marfim/85" aria-live="polite">
-            {pct}% carregado
-          </p>
-        ) : (
-          <div className="flex flex-col gap-3 sm:flex-row animate-in fade-in duration-700">
-            <button
-              type="button"
-              onClick={() => entrar(true)}
-              className="label-mono min-h-12 border border-dourado bg-dourado px-8 text-preto transition-colors hover:bg-marfim"
-            >
-              Entrar com som
-            </button>
-            <button
-              type="button"
-              onClick={() => entrar(false)}
-              className="label-mono min-h-12 border border-marfim/30 px-8 text-marfim transition-colors hover:border-dourado hover:text-dourado"
-            >
-              Entrar em silêncio
-            </button>
-          </div>
-        )}
+      <h1 className="sr-only">Vittori Creative House</h1>
+      <p className="portal-line font-serif text-lg italic text-marfim/85 md:text-2xl">Mais que uma agência. Uma assinatura.</p>
+      <div className={`portal-actions mt-8 flex flex-col gap-3 sm:flex-row ${pronto ? "is-ready" : ""}`}>
+        <button type="button" onClick={() => entrar(true)} className="portal-btn portal-btn--primary pointer-events-auto">
+          <span aria-hidden>✦</span> Entrar com som
+        </button>
+        <button type="button" onClick={() => entrar(false)} className="portal-btn pointer-events-auto">
+          Entrar em silêncio
+        </button>
       </div>
-      <p className="caption relative mt-10 text-center text-marfim/80">Experiência melhor com fones de ouvido.</p>
+      <p className="label-mono mt-6 text-marfim/60">Melhor com fones de ouvido</p>
     </div>
   );
 }

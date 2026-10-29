@@ -11,13 +11,9 @@ export function ClientStage() {
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const id = window.requestIdleCallback
-      ? window.requestIdleCallback(() => setReady(true))
-      : window.setTimeout(() => setReady(true), 200);
-    return () => {
-      if (window.cancelIdleCallback) window.cancelIdleCallback(id as number);
-      else clearTimeout(id as number);
-    };
+    // Monta logo: o portal é a própria cena 3D.
+    const id = window.setTimeout(() => setReady(true), 0);
+    return () => clearTimeout(id);
   }, []);
 
   if (!ready) return null;

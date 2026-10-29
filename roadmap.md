@@ -11,3 +11,10 @@
 - [x] Revisados os textos legais e as contas da tabela interna, sem publicar valores confidenciais; correções comunicadas.
 - [x] Lista de pendências entregue em português e visualização interna verificada.- [x] Abertura cinematográfica com escolha de som, trilha ambiente e VITTORI em partículas sobre fundo bordô.
 - [x] Rodapé sem Henrique, com "Telefone"; cards animados nos meses; calculadoras com barras de arrastar.
+
+# Universo imersivo (plano aprovado 29/10)
+- [x] Etapa 1: portal com VITTORI 3D em ouro fino, estrela abaixo, luz, fundo de espaço infinito.
+- [x] Etapa 2: mergulho por partículas e V em partículas com eclipse, numa única cena.
+- [ ] Etapa 3: transições por seção e fim dos fundos sólidos.
+- [ ] Etapa 4: botões, tipografia, títulos x descrições, Inteligência em destaque, páginas e planos de serviços com ícones, Processo, textos da auditoria.
+- [ ] Etapa 5: portfólio editorial e rodapé refinado.
