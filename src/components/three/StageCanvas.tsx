@@ -439,7 +439,7 @@ function Monogram({ mobile }: { mobile: boolean }) {
     const base = Math.min(viewport.height * (mobile ? 0.22 : 0.27), viewport.width * (mobile ? 0.34 : 0.2));
     vg.scale.setScalar(damp(vg.scale.x || base, base * targetScale, 3, dt));
     vg.position.x = damp(vg.position.x, viewport.width * targetX, 2.2, dt);
-    vg.position.y = damp(vg.position.y, viewport.height * ((y ?? 0) + (mobile ? 0.12 : 0)) + Math.sin(t * 0.5) * 0.06, 2.6, dt);
+    vg.position.y = damp(vg.position.y, viewport.height * (chor.active ? chor.y : (y ?? 0) + (mobile ? 0.12 : 0)) + Math.sin(t * 0.5) * 0.06, 2.6, dt);
     vg.position.z = damp(vg.position.z, (z ?? 0) - Math.abs(spin.current) * 0.8 + (chor.active ? chor.zOffset : 0), 2.2, dt);
     vg.rotation.x = damp(vg.rotation.x, (rx ?? 0) + mouse.y * 0.18, 2.6, dt);
     vg.rotation.y = damp(vg.rotation.y, (ry ?? 0) + mouse.x * 0.32 + spin.current * 0.35, 2.4, dt);
@@ -451,7 +451,7 @@ function Monogram({ mobile }: { mobile: boolean }) {
     const u = (vPts.material as THREE.ShaderMaterial).uniforms;
     setUniform(u, "uTime", t);
     setUniform(u, "uScatter", (1 - born.current) * 0.9 + breathe + Math.abs(spin.current) * 0.1);
-    setUniform(u, "uAlpha", choreography.particleAlpha * (mobile ? 0.8 : 1.25));
+    setUniform(u, "uAlpha", choreography.particleAlpha * (1 - chor.dim * reading.current) * (mobile ? 0.8 : 1.25));
 
     // Eclipse: o disco escuro desliza até cobrir o centro, a coroa se acende por trás (contraluz).
     const eu = ecl.uniforms;
