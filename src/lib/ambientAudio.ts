@@ -25,14 +25,14 @@ const hz = (midi: number) => 440 * 2 ** ((midi - 69) / 12);
 const BPM = 76;
 const BEAT = 60 / BPM;
 const BAR = BEAT * 4;
-// Ré maior heroico: D · Bb · C · D (com quinta e oitava abertas)
+// Ré maior triunfante, só acordes maiores: D · G · A · D
 const CHORDS = [
   [50, 57, 62, 66, 69],
-  [46, 53, 58, 62, 65],
-  [48, 55, 60, 64, 67],
-  [50, 57, 62, 66, 69],
+  [43, 55, 59, 62, 67],
+  [45, 57, 61, 64, 69],
+  [50, 57, 62, 66, 74],
 ];
-const ROOTS = [38, 34, 36, 38];
+const ROOTS = [38, 31, 33, 38];
 // Motivo de trompa que sobe (uma frase a cada 2 compassos)
 const MOTIFS = [
   [62, 69, 74, 73, 74],

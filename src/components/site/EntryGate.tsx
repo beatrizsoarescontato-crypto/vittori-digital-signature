@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { setSound } from "@/lib/ambientAudio";
+import { stageScroll } from "@/components/three/stageScroll";
 
 const KEY = "vittori-entrada";
 
@@ -11,6 +12,7 @@ export function EntryGate() {
 
   useEffect(() => {
     if (sessionStorage.getItem(KEY)) {
+      stageScroll.entered = true;
       setAberto(false);
       return;
     }
@@ -29,6 +31,7 @@ export function EntryGate() {
 
   const entrar = (som: boolean) => {
     sessionStorage.setItem(KEY, "1");
+    stageScroll.entered = true;
     if (som) void setSound(true);
     setSaindo(true);
     document.documentElement.style.overflow = "";

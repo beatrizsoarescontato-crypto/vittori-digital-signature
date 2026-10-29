@@ -10,6 +10,8 @@ export const stageScroll = {
   p: 0,
   raw: 0,
   vel: 0,
+  /** true quando o visitante atravessou a entrada (dispara a revelação do VITTORI). */
+  entered: false,
 };
 
 let started = false;
