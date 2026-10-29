@@ -3,6 +3,7 @@ import { Environment, Lightformer } from "@react-three/drei";
 import { Suspense, useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { Font } from "three/examples/jsm/loaders/FontLoader.js";
+import { MeshSurfaceSampler } from "three/examples/jsm/math/MeshSurfaceSampler.js";
 import { brushedTexture, radialTexture, starGeometry, vGeometry } from "./shapes";
 import { stageScroll, startStageScroll } from "./stageScroll";
 import fontJson from "./vittoriFont.json";
@@ -599,6 +600,8 @@ export default function StageCanvas() {
         <spotLight position={[6, -3, 4]} angle={0.7} penumbra={1} intensity={60} color="#C8203A" />
         <CursorLight />
         <Glow />
+        <Constellations mobile={mobile} />
+        <ShootingStars />
         <DustLayer count={mobile ? 500 : 1400} size={22} speed={0.4} color="#E8C27A" spread={34} />
         <DustLayer count={mobile ? 220 : 600} size={46} speed={1} color="#F6DFA8" spread={22} />
         <DustLayer count={mobile ? 50 : 120} size={120} speed={1.8} color="#D9485A" spread={16} />

@@ -16,6 +16,7 @@ export default defineConfig({
         "@radix-ui/react-slot",
         "three",
         "three/examples/jsm/loaders/FontLoader.js",
+        "three/examples/jsm/math/MeshSurfaceSampler.js",
         "@react-three/fiber",
         "@react-three/drei",
         "gsap",
