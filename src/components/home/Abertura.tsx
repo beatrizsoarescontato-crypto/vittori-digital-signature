@@ -10,7 +10,7 @@ export function Abertura() {
         <div className="max-w-3xl">
           <p data-reveal className="mb-6">
             <span className="reveal-item label-mono inline-flex items-center gap-3 text-dourado">
-              <span>✦</span> Brasília · Casa criativa
+              <span>✦</span> Vittori Creative House · Brasília
             </span>
           </p>
           <h1 data-lines className="title-1 text-marfim">

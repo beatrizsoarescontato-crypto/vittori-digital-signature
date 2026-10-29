@@ -50,7 +50,7 @@ export function Pilares() {
     ["Presença", "constância que vira lembrança."],
   ];
   return (
-    <section className="relative border-t border-border/50 bg-preto/45 py-24 md:py-32">
+    <section id="pilares" className="relative border-t border-border/50 bg-preto/45 py-24 md:py-32">
       <ul data-reveal className="mx-auto max-w-[1440px] px-6 md:px-12">
         {p.map(([t, d], i) => (
           <li key={t} className="reveal-item grid items-baseline gap-2 border-t border-border/60 py-8 md:grid-cols-12">

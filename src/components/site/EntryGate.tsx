@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { setSound } from "@/lib/ambientAudio";
 import { onPhase, skipPortal, stageScroll, startDive } from "@/components/three/stageScroll";
 
@@ -12,10 +13,16 @@ export function EntryGate() {
   const [visivel, setVisivel] = useState(false);
   const [pronto, setPronto] = useState(false);
   const [saindo, setSaindo] = useState(false);
+  const [simplificado, setSimplificado] = useState(false);
+  const controls = useRef<HTMLDivElement>(null);
+  const dialog = useRef<HTMLDivElement>(null);
+  const firstAction = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const reduz = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (sessionStorage.getItem(KEY) || reduz) {
+    let stored = false;
+    try { stored = Boolean(sessionStorage.getItem(KEY)); } catch { /* Storage may be blocked. */ }
+    if (stored || reduz) {
       skipPortal();
       document.documentElement.dataset["phase"] = "inside";
       return;
@@ -24,7 +31,11 @@ export function EntryGate() {
     document.documentElement.style.overflow = "hidden";
     window.scrollTo(0, 0);
     setVisivel(true);
-    const id = window.setTimeout(() => setPronto(true), 2200);
+    const ready = () => setPronto(true);
+    const unavailable = () => { setSimplificado(true); setPronto(true); };
+    window.addEventListener("vittori-scene-ready", ready);
+    window.addEventListener("vittori-scene-unavailable", unavailable);
+    if (document.querySelector("[data-scene-ready]")) ready();
     const off = onPhase(() => {
       if (stageScroll.phase === "inside") {
         document.documentElement.dataset["phase"] = "inside";
@@ -33,42 +44,68 @@ export function EntryGate() {
       }
     });
     return () => {
-      window.clearTimeout(id);
+      window.removeEventListener("vittori-scene-ready", ready);
+      window.removeEventListener("vittori-scene-unavailable", unavailable);
       off();
       document.documentElement.style.overflow = "";
     };
   }, []);
 
+  useEffect(() => {
+    if (!visivel || !controls.current) return;
+    const measure = () => { if (controls.current) stageScroll.portalSafeTop = controls.current.getBoundingClientRect().top; };
+    const observer = new ResizeObserver(measure);
+    observer.observe(controls.current);
+    window.addEventListener("resize", measure);
+    measure();
+    document.fonts.ready.then(measure);
+    return () => { observer.disconnect(); window.removeEventListener("resize", measure); };
+  }, [visivel]);
+  useEffect(() => { if (pronto && visivel) firstAction.current?.focus({ preventScroll: true }); }, [pronto, visivel]);
+
   const entrar = (som: boolean) => {
-    if (saindo) return;
-    sessionStorage.setItem(KEY, "1");
+    if (saindo || !pronto) return;
+    try { sessionStorage.setItem(KEY, "1"); } catch { /* Entry still works without storage. */ }
     if (som) void setSound(true);
     setSaindo(true);
     document.documentElement.dataset["phase"] = "diving";
-    startDive();
+    if (simplificado) { skipPortal(); document.documentElement.dataset["phase"] = "inside"; }
+    else startDive();
   };
 
   if (!visivel) return null;
 
   return (
     <div
+      ref={dialog}
       role="dialog"
       aria-modal="true"
       aria-label="Entrada do site Vittori Creative House"
-      className="portal-ui pointer-events-none fixed inset-0 z-[100] flex flex-col items-center justify-end px-6 pb-[12svh] md:pb-[11vh]"
+      className="portal-ui pointer-events-none fixed inset-0 z-[100]"
       data-saindo={saindo || undefined}
+      onKeyDown={(event) => {
+        if (event.key !== "Tab" || !pronto) return;
+        const buttons = dialog.current?.querySelectorAll<HTMLButtonElement>("button:not(:disabled)");
+        const first = buttons?.[0];
+        const last = buttons?.[buttons.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+      }}
     >
       <h1 className="sr-only">Vittori Creative House</h1>
-      <p className="portal-line font-serif text-lg italic text-marfim/85 md:text-2xl">Mais que uma agência. Uma assinatura.</p>
-      <div className={`portal-actions mt-8 flex flex-col gap-3 sm:flex-row ${pronto ? "is-ready" : ""}`}>
-        <button type="button" onClick={() => entrar(true)} className="portal-btn portal-btn--primary pointer-events-auto">
+      {simplificado && <div className="portal-static-brand font-serif text-dourado" aria-hidden>VITTORI<span>✦</span></div>}
+      <div ref={controls} className="portal-controls">
+      <p className="portal-line font-serif italic text-marfim">Mais que uma agência. Uma assinatura.</p>
+      <div className={`portal-actions ${pronto ? "is-ready" : ""}`}>
+        <Button ref={firstAction} variant="ghost" disabled={!pronto || saindo} type="button" onClick={() => entrar(true)} className="portal-btn portal-btn--primary pointer-events-auto">
           <span aria-hidden>✦</span> Entrar com som
-        </button>
-        <button type="button" onClick={() => entrar(false)} className="portal-btn pointer-events-auto">
+        </Button>
+        <Button variant="ghost" disabled={!pronto || saindo} type="button" onClick={() => entrar(false)} className="portal-btn pointer-events-auto">
           Entrar em silêncio
-        </button>
+        </Button>
       </div>
       <p className="label-mono mt-6 text-marfim/60">Melhor com fones de ouvido</p>
+      </div>
     </div>
   );
 }
