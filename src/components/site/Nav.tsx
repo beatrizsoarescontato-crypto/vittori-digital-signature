@@ -4,8 +4,8 @@ import { Link } from "@tanstack/react-router";
 const LINKS = [
   { to: "/", hash: "servicos", label: "Serviços" },
   { to: "/", hash: "metodo", label: "Como trabalhamos" },
-  { to: "/servicos/inteligencia", label: "Inteligência" },
-  { to: "/portfolio", label: "Portfólio" },
+  { to: "/", hash: "inteligencia", label: "Inteligência" },
+  { to: "/", hash: "portfolio", label: "Portfólio" },
   { to: "/", hash: "contato", label: "Contato" },
 ] as const;
 
@@ -60,12 +60,11 @@ export function Nav() {
               </Link>
             ))}
           </nav>
-          <Link
-            to="/comece"
-            className="vbtn vbtn--secondary hidden !min-h-11 !px-6 lg:inline-flex"
-          >
-            Agendar uma conversa
-          </Link>
+          <span className="hidden lg:inline-flex">
+            <Link to="/comece" className="vbtn vbtn--secondary !min-h-11 !px-6">
+              Agendar uma conversa
+            </Link>
+          </span>
           <button
             type="button"
             aria-label={open ? "Fechar menu" : "Abrir menu"}

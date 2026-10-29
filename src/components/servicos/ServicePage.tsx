@@ -8,7 +8,7 @@ const PLANO_ICONES = [Star, Layers, Gem, Crown];
 
 export function PageHero({ eyebrow, titulo, texto, children }: { eyebrow: string; titulo: string; texto: string; children?: ReactNode }) {
   return (
-    <section className="relative reading-veil pb-24 pt-40 md:pb-32 md:pt-52">
+    <section className="relative reading-veil pb-24 pt-14 md:pb-32 md:pt-20">
       <div className="mx-auto max-w-[1440px] px-6 md:px-12">
         <p className="t-label mb-8">✦ {eyebrow}</p>
         <h1 data-lines className="title-1 max-w-5xl text-marfim">

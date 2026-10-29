@@ -23,8 +23,11 @@
 - [x] Provas desta rodada: antes/depois, vídeos da abertura e transição, sessão nova/reentrada e leitura dos Pilares salvos nos Arquivos; sem erros JS no teste local.
 - [ ] Som ouvido: depende de avaliação no aparelho da dona; fluidez da transição já confirmada por ela.
 - [x] Etapa 3: evolução visual aprovada pela dona (sem blocos opacos, V se afasta dos textos). Itens abaixo seguem em aberto.
-- [x] Etapa 4 implementada (aguarda aprovação visual da dona): botões, dourado com acabamento, escala tipográfica em todas as seções, cards com personalidade por serviço, Método, Inteligência, páginas/planos, controles flutuantes funcionais no celular, textos da auditoria. Aguarda aprovação visual.
-- [ ] Etapa 5 (próxima fase): portfólio editorial e rodapé refinado.
+- [ ] Etapa 4 implementada (aguarda aprovação visual da dona): botões, dourado com acabamento, escala tipográfica em todas as seções, cards com personalidade por serviço, Método, Inteligência, páginas/planos, controles flutuantes funcionais no celular, textos da auditoria. Aguarda aprovação visual.
+- [x] Navegação contextual: voltar à seção de origem, trilha, links do cabeçalho com âncora, voltar/avançar do navegador.
+- [ ] Etapa 4.1 (antes da Etapa 5): legibilidade nas páginas internas, sobreposição do eclipse, padronização dos cards, apresentação dos planos, Vittori Inteligência, paleta de cores, botões e controles flutuantes.
+- [x] Exportar arquivo com o código completo do site atual.
+- [ ] Etapa 5 (depois da 4.1): portfólio editorial e rodapé refinado.
 
 # Pendências para a rodada de refinamento (não corrigir antes)
 - [ ] Etapa 3: movimentos de câmera específicos por seção.
