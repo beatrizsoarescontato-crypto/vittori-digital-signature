@@ -280,7 +280,16 @@
 @keyframes month-spin { to { transform: rotate(360deg); } }
 
 /* Portal: só controles sobre a cena 3D (o nome é 3D, nunca HTML) */
-.portal-line { opacity: 0; animation: portal-in 1.6s 1.4s cubic-bezier(.2,.7,.2,1) forwards; text-shadow: 0 2px 24px oklch(0.1 0.05 20 / .8); }
+.portal-controls { position: absolute; bottom: max(9svh, env(safe-area-inset-bottom)); left: 24px; right: 24px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.portal-line { font-size: 26px; line-height: 1.25; opacity: 0; animation: portal-in 1.6s .4s cubic-bezier(.2,.7,.2,1) forwards; text-shadow: 0 2px 24px color-mix(in oklab, var(--preto) 80%, transparent); }
+.portal-actions { margin-top: 28px; display: flex; gap: 12px; }
+.portal-static-brand { position: absolute; top: 34%; width: 100%; text-align: center; font-size: 64px; }
+.portal-static-brand span { display: block; margin-top: 20px; font-size: 32px; }
+@media (max-width: 767px) {
+  .portal-controls { bottom: max(8svh, env(safe-area-inset-bottom)); left: 20px; right: 20px; }
+  .portal-line { font-size: 21px; max-width: 330px; }
+  .portal-actions { flex-direction: column; margin-top: 26px; }
+}
 .portal-actions { opacity: 0; transform: translateY(10px); transition: opacity 1.2s ease, transform 1.2s cubic-bezier(.2,.7,.2,1); }
 .portal-actions.is-ready { opacity: 1; transform: none; }
 .portal-ui[data-saindo] .portal-line,
@@ -307,8 +316,7 @@
   border-color: color-mix(in oklab, var(--dourado) 75%, transparent);
 }
 /* Durante o portal e o mergulho, o site fica escondido (a cena 3D é a experiência). */
-html[data-phase="portal"] .site-layer,
-html[data-phase="diving"] .site-layer { opacity: 0; pointer-events: none; }
+html:not([data-phase="inside"]) .site-layer { opacity: 0; visibility: hidden; pointer-events: none; }
 .site-layer { transition: opacity 1.4s cubic-bezier(.2,.7,.2,1); }
 
 /* Barras do som */
@@ -375,7 +383,7 @@ html[data-phase="diving"] .site-layer { opacity: 0; pointer-events: none; }
 
 /* Universo de fundo: aparece já no primeiro paint e quando o 3D está desligado. */
 .stage-fallback {
-  background: radial-gradient(ellipse at 50% 42%, oklch(0.36 0.13 21) 0%, oklch(0.19 0.06 18) 45%, oklch(0.13 0.02 20) 100%);
+  background: radial-gradient(ellipse at 68% 35%, color-mix(in oklab, var(--bordo-dark) 60%, var(--preto)) 0%, color-mix(in oklab, var(--preto) 90%, var(--bordo-dark)) 50%, var(--preto) 100%);
 }
 .scroll-cue {
   animation: scroll-cue 2.2s ease-in-out infinite;

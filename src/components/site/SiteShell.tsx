@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { Nav } from "./Nav";
 import { Footer } from "./Footer";
 import { Cursor } from "./Cursor";
@@ -12,12 +12,20 @@ import { DepthHud } from "./DepthHud";
 /** Moldura comum a todas as páginas públicas. */
 export function SiteShell({ children, fab = true }: { children: ReactNode; fab?: boolean }) {
   useScrollReveal();
+  const layer = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const sync = () => { if (layer.current) layer.current.inert = document.documentElement.dataset["phase"] !== "inside"; };
+    sync();
+    const observer = new MutationObserver(sync);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-phase"] });
+    return () => observer.disconnect();
+  }, []);
   return (
     <div className="grain relative min-h-screen bg-preto">
       <div aria-hidden="true" className="stage-fallback pointer-events-none fixed inset-0 z-0">
         <ClientStage />
       </div>
-      <div className="site-layer">
+       <div ref={layer} className="site-layer">
       <Nav />
       <DepthHud />
       <Cursor />
