@@ -21,7 +21,7 @@ export function PageHero({ eyebrow, titulo, texto, children }: { eyebrow: string
 }
 
 export function Bloco({ eyebrow, titulo, children, tom = "preto" }: { eyebrow?: string | undefined; titulo: string; children: ReactNode; tom?: "preto" | "marrom" | "bordo" }) {
-  const bg = { preto: "bg-preto", marrom: "bg-marrom", bordo: "bg-bordo-dark" }[tom];
+  const bg = { preto: "bg-preto/45", marrom: "bg-marrom/55", bordo: "bg-bordo-dark/65" }[tom];
   return (
     <section className={`border-b border-border/50 py-24 md:py-32 ${bg}`}>
       <div className="mx-auto grid max-w-[1440px] gap-12 px-6 md:grid-cols-12 md:px-12">
@@ -65,7 +65,7 @@ export function ServicePage({ l }: { l: Linha }) {
   return (
     <>
       <PageHero eyebrow={l.linha} titulo={l.titulo} texto={l.descricao}>
-        <Btn to="/comece">Agendar uma conversa</Btn>
+        <Btn to="/comece">{l.cta ?? "Agendar uma conversa"}</Btn>
       </PageHero>
 
       {l.muda && (
@@ -100,15 +100,15 @@ export function ServicePage({ l }: { l: Linha }) {
       ))}
 
       {l.cards && (
-        <section className="border-b border-border/50 bg-bordo-dark py-24 md:py-32">
+        <section className="border-b border-border/50 bg-bordo-dark/65 py-24 md:py-32">
           <div className="mx-auto max-w-[1440px] px-6 md:px-12">
             <h2 className="title-2 max-w-3xl text-marfim">{l.cards.titulo}</h2>
-            <p className="measure mt-8 text-sm leading-loose text-marfim/75">{l.cards.texto}</p>
-            <div data-reveal className="mt-16 grid gap-px bg-marfim/10 sm:grid-cols-2 lg:grid-cols-5">
+            <p className="measure mt-8 text-sm leading-loose text-marfim/90">{l.cards.texto}</p>
+            <div data-reveal className={`mt-16 grid gap-px bg-marfim/10 sm:grid-cols-2 ${l.cards.itens.length === 4 ? "lg:grid-cols-4" : "lg:grid-cols-5"}`}>
               {l.cards.itens.map((c) => (
-                <div key={c.titulo} className="reveal-item bg-bordo-dark p-7">
+                <div key={c.titulo} className="reveal-item bg-bordo-dark/80 p-7">
                   <h3 className="font-serif text-2xl text-dourado">{c.titulo}</h3>
-                  <p className="mt-4 text-sm leading-relaxed text-marfim/75">{c.texto}</p>
+                  <p className="mt-4 text-sm leading-relaxed text-marfim/90">{c.texto}</p>
                 </div>
               ))}
             </div>
@@ -153,8 +153,8 @@ export function ServicePage({ l }: { l: Linha }) {
             )}
             {l.paraQuemNao && (
               <div className="reveal-item">
-                <p className="label-mono mb-6 text-marfim/50">Para quem não é</p>
-                <p className="font-serif text-2xl font-light leading-snug text-marfim/70 md:text-3xl">{l.paraQuemNao}</p>
+                <p className="label-mono mb-6 text-marfim/80">Para quem não é</p>
+                <p className="font-serif text-2xl font-light leading-snug text-marfim/90 md:text-3xl">{l.paraQuemNao}</p>
               </div>
             )}
           </div>
@@ -170,11 +170,11 @@ export function ServicePage({ l }: { l: Linha }) {
         </Bloco>
       )}
 
-      <section className="bg-bordo py-28 md:py-36">
+      <section className="bg-bordo/85 py-28 md:py-36">
         <div className="mx-auto max-w-[1440px] px-6 md:px-12">
           <h2 className="title-2 max-w-3xl text-marfim">Conte o que você está construindo.</h2>
           <div className="mt-12">
-            <Btn to="/comece" variant="light">Agendar uma conversa</Btn>
+            <Btn to="/comece" variant="light">{l.cta ?? "Agendar uma conversa"}</Btn>
           </div>
         </div>
       </section>
