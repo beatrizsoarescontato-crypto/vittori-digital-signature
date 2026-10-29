@@ -401,3 +401,30 @@ html:not([data-phase="inside"]) .site-layer { opacity: 0; visibility: hidden; po
 @media (prefers-reduced-motion: reduce) {
   .scroll-cue { animation: none; }
 }
+
+/* Etapa 3: seções sem faixas sólidas; névoa localizada só para leitura. */
+.reading-veil { position: relative; isolation: isolate; }
+.reading-veil::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: radial-gradient(70% 60% at 50% 50%, color-mix(in oklab, var(--color-preto) 62%, transparent), transparent 78%);
+}
+.section-seam::after {
+  content: ""; position: absolute; left: 10%; right: 10%; top: 0; height: 1px; pointer-events: none;
+  background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--color-dourado) 28%, transparent), transparent);
+}
+.finale-glow::before {
+  background: radial-gradient(80% 70% at 30% 60%, color-mix(in oklab, var(--color-bordo) 70%, transparent), transparent 80%);
+}
+.nav-veil { position: relative; }
+.nav-veil::before {
+  content: ""; position: absolute; inset: 0 0 -28px 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(to bottom, color-mix(in oklab, var(--color-preto) 78%, transparent), transparent);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  mask-image: linear-gradient(to bottom, #000 55%, transparent); -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent);
+  opacity: var(--nav-veil, 0); transition: opacity .6s ease;
+}
+.nav-veil::after {
+  content: ""; position: absolute; left: 15%; right: 15%; bottom: 0; height: 1px; pointer-events: none;
+  background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--color-dourado) 22%, transparent), transparent);
+  opacity: var(--nav-veil, 0); transition: opacity .6s ease;
+}
