@@ -14,6 +14,7 @@ import { Route as ComeceRouteImport } from './routes/comece'
 import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as PrivacidadeRouteImport } from './routes/privacidade'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermosRouteImport } from './routes/termos'
 import { Route as ServicosLinhaRouteImport } from './routes/servicos.$linha'
 import { Route as ServicosInteligenciaIndexRouteImport } from './routes/servicos.inteligencia.index'
@@ -44,6 +45,11 @@ const PortfolioRoute = PortfolioRouteImport.update({
 const PrivacidadeRoute = PrivacidadeRouteImport.update({
   id: '/privacidade',
   path: '/privacidade',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TermosRoute = TermosRouteImport.update({
@@ -87,6 +93,7 @@ export interface FileRoutesByFullPath {
   '/cookies': typeof CookiesRoute
   '/portfolio': typeof PortfolioRoute
   '/privacidade': typeof PrivacidadeRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos': typeof TermosRoute
   '/servicos/$linha': typeof ServicosLinhaRoute
   '/servicos/inteligencia/atendente': typeof ServicosInteligenciaAtendenteRoute
@@ -100,6 +107,7 @@ export interface FileRoutesByTo {
   '/cookies': typeof CookiesRoute
   '/portfolio': typeof PortfolioRoute
   '/privacidade': typeof PrivacidadeRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos': typeof TermosRoute
   '/servicos/$linha': typeof ServicosLinhaRoute
   '/servicos/inteligencia/atendente': typeof ServicosInteligenciaAtendenteRoute
@@ -114,6 +122,7 @@ export interface FileRoutesById {
   '/cookies': typeof CookiesRoute
   '/portfolio': typeof PortfolioRoute
   '/privacidade': typeof PrivacidadeRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos': typeof TermosRoute
   '/servicos/$linha': typeof ServicosLinhaRoute
   '/servicos/inteligencia/atendente': typeof ServicosInteligenciaAtendenteRoute
@@ -129,6 +138,7 @@ export interface FileRouteTypes {
     | '/cookies'
     | '/portfolio'
     | '/privacidade'
+    | '/sitemap.xml'
     | '/termos'
     | '/servicos/$linha'
     | '/servicos/inteligencia/atendente'
@@ -142,6 +152,7 @@ export interface FileRouteTypes {
     | '/cookies'
     | '/portfolio'
     | '/privacidade'
+    | '/sitemap.xml'
     | '/termos'
     | '/servicos/$linha'
     | '/servicos/inteligencia/atendente'
@@ -155,6 +166,7 @@ export interface FileRouteTypes {
     | '/cookies'
     | '/portfolio'
     | '/privacidade'
+    | '/sitemap.xml'
     | '/termos'
     | '/servicos/$linha'
     | '/servicos/inteligencia/atendente'
@@ -169,6 +181,7 @@ export interface RootRouteChildren {
   CookiesRoute: typeof CookiesRoute
   PortfolioRoute: typeof PortfolioRoute
   PrivacidadeRoute: typeof PrivacidadeRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermosRoute: typeof TermosRoute
   ServicosLinhaRoute: typeof ServicosLinhaRoute
   ServicosInteligenciaAtendenteRoute: typeof ServicosInteligenciaAtendenteRoute
@@ -212,6 +225,13 @@ declare module '@tanstack/react-router' {
       path: '/privacidade'
       fullPath: '/privacidade'
       preLoaderRoute: typeof PrivacidadeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/termos': {
@@ -265,6 +285,7 @@ const rootRouteChildren: RootRouteChildren = {
   CookiesRoute: CookiesRoute,
   PortfolioRoute: PortfolioRoute,
   PrivacidadeRoute: PrivacidadeRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermosRoute: TermosRoute,
   ServicosLinhaRoute: ServicosLinhaRoute,
   ServicosInteligenciaAtendenteRoute: ServicosInteligenciaAtendenteRoute,
