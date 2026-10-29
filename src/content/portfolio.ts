@@ -6,6 +6,9 @@ import coruja from "@/assets/portfolio/curaca-coruja.jpg.asset.json";
 import container from "@/assets/portfolio/valor-container.mp4.asset.json";
 import caminhao from "@/assets/portfolio/valor-caminhao.mp4.asset.json";
 import homenagem from "@/assets/portfolio/guilherme-feliciano.mp4.asset.json";
+import containerWebm from "@/assets/portfolio/valor-container.webm.asset.json";
+import caminhaoWebm from "@/assets/portfolio/valor-caminhao.webm.asset.json";
+import homenagemWebm from "@/assets/portfolio/guilherme-feliciano.webm.asset.json";
 import containerPoster from "@/assets/portfolio/valor-container-poster.jpg.asset.json";
 import caminhaoPoster from "@/assets/portfolio/valor-caminhao-poster.jpg.asset.json";
 import homenagemPoster from "@/assets/portfolio/guilherme-poster.jpg.asset.json";
@@ -15,7 +18,7 @@ export type Projeto = {
   tipo: string;
   resumo: string;
   imagem?: string;
-  midias?: { tipo: "foto" | "video"; src: string; alt: string; poster?: string }[];
+  midias?: { tipo: "foto" | "video"; src: string; alternativa?: string; alt: string; poster?: string }[];
 };
 
 /** Só projetos reais feitos pela Vittori. Sem números ou resultados inventados. */
@@ -50,8 +53,8 @@ export const PROJETOS: Projeto[] = [
     imagem: valor.url,
     midias: [
       { tipo: "foto", src: valor.url, alt: "Colaboradora da Valor Ambiental em Brasília" },
-      { tipo: "video", src: container.url, alt: "Produção Valor Ambiental: gestão de resíduos", poster: containerPoster.url },
-      { tipo: "video", src: caminhao.url, alt: "Produção Valor Ambiental: limpeza urbana", poster: caminhaoPoster.url },
+      { tipo: "video", src: container.url, alternativa: containerWebm.url, alt: "Produção Valor Ambiental: gestão de resíduos", poster: containerPoster.url },
+      { tipo: "video", src: caminhao.url, alternativa: caminhaoWebm.url, alt: "Produção Valor Ambiental: limpeza urbana", poster: caminhaoPoster.url },
     ],
   },
   {
@@ -69,6 +72,6 @@ export const PROJETOS: Projeto[] = [
     tipo: "Produção audiovisual",
     resumo: "Vídeo em homenagem ao conselheiro Guilherme Feliciano.",
     imagem: homenagemPoster.url,
-    midias: [{ tipo: "video", src: homenagem.url, alt: "Homenagem ao conselheiro Guilherme Feliciano", poster: homenagemPoster.url }],
+    midias: [{ tipo: "video", src: homenagem.url, alternativa: homenagemWebm.url, alt: "Homenagem ao conselheiro Guilherme Feliciano", poster: homenagemPoster.url }],
   },
 ];

@@ -50,7 +50,10 @@ export function PortfolioGrid() {
         <DialogDescription className="text-dourado">{projeto?.tipo}</DialogDescription>
         <div className="grid gap-5">
           {projeto?.midias ? projeto.midias.map((m) => m.tipo === "video" ? (
-            <video key={m.src} src={m.src} poster={m.poster} controls playsInline preload="none" aria-label={m.alt} className="max-h-[65dvh] w-full bg-preto object-contain" />
+            <video key={m.src} poster={m.poster} controls playsInline preload="none" aria-label={m.alt} className="max-h-[65dvh] w-full bg-preto object-contain">
+              {m.alternativa ? <source src={m.alternativa} type="video/webm" /> : null}
+              <source src={m.src} type="video/mp4" />
+            </video>
           ) : (
             <img key={m.src} src={m.src} alt={m.alt} className="max-h-[75dvh] w-full object-contain" />
           )) : projeto?.imagem ? (
