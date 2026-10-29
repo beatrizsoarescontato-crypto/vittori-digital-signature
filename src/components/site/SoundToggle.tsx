@@ -13,12 +13,12 @@ export function SoundToggle() {
       onClick={() => void setSound(!on)}
       aria-pressed={on}
       aria-label={on ? "Desligar trilha sonora" : "Ligar trilha sonora"}
-      className="group fixed bottom-6 left-5 z-40 flex min-h-12 items-center gap-3 border border-dourado/40 bg-preto/80 px-4 text-dourado backdrop-blur-md transition-colors hover:border-dourado md:bottom-8 md:left-8"
+      className="float-ctl group fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-4 z-40 flex size-12 items-center justify-center gap-3 text-dourado md:bottom-8 md:left-8 md:h-12 md:w-auto md:px-5"
     >
       <span aria-hidden className={`sound-bars ${on ? "is-on" : ""}`}>
         <i /><i /><i /><i />
       </span>
-      <span className="label-mono hidden text-marfim/80 sm:inline">{on ? "Som ligado" : "Som desligado"}</span>
+      <span className="label-mono hidden text-marfim/85 md:inline">{on ? "Som ligado" : "Som desligado"}</span>
     </button>
   );
 }

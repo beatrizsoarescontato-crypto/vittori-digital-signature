@@ -54,7 +54,7 @@ export function Nav() {
                 key={l.label}
                 to={l.to}
                 {...("hash" in l ? { hash: l.hash } : {})}
-                className="label-mono py-1 text-marfim/80 transition-colors duration-300 hover:text-dourado"
+                className="label-mono py-1 text-marfim/85 transition-colors duration-300 hover:text-dourado"
               >
                 {l.label}
               </Link>
@@ -62,7 +62,7 @@ export function Nav() {
           </nav>
           <Link
             to="/comece"
-            className="label-mono hidden border border-dourado/50 px-5 py-3 text-dourado transition-colors duration-500 hover:bg-dourado hover:text-preto lg:inline-block"
+            className="vbtn vbtn--secondary hidden !min-h-11 !px-6 lg:inline-flex"
           >
             Agendar uma conversa
           </Link>
@@ -98,7 +98,7 @@ export function Nav() {
         <Link
           to="/comece"
           onClick={() => setOpen(false)}
-          className="label-mono mt-10 bg-bordo px-6 py-4 text-center text-marfim"
+          className="vbtn vbtn--primary mt-10"
         >
           Agendar uma conversa
         </Link>

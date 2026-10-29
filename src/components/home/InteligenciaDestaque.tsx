@@ -51,17 +51,17 @@ export function ConversaIlustrativa() {
   }, []);
 
   return (
-    <div ref={ref} className="border border-border/60 bg-preto">
+    <div ref={ref} className="overflow-hidden rounded-[1.25rem] border border-dourado/30 bg-preto/80 shadow-[0_30px_80px_-30px_color-mix(in_oklab,var(--preto)_90%,transparent)]">
       <div className="flex items-center gap-3 border-b border-border/60 px-5 py-4">
         <span className="h-2 w-2 rounded-full bg-dourado" />
-        <span className="label-mono text-marfim/80">WhatsApp da sua empresa</span>
+        <span className="t-label !text-marfim/85">WhatsApp da sua empresa</span>
       </div>
       <div className="flex min-h-[480px] sm:min-h-[380px] flex-col gap-3 p-5" aria-live="polite">
         {CONVERSA.slice(0, n).map((m, i) => (
           <div
             key={i}
             className={`max-w-[85%] animate-in fade-in slide-in-from-bottom-2 px-4 py-3 text-sm leading-relaxed duration-500 ${
-              m.de === "cliente" ? "self-end bg-marrom text-marfim" : "self-start border border-dourado/30 text-marfim/90"
+              m.de === "cliente" ? "self-end rounded-2xl rounded-br-sm bg-marrom text-marfim" : "self-start rounded-2xl rounded-bl-sm border border-dourado/30 bg-bordo-dark/40 text-marfim"
             }`}
           >
             {m.audio ? (
@@ -85,7 +85,7 @@ export function InteligenciaDestaque() {
   return (
     <section data-stage-section="wide" id="inteligencia" className="relative section-seam py-28 md:py-40 reading-veil">
       <div className="mx-auto max-w-[1440px] px-6 md:px-12">
-        <p className="label-mono mb-6 text-dourado">Vittori Inteligência</p>
+        <p className="t-label mb-6">Vittori Inteligência</p>
         <h2 data-lines className="title-2 max-w-4xl text-marfim">
           <Line>Nenhum cliente sem resposta.</Line>
           <Line>
@@ -93,25 +93,30 @@ export function InteligenciaDestaque() {
           </Line>
         </h2>
 
-        <div className="mt-20">
+        <div className="mt-20 grid gap-6">
           {PRODUTOS_IA.map((p, i) => {
             const Icon = [Bot, LayoutDashboard, PanelsTopLeft][i] ?? Bot;
+            const demo = i === 0;
             return (
-              <div key={p.slug} className="grid items-start gap-10 border-t border-marfim/25 py-12 lg:grid-cols-12 lg:gap-16">
-                <div className="lg:col-span-7">
-                  <p className="label-mono flex items-center gap-3 text-dourado"><Icon aria-hidden="true" className="size-5" strokeWidth={1.5} />{p.nome}</p>
-                  <h3 className="mt-4 font-serif text-3xl font-medium text-marfim">{p.titulo}</h3>
-                  <p className="measure mt-4 text-sm font-normal leading-loose text-marfim/90">{p.resumo}</p>
-                  <Link to={p.to} className="label-mono mt-6 inline-flex min-h-11 items-center gap-3 text-dourado">Saiba mais <ArrowUpRight aria-hidden="true" className="size-4" /></Link>
+              <article key={p.slug} className={`glass glow-edge relative grid items-start gap-10 overflow-hidden p-7 md:p-12 lg:grid-cols-12 lg:gap-14 ${demo ? "glass--bordo" : ""}`}>
+                <div className={demo ? "lg:col-span-6" : "lg:col-span-8"}>
+                  <div className="flex items-center gap-4">
+                    <span className="flex size-14 items-center justify-center rounded-full border border-dourado/40"><Icon aria-hidden="true" className="size-6 text-dourado" strokeWidth={1.25} /></span>
+                    <span className="t-label">Produto 0{i + 1}</span>
+                  </div>
+                  <h3 className="mt-8 font-serif text-4xl font-medium leading-[1.05] text-marfim md:text-5xl">{p.nome}</h3>
+                  <p className="mt-5 font-serif text-2xl italic text-dourado-claro md:text-[1.7rem]">{p.titulo}</p>
+                  <p className="t-body measure mt-6">{p.resumo}</p>
+                  <Link to={p.to} className="vlink mt-8">Conhecer o produto <ArrowUpRight aria-hidden="true" className="size-4" /></Link>
                 </div>
-                {i === 0 && <div className="min-w-0 lg:col-span-5"><ConversaIlustrativa /></div>}
-              </div>
+                {demo && <div className="min-w-0 lg:col-span-6"><ConversaIlustrativa /></div>}
+              </article>
             );
           })}
         </div>
 
         <div className="mt-16">
-          <Btn href={henriqueLink()} variant="ghost">
+          <Btn href={henriqueLink()}>
             Falar com o Henrique, Consultor de Novos Projetos
           </Btn>
         </div>
