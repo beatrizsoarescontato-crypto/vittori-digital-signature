@@ -40,7 +40,7 @@ void main() {
 
 /** "VITTORI" desenhado por milhares de pontos de luz que se montam e se dispersam com o scroll. */
 export function ParticleWord({ mobile }: { mobile: boolean }) {
-  const ref = useRef<THREE.Points>(null);
+  const ref = useRef<THREE.Points | null>(null);
   const { viewport, gl } = useThree();
   const start = useRef<number | null>(null);
 
@@ -122,12 +122,9 @@ export function ParticleWord({ mobile }: { mobile: boolean }) {
     }
   });
 
-  return (
-    <points
-      ref={ref}
-      geometry={geometry}
-      material={material}
-      position={[0, viewport.height * (mobile ? 0.26 : 0.22), -1.2]}
-    />
-  );
+  // Objeto criado aqui e passado sem props que mudam: o React não precisa atualizar nada no 3D.
+  const points = useMemo(() => new THREE.Points(geometry, material), [geometry, material]);
+  ref.current = points;
+  points.position.set(0, viewport.height * (mobile ? 0.26 : 0.22), -1.2);
+  return <primitive object={points} />;
 }
