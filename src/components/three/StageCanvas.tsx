@@ -87,7 +87,7 @@ uniform float uTime;
 varying float vR;
 void main() {
   float d = length(gl_PointCoord - 0.5);
-  float a = smoothstep(0.5, 0.0, d);
+  float a = 1.0 - smoothstep(0.0, 0.5, d);
   float tw = 0.6 + 0.4 * sin(uTime * (1.5 + vR * 3.0) + vR * 60.0);
   gl_FragColor = vec4(uColor * (1.0 + vR * 0.6), a * a * uAlpha * tw);
 }`;
@@ -156,7 +156,7 @@ function Portal({ mobile }: { mobile: boolean }) {
   const group = useRef<THREE.Group>(null);
   const solid = useRef<THREE.Group>(null);
   const starRef = useRef<THREE.Mesh>(null);
-  const sweepUniforms = useMemo(() => ({ uSweepX: { value: -10 }, uSweepWidth: { value: 1 } }), []);
+  const sweepUniforms = useMemo(() => ({ uSweepX: { value: -10 }, uSweepWidth: { value: 1 }, uGlintTime: { value: 0 }, uGlintStrength: { value: 0.22 } }), []);
   const intro = useRef(0);
 
   const mats = useMemo(() => {
@@ -180,12 +180,21 @@ function Portal({ mobile }: { mobile: boolean }) {
     });
     face.onBeforeCompile = (shader) => {
       Object.assign(shader.uniforms, sweepUniforms);
-      shader.vertexShader = "varying float vSweepX;\n" + shader.vertexShader.replace("#include <begin_vertex>", "#include <begin_vertex>\nvSweepX = (modelMatrix * vec4(position, 1.0)).x;");
-      shader.fragmentShader = "varying float vSweepX; uniform float uSweepX; uniform float uSweepWidth;\n" + shader.fragmentShader.replace("#include <emissivemap_fragment>", `#include <emissivemap_fragment>
+      shader.vertexShader = "varying float vSweepX; varying vec2 vMetalPosition;\n" + shader.vertexShader.replace("#include <begin_vertex>", "#include <begin_vertex>\nvSweepX = (modelMatrix * vec4(position, 1.0)).x; vMetalPosition = position.xy;");
+      shader.fragmentShader = "varying float vSweepX; varying vec2 vMetalPosition; uniform float uSweepX; uniform float uSweepWidth; uniform float uGlintTime; uniform float uGlintStrength;\n" + shader.fragmentShader.replace("#include <emissivemap_fragment>", `#include <emissivemap_fragment>
 float sweepMask = exp(-pow((vSweepX - uSweepX) / uSweepWidth, 2.0));
-totalEmissiveRadiance += vec3(0.84, 0.63, 0.30) * sweepMask * ${EXPERIENCE.sweepStrength.toFixed(2)};`);
+totalEmissiveRadiance += vec3(0.84, 0.63, 0.30) * sweepMask * ${EXPERIENCE.sweepStrength.toFixed(2)};
+// Original moving lights were removed in 3552c090. Recover only tiny,
+// short reflections here, without adding lights or raising metal exposure.
+vec2 cell = floor(vMetalPosition * 28.0);
+float seed = fract(sin(dot(cell, vec2(127.1, 311.7))) * 43758.5453);
+vec2 center = vec2(seed, fract(seed * 41.7));
+vec2 glintDelta = fract(vMetalPosition * 28.0) - center;
+float glintDot = exp(-dot(glintDelta, glintDelta) * 180.0);
+float glintPulse = pow(max(0.0, sin(uGlintTime * 2.3 + seed * 60.0)), 28.0);
+totalEmissiveRadiance += vec3(0.95, 0.83, 0.57) * glintDot * glintPulse * step(0.84, seed) * uGlintStrength;`);
     };
-    face.customProgramCacheKey = () => "vittori-metal-sweep-v2";
+    face.customProgramCacheKey = () => "vittori-metal-sweep-glints-v3";
     return [face, side];
   }, [sweepUniforms]);
 
@@ -274,6 +283,7 @@ totalEmissiveRadiance += vec3(0.84, 0.63, 0.30) * sweepMask * ${EXPERIENCE.sweep
     const c = (t % EXPERIENCE.sweepSeconds) / EXPERIENCE.sweepSeconds;
     sweepUniforms.uSweepX.value = (-0.6 + c * 1.2) * width * layout.fit;
     sweepUniforms.uSweepWidth.value = width * layout.fit * 0.16;
+    sweepUniforms.uGlintTime.value = t;
 
     // Mergulho da câmera: avança pelo cenário e abre o campo de visão.
     const cam = camera as THREE.PerspectiveCamera;
@@ -316,7 +326,7 @@ void main() {
   vec2 q = p - uOff;
   float rq = length(q);
   float disc = 0.22;
-  float core = smoothstep(disc + 0.004, disc - 0.004, rq);
+  float core = 1.0 - smoothstep(disc - 0.004, disc + 0.004, rq);
   float rim = exp(-pow((rq - disc) * mix(38.0, 14.0, uSoftness), 2.0));
   float ang = atan(q.y, q.x);
   float rays = 0.55 + 0.45 * sin(ang * 9.0 + uTime * 0.25) * sin(ang * 4.0 - uTime * 0.18);
@@ -327,7 +337,7 @@ void main() {
   vec3 col = gold * (rim * 1.2 * arc + corona * 0.7 + halo);
   float a = max(core * 0.92, clamp(rim * 1.2 * arc + corona * 0.85 + halo, 0.0, 1.0));
   vec3 dark = vec3(0.05, 0.01, 0.02);
-  gl_FragColor = vec4(mix(col, dark, core), a * uAlpha * smoothstep(0.5, 0.36, r));
+  gl_FragColor = vec4(mix(col, dark, core), a * uAlpha * (1.0 - smoothstep(0.36, 0.5, r)));
 }`;
 
 function Monogram({ mobile }: { mobile: boolean }) {
@@ -545,8 +555,8 @@ function TwinkleField({ count }: { count: number }) {
           vR = aRand; gl_PointSize = uPx * (1.5 + aRand * aRand * 5.0); gl_Position = projectionMatrix * mv; }`,
       fragmentShader: `varying float vA; varying float vR;
         void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c);
-          float core = smoothstep(0.5, 0.0, d);
-          float cross = vR > 0.85 ? max(smoothstep(0.05,0.0,abs(c.x)), smoothstep(0.05,0.0,abs(c.y))) * smoothstep(0.5,0.0,d) : 0.0;
+          float core = 1.0 - smoothstep(0.0, 0.5, d);
+          float cross = vR > 0.85 ? max(1.0 - smoothstep(0.0,0.05,abs(c.x)), 1.0 - smoothstep(0.0,0.05,abs(c.y))) * (1.0 - smoothstep(0.0,0.5,d)) : 0.0;
           gl_FragColor = vec4(vec3(1.0, 0.92, 0.78), (core*core + cross) * (0.25 + 0.75 * vA)); }`,
     });
     const p = new THREE.Points(g, m);
@@ -661,7 +671,7 @@ void main() {
   p.x += sin(uTime * 0.2 + aRand * 30.0) * 0.15;
   p.y += cos(uTime * 0.17 + aRand * 20.0) * 0.15;
   vec4 mv = modelViewMatrix * vec4(p, 1.0);
-  float near = smoothstep(7.5, 4.0, p.z);
+  float near = 1.0 - smoothstep(4.0, 7.5, p.z);
   float far = smoothstep(-40.0, -26.0, p.z);
   vA = near * far * (0.55 + 0.45 * sin(uTime * (1.0 + aRand * 2.5) + aRand * 50.0));
   vR = aRand;
@@ -675,8 +685,8 @@ varying float vR;
 void main() {
   vec2 c = gl_PointCoord - 0.5;
   float d = length(c);
-  float core = smoothstep(0.5, 0.0, d);
-  float cross = vR > 0.92 ? max(smoothstep(0.06, 0.0, abs(c.x)), smoothstep(0.06, 0.0, abs(c.y))) * smoothstep(0.5, 0.1, d) : 0.0;
+  float core = 1.0 - smoothstep(0.0, 0.5, d);
+  float cross = vR > 0.92 ? max(1.0 - smoothstep(0.0, 0.06, abs(c.x)), 1.0 - smoothstep(0.0, 0.06, abs(c.y))) * (1.0 - smoothstep(0.1, 0.5, d)) : 0.0;
   gl_FragColor = vec4(uColor, (core * core + cross * 0.8) * vA);
 }`;
 

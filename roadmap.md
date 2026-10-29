@@ -1,4 +1,6 @@
 # Ajustes solicitados
+- [x] Intervenção direcionada: A/B de partículas, Bloom, compileAsync e desenho de aquecimento; corrigidos smoothsteps invertidos e aquecida a variante do eclipse fora da tela. Compilações durante o primeiro mergulho: 4 antes, 0 depois nas comparações finais. Reflexos pontuais adicionados com intensidade independente; halo, fundo, câmera e Bloom preservados.
+- [ ] Fluidez real e aprovação dos reflexos: sem melhoria consistente de frame time no computador por software; verificar na prévia interativa da dona antes de declarar resolvido.
 - [x] Fotos inteiras e centralizadas; BSB conferida sem domínio ou link externo na captura atual.
 - [x] Beatriz Soares identificada no contato de Brasília.
 - [x] Serviços com arraste e setas sem travar rolagem; exemplo apenas no produto Atendente.
