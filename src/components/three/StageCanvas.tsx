@@ -16,7 +16,7 @@ import fontJson from "./vittoriFont.json";
 /* Keyframes do monumento ao longo da página: [x, y, z, rotX, rotY, escala] (x/y em fração da tela). */
 type Key = { p: number; v: number[] };
 const KEYS: Key[] = [
-  { p: 0, v: [0, 0.2, 0, 0, 0, 1] },
+  { p: 0, v: [0, 0.15, 0, 0, 0, 1] },
   { p: 0.07, v: [0.16, 0.06, -5, 0.08, -0.5, 0.82] },
   { p: 0.35, v: [-0.18, 0.02, -8, 0.04, 0.55, 0.8] },
   { p: 0.65, v: [0.2, -0.02, -8, -0.04, -0.6, 0.8] },
@@ -145,7 +145,7 @@ function Monument({ mobile }: { mobile: boolean }) {
       {letters.map((l, i) => (
         <mesh key={i} geometry={l.geo} material={[mats.face, mats.edge]} position={[l.x, -height / 2, -0.11]} />
       ))}
-      <mesh geometry={vGeo} material={[mats.face, mats.edge]} position={[0, height * 1.35, -0.2]} scale={0.32} />
+      <mesh geometry={vGeo} material={[mats.face, mats.edge]} position={[0, height * 1.2, -0.2]} scale={0.28} />
       {[0.16, 0.1, 0.07].map((s, i) => (
         <mesh
           key={i}
