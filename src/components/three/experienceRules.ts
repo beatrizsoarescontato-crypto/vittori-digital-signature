@@ -30,6 +30,16 @@ export const smoothProgress = (a: number, b: number, x: number) => {
   return t * t * (3 - 2 * t);
 };
 
+/** One post-warmup clock drives the monument and the HTML controls. */
+export function portalSequence(elapsed: number | null) {
+  const t = elapsed ?? -1;
+  return {
+    word: smoothProgress(0.35, 2.6, t),
+    star: smoothProgress(2.6, 3.3, t),
+    step: t < 0 ? 0 : t < 0.35 ? 1 : t < 2.6 ? 2 : t < 3.4 ? 3 : t < 4.3 ? 4 : 5,
+  };
+}
+
 /** Independent eclipse peak; reading safety never changes the peak itself. */
 export function eclipseState(formation: number, dispersion: number, readingSafety: number) {
   const peak = smoothProgress(0.2, 0.9, dispersion);

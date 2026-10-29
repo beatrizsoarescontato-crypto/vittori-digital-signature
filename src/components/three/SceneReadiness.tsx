@@ -21,12 +21,14 @@ export function SceneReadiness({ onReady }: { onReady: () => void }) {
   const reduced = useRef(false);
   useEffect(() => {
     let active = true;
+    stageScroll.portalStartedAt = null;
+    stageScroll.portalStep = 0;
     gl.info.autoReset = false;
     gl.compileAsync(scene, camera).then(() => { if (active) warm.current = true; }).catch(() => { if (active) warm.current = true; });
     if (import.meta.env.DEV) window.__vittori = { report: () => reports.current.slice(), state: () => ({ ...stageScroll }) };
     return () => { active = false; gl.info.autoReset = true; if (import.meta.env.DEV) delete window.__vittori; };
   }, [gl, scene, camera]);
-  useFrame(() => {
+  useFrame((state) => {
     const now = performance.now();
     const interval = last.current ? now - last.current : 0;
     last.current = now;
@@ -63,7 +65,10 @@ export function SceneReadiness({ onReady }: { onReady: () => void }) {
         target.dispose();
       }
     }
-    if (warm.current && frames.current === 5) onReady();
+    if (warm.current && frames.current === 5) {
+      stageScroll.portalStartedAt = state.clock.elapsedTime;
+      onReady();
+    }
     if (!document.hidden && interval > 0) {
       if (import.meta.env.DEV) {
         reports.current.push({ phase: stageScroll.dive > 0 && stageScroll.dive < 1 ? "dive" : stageScroll.phase, intervalMs: Math.round(interval * 10) / 10, calls: gl.info.render.calls, triangles: gl.info.render.triangles, dpr: gl.getPixelRatio() });

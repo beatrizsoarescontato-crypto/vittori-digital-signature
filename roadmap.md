@@ -1,6 +1,8 @@
 # Ajustes solicitados
 - [x] Intervenção direcionada: A/B de partículas, Bloom, compileAsync e desenho de aquecimento; corrigidos smoothsteps invertidos e aquecida a variante do eclipse fora da tela. Compilações durante o primeiro mergulho: 4 antes, 0 depois nas comparações finais. Reflexos pontuais adicionados com intensidade independente; halo, fundo, câmera e Bloom preservados.
-- [ ] Fluidez real e aprovação dos reflexos: sem melhoria consistente de frame time no computador por software; verificar na prévia interativa da dona antes de declarar resolvido.
+- [x] Fluidez confirmada pela dona na prévia interativa; preservar as otimizações sem novos testes A/B.
+- [x] Rodada pontual: sequência sincronizada após prontidão, reflexos locais ajustados; dez testes passaram e gravações contínuas computador/celular confirmaram entrada sem erros JS. Câmera, V, eclipse, halo, Bloom, nebulosa e otimizações preservados.
+- [ ] Aprovação visual da abertura sincronizada e dos reflexos: aguarda avaliação da dona na prévia em sessão nova; não confundir validação local com aparência na GPU real.
 - [x] Fotos inteiras e centralizadas; BSB conferida sem domínio ou link externo na captura atual.
 - [x] Beatriz Soares identificada no contato de Brasília.
 - [x] Serviços com arraste e setas sem travar rolagem; exemplo apenas no produto Atendente.
@@ -19,7 +21,7 @@
 - [x] Refinamento desta rodada: composição portal em cinco tamanhos, varredura procedural, espaço escuro/orgânico, halo discreto na formação e pico independente na dispersão; requer aprovação estética.
 - [x] Refinamento desta rodada: proteção desde o primeiro paint, preparação dos recursos, diagnóstico de frames, teclado, movimento reduzido e fallback WebGL; oito testes passaram.
 - [x] Provas desta rodada: antes/depois, vídeos da abertura e transição, sessão nova/reentrada e leitura dos Pilares salvos nos Arquivos; sem erros JS no teste local.
-- [ ] Fluidez/travamento na prévia embutida e som ouvido: dependem de teste no aparelho/navegador da dona; métricas locais por software não comprovam a correção desse relato.
+- [ ] Som ouvido: depende de avaliação no aparelho da dona; fluidez da transição já confirmada por ela.
 - [ ] Etapa 3: transições por seção e fim dos fundos sólidos.
 - [ ] Etapa 4: botões, tipografia, títulos x descrições, Inteligência em destaque, páginas e planos de serviços com ícones, Processo, textos da auditoria.
 - [ ] Etapa 5: portfólio editorial e rodapé refinado.
