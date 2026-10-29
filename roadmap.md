@@ -1,4 +1,8 @@
 # Ajustes solicitados
+- [ ] Centralizar fotos inteiras e retirar domínio da visualização BSB.
+- [ ] Identificar Beatriz Soares no contato de Brasília.
+- [ ] Corrigir rolagem de serviços e limitar exemplo de conversa ao produto Atendente.
+- [ ] Reforçar contraste, destaques em negrito, ícones e detalhes sutis de estrelas/títulos.
 - [x] BSB abre visualização interna; removidos links aos domínios e avisos de publicação de todos os projetos.
 - [ ] Visualizações completas de Roberta e Dayane: aguardam capturas da dona; versões públicas/manutenção e acesso aos assets externos impedem captura real.
 - [x] Quatro fotos e três vídeos identificados exibidos por projeto, sem legendas individuais; reprodução verificada em computador e celular.
