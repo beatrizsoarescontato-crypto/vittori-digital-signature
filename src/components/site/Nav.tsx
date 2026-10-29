@@ -60,12 +60,11 @@ export function Nav() {
               </Link>
             ))}
           </nav>
-          <Link
-            to="/comece"
-            className="vbtn vbtn--secondary hidden !min-h-11 !px-6 lg:inline-flex"
-          >
-            Agendar uma conversa
-          </Link>
+          <span className="hidden lg:inline-flex">
+            <Link to="/comece" className="vbtn vbtn--secondary !min-h-11 !px-6">
+              Agendar uma conversa
+            </Link>
+          </span>
           <button
             type="button"
             aria-label={open ? "Fechar menu" : "Abrir menu"}

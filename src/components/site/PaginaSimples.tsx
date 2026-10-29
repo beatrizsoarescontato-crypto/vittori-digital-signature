@@ -4,7 +4,7 @@ import { SiteShell } from "./SiteShell";
 export function PaginaSimples({ eyebrow, titulo, children }: { eyebrow: string; titulo: string; children: ReactNode }) {
   return (
     <SiteShell>
-      <section className="min-h-[70vh] pb-28 pt-40 md:pt-52">
+      <section className="min-h-[70vh] pb-28 pt-14 md:pt-20">
         <div className="mx-auto max-w-3xl px-6">
           <p className="label-mono mb-8 text-dourado">✦ {eyebrow}</p>
           <h1 className="title-2 text-marfim">{titulo}</h1>

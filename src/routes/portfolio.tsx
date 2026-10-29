@@ -23,7 +23,7 @@ export const Route = createFileRoute("/portfolio")({
 function Pagina() {
   return (
     <SiteShell>
-      <section className="bg-preto pb-32 pt-40 md:pt-52">
+      <section className="bg-preto pb-32 pt-14 md:pt-20">
         <div className="mx-auto max-w-[1440px] px-6 md:px-12">
           <SectionTitle className="mb-16" eyebrow="Portfólio" lines={["Visão geral", <em key="e" className="italic text-dourado">do que assinamos.</em>]} />
           <PortfolioGrid />
