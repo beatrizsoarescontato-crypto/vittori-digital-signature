@@ -250,8 +250,106 @@
 @keyframes title-sheen { 0%, 100% { background-position: 100% 50%; } 50% { background-position: 0% 50%; } }
 @keyframes signature-twinkle { 0%, 100% { opacity: .15; transform: scale(.8) rotate(0deg); } 50% { opacity: .65; transform: scale(1.1) rotate(20deg); } }
 
+/* Cards dos meses: vidro fumê com luz bordô/dourada girando por trás. */
+.month-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  padding: 2rem 1.75rem;
+  border: 1px solid color-mix(in oklab, var(--dourado) 35%, transparent);
+  background: color-mix(in oklab, var(--marrom) 70%, transparent);
+  transition: transform .6s cubic-bezier(.2,.7,.2,1), border-color .6s;
+}
+.month-card:hover { transform: translateY(-6px); border-color: var(--dourado); }
+.month-card-glow {
+  position: absolute;
+  inset: -60%;
+  z-index: -1;
+  background: conic-gradient(from 0deg, transparent 0 40%, color-mix(in oklab, var(--bordo) 85%, transparent) 55%, color-mix(in oklab, var(--dourado) 45%, transparent) 62%, transparent 75%);
+  filter: blur(40px);
+  opacity: .75;
+  animation: month-spin 10s linear infinite;
+}
+.month-card::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  background: linear-gradient(160deg, color-mix(in oklab, var(--preto) 55%, transparent), color-mix(in oklab, var(--preto) 85%, transparent));
+}
+@keyframes month-spin { to { transform: rotate(360deg); } }
+
+/* Entrada */
+.entry-stars {
+  background-image:
+    radial-gradient(1px 1px at 12% 18%, var(--dourado-claro), transparent),
+    radial-gradient(1px 1px at 72% 32%, var(--marfim), transparent),
+    radial-gradient(1.5px 1.5px at 38% 74%, var(--dourado), transparent),
+    radial-gradient(1px 1px at 86% 82%, var(--dourado-claro), transparent),
+    radial-gradient(1px 1px at 52% 12%, var(--marfim), transparent),
+    radial-gradient(1.5px 1.5px at 22% 58%, var(--dourado), transparent),
+    radial-gradient(1px 1px at 64% 62%, var(--marfim), transparent);
+  background-size: 260px 260px;
+  animation: entry-drift 40s linear infinite;
+  opacity: .8;
+}
+@keyframes entry-drift { to { background-position: 260px -520px; } }
+.entry-word {
+  background: linear-gradient(110deg, var(--marfim) 20%, var(--dourado-claro) 45%, var(--dourado) 55%, var(--marfim) 80%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: title-sheen 7s ease-in-out infinite, entry-rise 2.4s cubic-bezier(.2,.7,.2,1) both;
+}
+@keyframes entry-rise { from { opacity: 0; letter-spacing: .5em; filter: blur(14px); } to { opacity: 1; filter: blur(0); } }
+
+/* Barras do som */
+.sound-bars { display: inline-flex; align-items: flex-end; gap: 2px; height: 14px; }
+.sound-bars i { display: block; width: 2px; height: 3px; background: currentColor; transition: height .3s; }
+.sound-bars.is-on i { animation: sound-bar 1.1s ease-in-out infinite; }
+.sound-bars.is-on i:nth-child(2) { animation-delay: -.3s; }
+.sound-bars.is-on i:nth-child(3) { animation-delay: -.6s; }
+.sound-bars.is-on i:nth-child(4) { animation-delay: -.9s; }
+@keyframes sound-bar { 0%, 100% { height: 3px; } 50% { height: 14px; } }
+
+/* Calculadora */
+.calc-badge { animation: calc-pulse 2.8s ease-in-out infinite; }
+@keyframes calc-pulse { 0%, 100% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--dourado) 40%, transparent); } 50% { box-shadow: 0 0 0 8px transparent; } }
+.calc-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 28px;
+  background: transparent;
+  cursor: pointer;
+}
+.calc-range::-webkit-slider-runnable-track {
+  height: 2px;
+  background: linear-gradient(90deg, var(--dourado) var(--fill), color-mix(in oklab, var(--marfim) 20%, transparent) var(--fill));
+}
+.calc-range::-moz-range-track { height: 2px; background: color-mix(in oklab, var(--marfim) 20%, transparent); }
+.calc-range::-moz-range-progress { height: 2px; background: var(--dourado); }
+.calc-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px; height: 22px; margin-top: -10px;
+  background: var(--dourado);
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+  transition: transform .2s;
+}
+.calc-range::-moz-range-thumb {
+  width: 22px; height: 22px; border: 0;
+  background: var(--dourado);
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+}
+.calc-range:active::-webkit-slider-thumb { transform: scale(1.3) rotate(45deg); }
+.calc-range:focus-visible { outline: 1px solid var(--dourado); outline-offset: 4px; }
+.calc-result { animation: calc-in .5s cubic-bezier(.2,.7,.2,1); }
+@keyframes calc-in { from { opacity: .3; transform: translateY(6px); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
+
 @media (prefers-reduced-motion: reduce) {
-  .title-shimmer, .signature-sparkle { animation: none; }
+  .title-shimmer, .signature-sparkle, .month-card-glow, .entry-stars, .entry-word, .calc-badge, .calc-result { animation: none; }
+  .entry-word { color: var(--marfim); }
   .title-shimmer { background: none; color: var(--dourado); }
   html {
     scroll-behavior: auto;

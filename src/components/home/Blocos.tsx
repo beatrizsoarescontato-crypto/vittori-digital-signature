@@ -128,12 +128,13 @@ export function OQueEsperar() {
           </Line>
         </h2>
         <div className="relative mt-20">
-          <span aria-hidden data-draw className="absolute left-0 top-0 hidden h-px w-full origin-left bg-dourado md:block" />
-          <ol data-reveal className="grid gap-10 md:grid-cols-4">
-            {marcos.map(([t, d]) => (
-              <li key={t} className="reveal-item md:pt-10">
-                <span className="label-mono text-dourado">✦ {t}</span>
-                <p className="mt-4 text-sm leading-loose text-marfim/75">{d}</p>
+          <ol data-reveal className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {marcos.map(([t, d], i) => (
+              <li key={t} className="reveal-item month-card" style={{ animationDelay: `${i * -2.5}s` }}>
+                <span aria-hidden className="month-card-glow" style={{ animationDelay: `${i * -2.5}s` }} />
+                <span className="relative label-mono text-dourado">✦ {t}</span>
+                <p className="relative mt-5 text-sm leading-loose text-marfim/85">{d}</p>
+                <span aria-hidden className="relative mt-8 block font-serif text-6xl font-light text-dourado/25">0{i + 1}</span>
               </li>
             ))}
           </ol>

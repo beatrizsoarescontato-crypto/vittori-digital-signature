@@ -3,6 +3,8 @@ import { Nav } from "./Nav";
 import { Footer } from "./Footer";
 import { Cursor } from "./Cursor";
 import { WhatsAppFab } from "./WhatsAppFab";
+import { SoundToggle } from "./SoundToggle";
+import { EntryGate } from "./EntryGate";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 /** Moldura comum a todas as páginas públicas. */
@@ -22,6 +24,8 @@ export function SiteShell({ children, fab = true }: { children: ReactNode; fab?:
        </main>
       <Footer />
       {fab && <WhatsAppFab />}
+      <SoundToggle />
+      <EntryGate />
       <div aria-hidden className="grain-layer fixed z-[60]" />
     </div>
   );

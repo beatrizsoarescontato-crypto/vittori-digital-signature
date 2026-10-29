@@ -4,6 +4,7 @@ import { Suspense, useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { brushedTexture, radialTexture, starGeometry, vGeometry } from "./shapes";
 import { stageScroll, startStageScroll } from "./stageScroll";
+import { ParticleWord } from "./ParticleWord";
 
 
 /** Keyframes: [x, y, z, rotX, rotY, rotZ, escala, bordô, presença] */
@@ -43,7 +44,7 @@ function BordoWall({ state }: { state: React.MutableRefObject<number[]> }) {
   const ref = useRef<THREE.Mesh>(null);
   const { viewport } = useThree();
   const material = useMemo(() => {
-    const tex = radialTexture("#3A2618", "#0D0D0D");
+    const tex = radialTexture("#5A0B14", "#0D0D0D");
     return new THREE.MeshBasicMaterial({
       map: tex,
       transparent: true,
@@ -301,8 +302,9 @@ export default function StageCanvas() {
           />
         </Environment>
         <BordoWall state={state} />
+        <ParticleWord mobile={mobile} />
         <Monogram state={state} mobile={mobile} />
-        <GoldDust count={mobile ? 70 : 150} state={state} />
+        <GoldDust count={mobile ? 160 : 420} state={state} />
       </Suspense>
     </Canvas>
   );
