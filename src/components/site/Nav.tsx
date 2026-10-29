@@ -35,9 +35,8 @@ export function Nav() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
-        scrolled ? "border-b border-border bg-preto/85 py-3 backdrop-blur-md" : "border-b border-transparent py-6"
-      }`}
+      style={{ ["--nav-veil" as string]: scrolled ? 1 : 0 }}
+      className={`nav-veil fixed inset-x-0 top-0 z-50 transition-[padding] duration-500 ${scrolled ? "py-3" : "py-6"}`}
     >
       <div className="relative z-50 mx-auto flex max-w-[1440px] items-center justify-between gap-6 px-6 md:px-12">
         <Link
