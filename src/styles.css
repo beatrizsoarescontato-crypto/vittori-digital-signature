@@ -500,7 +500,7 @@ html:not([data-phase="inside"]) .site-layer { opacity: 0; visibility: hidden; po
 
 /* Painel de vidro com luz localizada pelo cursor (só borda, discreto). */
 .glass { position: relative; isolation: isolate; background: linear-gradient(160deg, color-mix(in oklab, var(--marrom) 40%, transparent), var(--glass-dark)); border: 1px solid var(--hair-gold); }
-.glass--bordo { background: linear-gradient(160deg, color-mix(in oklab, var(--bordo) 45%, transparent), var(--glass-bordo)); border-color: color-mix(in oklab, var(--dourado) 34%, transparent); }
+.glass--bordo { background: linear-gradient(160deg, color-mix(in oklab, var(--bordo) 32%, transparent), color-mix(in oklab, var(--bordo-dark) 38%, transparent) 60%, var(--glass-dark)); border-color: color-mix(in oklab, var(--dourado) 34%, transparent); }
 .glow-edge::before {
   content: ""; position: absolute; inset: -1px; padding: 1px; border-radius: inherit; pointer-events: none; z-index: 2; opacity: 0; transition: opacity .5s;
   background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 0%), color-mix(in oklab, var(--gold-champagne) 85%, transparent), transparent 70%);
@@ -521,7 +521,7 @@ html:not([data-phase="inside"]) .site-layer { opacity: 0; visibility: hidden; po
 .float-ctl:hover { border-color: var(--dourado); }
 @media (max-width: 767px) {
   .float-ctl { backdrop-filter: none; background: color-mix(in oklab, var(--preto) 82%, transparent); }
-  html[data-scrolling] .float-ctl { opacity: 0; transform: translateY(18px); pointer-events: none; }
+  html[data-dock-hidden] .float-ctl { opacity: 0; transform: translateY(18px); pointer-events: none; }
   /* espaço reservado: o último conteúdo nunca fica sob os controles */
   .site-layer footer { padding-bottom: calc(5.5rem + env(safe-area-inset-bottom)); }
   .glass { background: color-mix(in oklab, var(--preto) 70%, transparent); }

@@ -20,17 +20,19 @@ export function SiteShell({ children, fab = true }: { children: ReactNode; fab?:
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-phase"] });
     return () => observer.disconnect();
   }, []);
-  // Celular: controles flutuantes saem do caminho durante a rolagem e voltam ao parar.
+  // Celular: ao rolar para baixo (lendo) os controles somem; reaparecem ao subir, no topo ou no fim da página.
   useEffect(() => {
-    let t: number | undefined;
     const root = document.documentElement;
+    let last = window.scrollY;
     const onScroll = () => {
-      root.dataset["scrolling"] = "";
-      clearTimeout(t);
-      t = window.setTimeout(() => delete root.dataset["scrolling"], 450);
+      const y = window.scrollY;
+      const nearEnd = y + window.innerHeight > document.documentElement.scrollHeight - 160;
+      if (y < 120 || nearEnd || y < last - 6) delete root.dataset["dockHidden"];
+      else if (y > last + 6) root.dataset["dockHidden"] = "";
+      last = y;
     };
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => { window.removeEventListener("scroll", onScroll); clearTimeout(t); delete root.dataset["scrolling"]; };
+    return () => { window.removeEventListener("scroll", onScroll); delete root.dataset["dockHidden"]; };
   }, []);
   return (
     <div className="grain relative min-h-screen bg-preto">

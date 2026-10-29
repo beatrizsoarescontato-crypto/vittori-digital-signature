@@ -3,7 +3,7 @@ import { Btn } from "@/components/site/ui";
 
 export function Abertura() {
   return (
-    <section id="top" className="relative flex min-h-[100svh] items-end overflow-hidden pb-16 pt-36 md:pb-20">
+    <section id="top" className="relative flex min-h-[100svh] items-end overflow-hidden pb-16 pt-36 md:pb-32">
       <div aria-hidden className="vignette pointer-events-none absolute inset-0 z-0" />
 
       <div className="relative z-10 mx-auto w-full max-w-[1440px] px-6 md:px-12">
