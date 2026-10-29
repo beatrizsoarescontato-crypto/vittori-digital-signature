@@ -208,7 +208,7 @@ function Monument({ mobile }: { mobile: boolean }) {
   const vPts = useMemo(() => {
     const m = new THREE.Mesh(vGeo);
     m.updateMatrix();
-    return samplePoints([m], mobile ? 2200 : 5000, 0, 34 * gl.getPixelRatio(), "#F3D79A");
+    return samplePoints([m], mobile ? 2200 : 5000, 0, 60 * gl.getPixelRatio(), "#F3D79A");
   }, [vGeo, mobile, gl]);
   const sGeo = useMemo(() => starGeometry(), []);
 
@@ -224,10 +224,10 @@ function Monument({ mobile }: { mobile: boolean }) {
     const dissolve = sm(0.004, 0.075, p);
     const wg = wordGroup.current;
     if (wg) {
-      const fit = (viewport.width * (mobile ? 0.9 : 0.8)) / width;
+      const fit = (viewport.width * (mobile ? 0.9 : 0.72)) / width;
       const i = intro.current;
       wg.scale.setScalar(fit * (0.86 + 0.14 * i));
-      wg.position.set(0, viewport.height * 0.04 + Math.sin(t * 0.5) * 0.05, -2 * (1 - i));
+      wg.position.set(0, viewport.height * 0.2 + Math.sin(t * 0.5) * 0.05, -2 * (1 - i));
       wg.rotation.x = damp(wg.rotation.x, -0.1 + mouse.y * 0.14, 2.4, dt);
       wg.rotation.y = damp(wg.rotation.y, mouse.x * 0.26, 2.4, dt);
       const solid = i * (1 - sm(0.0, 0.035, p));
@@ -267,7 +267,7 @@ function Monument({ mobile }: { mobile: boolean }) {
       if (l) {
         const c = (t % 6) / 6;
         l.position.set(-2.2 + c * 4.4, 0.6 - c * 1.2, 1.1);
-        l.intensity = 40 * Math.sin(Math.PI * c) * solid;
+        l.intensity = 22 * Math.sin(Math.PI * c) * solid;
       }
 
       stars.current.forEach((m, i) => {
