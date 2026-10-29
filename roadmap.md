@@ -1,7 +1,8 @@
 # Ajustes solicitados
 - [x] Intervenção direcionada: A/B de partículas, Bloom, compileAsync e desenho de aquecimento; corrigidos smoothsteps invertidos e aquecida a variante do eclipse fora da tela. Compilações durante o primeiro mergulho: 4 antes, 0 depois nas comparações finais. Reflexos pontuais adicionados com intensidade independente; halo, fundo, câmera e Bloom preservados.
 - [x] Fluidez confirmada pela dona na prévia interativa; preservar as otimizações sem novos testes A/B.
-- [ ] Rodada pontual: sincronizar cenário, VITTORI, estrela, frase e botões após prontidão real; recuperar reflexos locais e gravar abertura/transição, sem alterar câmera, V, eclipse, halo ou nebulosa.
+- [x] Rodada pontual: sequência sincronizada após prontidão, reflexos locais ajustados; dez testes passaram e gravações contínuas computador/celular confirmaram entrada sem erros JS. Câmera, V, eclipse, halo, Bloom, nebulosa e otimizações preservados.
+- [ ] Aprovação visual da abertura sincronizada e dos reflexos: aguarda avaliação da dona na prévia em sessão nova; não confundir validação local com aparência na GPU real.
 - [x] Fotos inteiras e centralizadas; BSB conferida sem domínio ou link externo na captura atual.
 - [x] Beatriz Soares identificada no contato de Brasília.
 - [x] Serviços com arraste e setas sem travar rolagem; exemplo apenas no produto Atendente.
