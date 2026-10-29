@@ -13,8 +13,10 @@
 - [x] Rodapé sem Henrique, com "Telefone"; cards animados nos meses; calculadoras com barras de arrastar.
 
 # Universo imersivo (plano aprovado 29/10)
-- [x] Etapa 1: portal com VITTORI 3D em ouro fino, estrela abaixo, luz, fundo de espaço infinito.
-- [x] Etapa 2: mergulho por partículas e V em partículas com eclipse, numa única cena.
+- [ ] Etapas 1 e 2: aprovação visual da dona após refinamento e novas provas de movimento.
+- [ ] Refinamento desta rodada: composição portal em cinco tamanhos, luz uniforme em varredura, espaço escuro/orgânico, halo discreto na formação e pico preservado na dispersão.
+- [ ] Refinamento desta rodada: proteção desde o primeiro paint, preparação dos recursos, diagnóstico de frames, teclado, movimento reduzido e fallback WebGL.
+- [ ] Provas desta rodada: antes/depois, vídeos da abertura e transição, sessão nova/reentrada e leitura dos Pilares.
 - [ ] Etapa 3: transições por seção e fim dos fundos sólidos.
 - [ ] Etapa 4: botões, tipografia, títulos x descrições, Inteligência em destaque, páginas e planos de serviços com ícones, Processo, textos da auditoria.
 - [ ] Etapa 5: portfólio editorial e rodapé refinado.
