@@ -18,6 +18,8 @@ export const stageScroll = {
   dive: 0,
   /** true quando a sessão pulou o portal (já entrou antes). */
   skipped: false,
+  /** Top of the HTML phrase, measured on resize, in CSS pixels. */
+  portalSafeTop: 0,
 };
 
 type PhaseListener = () => void;
@@ -36,13 +38,15 @@ export function setPhase(next: "portal" | "inside") {
 /** Dispara o mergulho: a cena dissolve o VITTORI e revela o site ao final. */
 export function startDive(duration = 3.4) {
   stageScroll.entered = true;
+  gsap.killTweensOf(stageScroll, "dive");
   gsap.to(stageScroll, {
     dive: 1,
     duration,
     ease: "power2.inOut",
     onUpdate: () => {
-      if (stageScroll.dive > 0.78 && stageScroll.phase === "portal") setPhase("inside");
+      if (stageScroll.dive >= 0.999 && stageScroll.phase === "portal") setPhase("inside");
     },
+    onComplete: () => setPhase("inside"),
   });
 }
 
