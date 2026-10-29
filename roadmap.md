@@ -23,7 +23,7 @@
 - [x] Provas desta rodada: antes/depois, vídeos da abertura e transição, sessão nova/reentrada e leitura dos Pilares salvos nos Arquivos; sem erros JS no teste local.
 - [ ] Som ouvido: depende de avaliação no aparelho da dona; fluidez da transição já confirmada por ela.
 - [x] Etapa 3: evolução visual aprovada pela dona (sem blocos opacos, V se afasta dos textos). Itens abaixo seguem em aberto.
-- [ ] Etapa 4: botões, dourado com acabamento, escala tipográfica em todas as seções, cards com personalidade por serviço, Método, Inteligência, páginas/planos, controles flutuantes funcionais no celular, textos da auditoria. Aguarda aprovação visual.
+- [x] Etapa 4 implementada (aguarda aprovação visual da dona): botões, dourado com acabamento, escala tipográfica em todas as seções, cards com personalidade por serviço, Método, Inteligência, páginas/planos, controles flutuantes funcionais no celular, textos da auditoria. Aguarda aprovação visual.
 - [ ] Etapa 5 (próxima fase): portfólio editorial e rodapé refinado.
 
 # Pendências para a rodada de refinamento (não corrigir antes)

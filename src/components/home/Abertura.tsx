@@ -60,7 +60,7 @@ export function Resolve() {
         <ul data-reveal className="md:col-span-5 md:col-start-8">
           {linhas.map((l, i) => (
             <li key={l} className="reveal-item flex gap-6 border-t border-border/60 py-8">
-              <span className="t-label pt-2 font-serif text-xl tracking-normal">0{i + 1}</span>
+              <span className="t-label pt-1 font-serif !text-2xl !tracking-normal">0{i + 1}</span>
               <span className="font-serif text-2xl font-light leading-snug text-marfim md:text-3xl">{l}</span>
             </li>
           ))}
