@@ -54,11 +54,11 @@ export function EntryGate() {
       <p className="entry-word relative mt-8 font-serif text-[clamp(3.5rem,14vw,11rem)] font-light leading-none tracking-[0.12em] text-marfim">
         VITTORI
       </p>
-      <p className="relative mt-6 font-serif text-xl italic text-marfim/70 md:text-2xl">Mais que uma agência. Uma assinatura.</p>
+      <p className="relative mt-6 font-serif text-xl italic text-marfim/90 md:text-2xl">Mais que uma agência. Uma assinatura.</p>
 
-      <div className="relative mt-14 h-12">
+      <div className="relative mt-14 min-h-12">
         {!pronto ? (
-          <p className="label-mono tabular-nums text-marfim/60" aria-live="polite">
+          <p className="label-mono tabular-nums text-marfim/85" aria-live="polite">
             {pct}% carregado
           </p>
         ) : (
@@ -80,7 +80,7 @@ export function EntryGate() {
           </div>
         )}
       </div>
-      <p className="caption relative mt-10 text-center">Experiência melhor com fones de ouvido.</p>
+      <p className="caption relative mt-10 text-center text-marfim/80">Experiência melhor com fones de ouvido.</p>
     </div>
   );
 }

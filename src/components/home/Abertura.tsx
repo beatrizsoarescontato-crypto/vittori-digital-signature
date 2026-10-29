@@ -8,23 +8,22 @@ export function Abertura() {
 
       <div className="relative z-10 mx-auto w-full max-w-[1440px] px-6 md:px-12">
         <div className="max-w-3xl">
-          <p data-reveal className="mb-8">
+          <p data-reveal className="mb-6">
             <span className="reveal-item label-mono inline-flex items-center gap-3 text-dourado">
               <span>✦</span> Brasília · Casa criativa
             </span>
           </p>
           <h1 data-lines className="title-1 text-marfim">
-            <Line>Criamos</Line>
             <Line>
-              <em className="italic text-dourado">presença.</em>
+              Criamos <em className="italic text-dourado">presença.</em>
             </Line>
           </h1>
-          <div data-reveal className="mt-10 max-w-xl">
-            <p className="reveal-item text-base leading-loose text-marfim/90 md:text-lg">
+          <div data-reveal className="mt-6 max-w-xl">
+            <p className="reveal-item text-base leading-relaxed text-marfim/90 md:text-lg">
               Social media, tráfego pago, audiovisual, sites e inteligência artificial para negócios
               que querem ser escolhidos pela qualidade.
             </p>
-            <div className="reveal-item mt-10 flex flex-col gap-4 sm:flex-row">
+            <div className="reveal-item mt-8 flex flex-col gap-4 sm:flex-row">
               <Btn to="/comece">Quero uma conversa</Btn>
               <Btn to="/" hash="servicos" variant="ghost">
                 Ver serviços

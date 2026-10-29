@@ -16,7 +16,7 @@ import fontJson from "./vittoriFont.json";
 /* Keyframes do monumento ao longo da página: [x, y, z, rotX, rotY, escala] (x/y em fração da tela). */
 type Key = { p: number; v: number[] };
 const KEYS: Key[] = [
-  { p: 0, v: [0, 0.13, 0, 0, 0, 1] },
+  { p: 0, v: [0, 0.2, 0, 0, 0, 1] },
   { p: 0.07, v: [0.16, 0.06, -5, 0.08, -0.5, 0.82] },
   { p: 0.35, v: [-0.18, 0.02, -8, 0.04, 0.55, 0.8] },
   { p: 0.65, v: [0.2, -0.02, -8, -0.04, -0.6, 0.8] },
@@ -49,9 +49,9 @@ function useMaterials() {
   return useMemo(() => {
     const brushed = brushedTexture();
     const face = new THREE.MeshStandardMaterial({
-      color: new THREE.Color("#6E0A15"),
-      metalness: 0.85,
-      roughness: 0.32,
+      color: new THREE.Color("#4E0710"),
+      metalness: 0.9,
+      roughness: 0.38,
       roughnessMap: brushed,
       envMapIntensity: 1.1,
     });
@@ -122,7 +122,7 @@ function Monument({ mobile }: { mobile: boolean }) {
     stageScroll.vel = damp(stageScroll.vel, 0, 3, dt);
 
     // Encaixa a palavra na largura da tela (monumental, sem cortar).
-    const fit = (viewport.width * (mobile ? 0.9 : 0.8)) / width;
+    const fit = (viewport.width * (mobile ? 0.9 : 0.74)) / width;
     g.scale.setScalar(damp(g.scale.x, fit * (sc ?? 1), 3, dt));
     g.position.x = damp(g.position.x, viewport.width * (x ?? 0), 2.6, dt);
     g.position.y = damp(g.position.y, viewport.height * (y ?? 0) + Math.sin(t * 0.5) * 0.06, 2.6, dt);
