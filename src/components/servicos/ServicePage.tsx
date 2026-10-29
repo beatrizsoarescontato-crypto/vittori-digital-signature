@@ -12,7 +12,7 @@ export function PageHero({ eyebrow, titulo, texto, children }: { eyebrow: string
           <Line>{titulo}</Line>
         </h1>
         <p data-reveal className="mt-10 max-w-2xl">
-          <span className="reveal-item block text-base leading-loose text-marfim/75 md:text-lg">{texto}</span>
+          <span className="reveal-item block text-base font-normal leading-loose text-marfim/90 md:text-lg">{texto}</span>
         </p>
         {children && <div className="mt-12 flex flex-col gap-4 sm:flex-row">{children}</div>}
       </div>
@@ -88,10 +88,10 @@ export function ServicePage({ l }: { l: Linha }) {
 
       {l.blocos?.map((b, i) => (
         <Bloco key={b.titulo + i} eyebrow={b.eyebrow} titulo={b.titulo} tom={i % 2 ? "preto" : "marrom"}>
-          {b.texto && <p className="reveal-item measure mb-8 text-sm leading-loose text-marfim/75">{b.texto}</p>}
+          {b.texto && <p className="reveal-item measure mb-8 text-sm font-normal leading-loose text-marfim/90">{b.texto}</p>}
           {b.lista && <Lista itens={b.lista} />}
           {b.para && (
-            <p className="reveal-item mt-8 text-sm leading-loose text-marfim/60">
+            <p className="reveal-item mt-8 text-sm font-normal leading-loose text-marfim/85">
               <span className="label-mono mr-3 text-dourado">Para</span>
               {b.para}
             </p>
@@ -129,7 +129,7 @@ export function ServicePage({ l }: { l: Linha }) {
             {l.planos.map((p) => (
               <li key={p.nome} className="reveal-item grid gap-2 border-t border-border/60 py-6 md:grid-cols-2">
                 <span className="font-serif text-3xl font-light text-marfim">{p.nome}</span>
-                {p.detalhe && <span className="text-sm leading-relaxed text-marfim/65">{p.detalhe}</span>}
+                {p.detalhe && <span className="text-sm font-normal leading-relaxed text-marfim/85">{p.detalhe}</span>}
               </li>
             ))}
           </ul>

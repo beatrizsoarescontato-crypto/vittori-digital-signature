@@ -71,7 +71,7 @@ function Abas() {
         <p className="mt-4 text-sm leading-loose text-marfim/75">{ABAS[a]![1]}</p>
         <p className="caption mt-8">Dados de demonstração</p>
       </div>
-      <p className="mt-4 text-xs text-marfim/50">Ficha, funil, agenda e painel fazem parte do plano Completa.</p>
+      <p className="mt-4 text-xs text-marfim/85">Ficha, funil, agenda e painel fazem parte do plano Completa.</p>
     </div>
   );
 }
@@ -141,7 +141,7 @@ function Page() {
             nota={
               <>
                 <p>A atendente de IA cobre as 168 horas da semana, não tira férias e passa para o seu time só o que precisa de gente.</p>
-                <p className="mt-4 text-xs text-marfim/45">
+                <p className="mt-4 text-xs text-marfim/85">
                   Salário inicial: média nacional de recepcionista. Encargos estimados em 44% do salário para empresas do Simples Nacional. Consulte o seu contador.
                 </p>
               </>
