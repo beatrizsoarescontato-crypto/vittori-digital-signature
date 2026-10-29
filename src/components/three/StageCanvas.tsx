@@ -224,7 +224,7 @@ function Monument({ mobile }: { mobile: boolean }) {
     const dissolve = sm(0.004, 0.075, p);
     const wg = wordGroup.current;
     if (wg) {
-      const fit = (viewport.width * (mobile ? 0.9 : 0.72)) / width;
+      const fit = (viewport.width * (mobile ? 0.92 : 0.72)) / width;
       const i = intro.current;
       wg.scale.setScalar(fit * (0.86 + 0.14 * i));
       wg.position.set(0, viewport.height * 0.2 + Math.sin(t * 0.5) * 0.05, -2 * (1 - i));
