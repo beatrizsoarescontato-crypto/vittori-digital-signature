@@ -158,7 +158,7 @@ function Portal({ mobile }: { mobile: boolean }) {
       roughness: 0.3,
       roughnessMap: brushed,
       emissive: new THREE.Color("#3a2408"),
-      emissiveIntensity: 0.35,
+      emissiveIntensity: 0.55,
       clearcoat: 0.6,
       clearcoatRoughness: 0.15,
       envMapIntensity: 2.2,
@@ -207,9 +207,9 @@ function Portal({ mobile }: { mobile: boolean }) {
     }).center();
     const sm_ = new THREE.Mesh(starGeo);
     sm_.position.set(0, -0.84, 0);
-    sm_.scale.setScalar(mobile ? 0.26 : 0.2);
+    sm_.scale.setScalar(mobile ? 0.34 : 0.2);
     sm_.updateMatrix();
-    const pts = samplePoints([...tmp, sm_], mobile ? 3200 : 7500, 1.8, 22 * gl.getPixelRatio(), "#F3D79A");
+    const pts = samplePoints([...tmp, sm_], mobile ? 1800 : 7500, 1.8, 22 * gl.getPixelRatio(), "#F3D79A");
     return { letters: placed, width: w, pts, starGeo };
   }, [mobile, gl]);
   const starGeo = useMemo(
@@ -235,7 +235,7 @@ function Portal({ mobile }: { mobile: boolean }) {
     g.visible = dive < 0.98;
     if (!g.visible) return;
 
-    const fit = (viewport.width * (mobile ? 0.84 : 0.8)) / width;
+    const fit = (viewport.width * (mobile ? 0.88 : 0.8)) / width;
     g.scale.setScalar(fit * (0.92 + 0.08 * i));
     g.position.set(0, viewport.height * (mobile ? 0.08 : 0.06) + Math.sin(t * 0.45) * 0.03, -1.2 * (1 - i));
     g.rotation.x = damp(g.rotation.x, -0.04 + mouse.y * 0.08, 2.2, dt);
@@ -263,7 +263,7 @@ function Portal({ mobile }: { mobile: boolean }) {
     }
     if (sweep2.current) {
       sweep2.current.position.set((-0.6 + c * 1.2) * width, 1.5, 2.5);
-      sweep2.current.intensity = 26 * Math.sin(Math.PI * c) * solidO;
+      sweep2.current.intensity = 16 * Math.sin(Math.PI * c) * solidO;
     }
 
     // Mergulho da câmera: avança pelo cenário e abre o campo de visão.
@@ -280,11 +280,11 @@ function Portal({ mobile }: { mobile: boolean }) {
         {letters.map((l, i) => (
           <mesh key={i} geometry={l.geo} material={mats} position={[l.x, -0.32, -0.03]} />
         ))}
-        <mesh ref={starRef} geometry={starGeo} material={mats} position={[0, -0.84, 0]} scale={mobile ? 0.26 : 0.2} />
+        <mesh ref={starRef} geometry={starGeo} material={mats} position={[0, -0.84, 0]} scale={mobile ? 0.34 : 0.2} />
       </group>
       <primitive object={pts} />
       <pointLight ref={sweep} distance={1.6} decay={1.2} color="#FFF4D6" intensity={0} />
-      <spotLight ref={sweep2} angle={0.35} penumbra={1} distance={8} color="#FFF1CC" intensity={0} />
+      <spotLight ref={sweep2} angle={0.22} penumbra={1} distance={8} color="#FFF1CC" intensity={0} />
     </group>
   );
 }
@@ -740,6 +740,7 @@ export default function StageCanvas() {
         <Rig />
         <ambientLight intensity={0.2} />
         <directionalLight position={[2, 3, 7]} intensity={1.8} color="#F2DDAA" />
+        <directionalLight position={[-3, 1, 8]} intensity={2.2} color="#F6E2B4" />
         <spotLight position={[-6, 4, 6]} angle={0.6} penumbra={1} intensity={60} color="#F2EFE6" />
         <spotLight position={[6, -3, 4]} angle={0.7} penumbra={1} intensity={40} color="#C8203A" />
         <CursorLight />
