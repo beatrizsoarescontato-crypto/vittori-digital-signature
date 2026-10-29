@@ -366,3 +366,18 @@
     transition-duration: 0.001ms !important;
   }
 }
+
+/* Universo de fundo: aparece já no primeiro paint e quando o 3D está desligado. */
+.stage-fallback {
+  background: radial-gradient(ellipse at 50% 42%, oklch(0.36 0.13 21) 0%, oklch(0.19 0.06 18) 45%, oklch(0.13 0.02 20) 100%);
+}
+.scroll-cue {
+  animation: scroll-cue 2.2s ease-in-out infinite;
+}
+@keyframes scroll-cue {
+  0%, 100% { transform: translateY(0); opacity: 0.6; }
+  50% { transform: translateY(6px); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue { animation: none; }
+}
