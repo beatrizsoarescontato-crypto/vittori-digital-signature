@@ -2,6 +2,13 @@
 
 Nada da abertura, do mergulho, do V em partículas, do halo da dispersão ou das otimizações de fluidez será tocado.
 
+## Cuidados reforçados na aprovação
+- Cards com personalidade e composição próprias por serviço, não caixas de vidro iguais trocando ícone e texto.
+- Revisão tipográfica e de contraste em todas as seções: Pilares, Para Quem, O que esperar, Bastidores, FAQ, chamada final e páginas internas.
+- Controles flutuantes realmente funcionais no celular, com área reservada e sem cobrir informação, não apenas menores.
+- Vidro, reflexos e luz discretos e usados com intenção; dourado não em tudo; sem custo para a fluidez.
+- Etapa 5 (portfólio editorial e rodapé) continua registrada como próxima fase.
+
 ## Passo 0: registrar pendências (primeira ação do Build, sem corrigir nada)
 No `roadmap.md`, numa seção própria "Pendências para a rodada de refinamento", todas desmarcadas:
 - Etapa 3: movimentos de câmera por seção; mudança de atmosfera e nebulosa entre seções; gravações completas de validação; emenda visual entre a hero e a seção seguinte.
