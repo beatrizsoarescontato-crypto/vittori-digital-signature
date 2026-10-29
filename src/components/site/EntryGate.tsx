@@ -14,6 +14,7 @@ export function EntryGate() {
   const [pronto, setPronto] = useState(false);
   const [saindo, setSaindo] = useState(false);
   const [simplificado, setSimplificado] = useState(false);
+  const [sequence, setSequence] = useState(0);
   const controls = useRef<HTMLDivElement>(null);
   const dialog = useRef<HTMLDivElement>(null);
   const firstAction = useRef<HTMLButtonElement>(null);
@@ -31,9 +32,14 @@ export function EntryGate() {
     document.documentElement.style.overflow = "hidden";
     window.scrollTo(0, 0);
     setVisivel(true);
-    const ready = () => setPronto(true);
-    const unavailable = () => { setSimplificado(true); setPronto(true); };
+    const progress = () => {
+      setSequence(stageScroll.portalStep);
+      if (stageScroll.portalStep >= 5) setPronto(true);
+    };
+    const ready = () => progress();
+    const unavailable = () => { setSimplificado(true); setSequence(5); setPronto(true); };
     window.addEventListener("vittori-scene-ready", ready);
+    window.addEventListener("vittori-portal-progress", progress);
     window.addEventListener("vittori-scene-unavailable", unavailable);
     if (document.querySelector("[data-scene-ready]")) ready();
     const off = onPhase(() => {
@@ -45,6 +51,7 @@ export function EntryGate() {
     });
     return () => {
       window.removeEventListener("vittori-scene-ready", ready);
+      window.removeEventListener("vittori-portal-progress", progress);
       window.removeEventListener("vittori-scene-unavailable", unavailable);
       off();
       document.documentElement.style.overflow = "";
@@ -83,6 +90,7 @@ export function EntryGate() {
       aria-label="Entrada do site Vittori Creative House"
       className="portal-ui pointer-events-none fixed inset-0 z-[100]"
       data-saindo={saindo || undefined}
+      data-sequence={sequence}
       onKeyDown={(event) => {
         if (event.key !== "Tab" || !pronto) return;
         const buttons = dialog.current?.querySelectorAll<HTMLButtonElement>("button:not(:disabled)");
@@ -104,7 +112,7 @@ export function EntryGate() {
           Entrar em silêncio
         </Button>
       </div>
-      <p className="label-mono mt-6 text-marfim/60">Melhor com fones de ouvido</p>
+       <p className="portal-headphones label-mono mt-6 text-marfim/60">Melhor com fones de ouvido</p>
       </div>
     </div>
   );

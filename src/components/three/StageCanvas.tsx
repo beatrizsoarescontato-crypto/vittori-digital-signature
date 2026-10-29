@@ -3,7 +3,7 @@ import { Environment, Lightformer } from "@react-three/drei";
 import { Bloom, EffectComposer, Vignette } from "@react-three/postprocessing";
 import { Suspense, useEffect, useMemo, useRef } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { EXPERIENCE, eclipseState, portalLayout } from "./experienceRules";
+import { EXPERIENCE, eclipseState, portalLayout, portalSequence } from "./experienceRules";
 import { SceneReadiness } from "./SceneReadiness";
 import * as THREE from "three";
 import { Font } from "three/examples/jsm/loaders/FontLoader.js";
@@ -156,7 +156,7 @@ function Portal({ mobile }: { mobile: boolean }) {
   const group = useRef<THREE.Group>(null);
   const solid = useRef<THREE.Group>(null);
   const starRef = useRef<THREE.Mesh>(null);
-  const sweepUniforms = useMemo(() => ({ uSweepX: { value: -10 }, uSweepWidth: { value: 1 }, uGlintTime: { value: 0 }, uGlintStrength: { value: 0.22 } }), []);
+  const sweepUniforms = useMemo(() => ({ uSweepX: { value: -10 }, uSweepWidth: { value: 1 }, uGlintTime: { value: 0 }, uGlintStrength: { value: 2.8 } }), []);
   const intro = useRef(0);
 
   const mats = useMemo(() => {
@@ -180,21 +180,23 @@ function Portal({ mobile }: { mobile: boolean }) {
     });
     face.onBeforeCompile = (shader) => {
       Object.assign(shader.uniforms, sweepUniforms);
-      shader.vertexShader = "varying float vSweepX; varying vec2 vMetalPosition;\n" + shader.vertexShader.replace("#include <begin_vertex>", "#include <begin_vertex>\nvSweepX = (modelMatrix * vec4(position, 1.0)).x; vMetalPosition = position.xy;");
+      shader.vertexShader = "varying float vSweepX; varying vec2 vMetalPosition;\n" + shader.vertexShader.replace("#include <begin_vertex>", "#include <begin_vertex>\nvSweepX = (modelMatrix * vec4(position, 1.0)).x; vMetalPosition = position.xy + vec2(modelMatrix[3].x, 0.0);");
       shader.fragmentShader = "varying float vSweepX; varying vec2 vMetalPosition; uniform float uSweepX; uniform float uSweepWidth; uniform float uGlintTime; uniform float uGlintStrength;\n" + shader.fragmentShader.replace("#include <emissivemap_fragment>", `#include <emissivemap_fragment>
 float sweepMask = exp(-pow((vSweepX - uSweepX) / uSweepWidth, 2.0));
 totalEmissiveRadiance += vec3(0.84, 0.63, 0.30) * sweepMask * ${EXPERIENCE.sweepStrength.toFixed(2)};
 // Original moving lights were removed in 3552c090. Recover only tiny,
 // short reflections here, without adding lights or raising metal exposure.
-vec2 cell = floor(vMetalPosition * 28.0);
+vec2 cell = floor(vMetalPosition * 5.0);
 float seed = fract(sin(dot(cell, vec2(127.1, 311.7))) * 43758.5453);
-vec2 center = vec2(seed, fract(seed * 41.7));
-vec2 glintDelta = fract(vMetalPosition * 28.0) - center;
-float glintDot = exp(-dot(glintDelta, glintDelta) * 180.0);
-float glintPulse = pow(max(0.0, sin(uGlintTime * 2.3 + seed * 60.0)), 28.0);
-totalEmissiveRadiance += vec3(0.95, 0.83, 0.57) * glintDot * glintPulse * step(0.84, seed) * uGlintStrength;`);
+vec2 center = 0.2 + 0.6 * vec2(seed, fract(seed * 41.7));
+vec2 glintDelta = fract(vMetalPosition * 5.0) - center;
+float glintDot = exp(-dot(glintDelta, glintDelta) * 240.0);
+float glintRay = exp(-abs(glintDelta.x) * 110.0 - abs(glintDelta.y) * 24.0)
+  + exp(-abs(glintDelta.y) * 110.0 - abs(glintDelta.x) * 24.0);
+float glintPulse = pow(max(0.0, sin(uGlintTime * 1.6 + seed * 60.0)), 12.0);
+totalEmissiveRadiance += vec3(0.95, 0.83, 0.57) * (glintDot + glintRay * 0.18) * glintPulse * step(0.72, seed) * uGlintStrength;`);
     };
-    face.customProgramCacheKey = () => "vittori-metal-sweep-glints-v3";
+    face.customProgramCacheKey = () => "vittori-metal-sweep-glints-v4";
     return [face, side];
   }, [sweepUniforms]);
 
@@ -253,7 +255,13 @@ totalEmissiveRadiance += vec3(0.95, 0.83, 0.57) * glintDot * glintPulse * step(0
     const dive = stageScroll.dive;
     const g = group.current;
     if (!g) return;
-    intro.current = sm(0, 2.6, t);
+    const elapsed = stageScroll.portalStartedAt === null ? null : t - stageScroll.portalStartedAt;
+    const sequence = portalSequence(elapsed);
+    if (stageScroll.portalStep !== sequence.step) {
+      stageScroll.portalStep = sequence.step;
+      window.dispatchEvent(new Event("vittori-portal-progress"));
+    }
+    intro.current = sequence.word;
     const i = intro.current;
     g.visible = dive < 0.98;
     if (!g.visible) return;
@@ -270,6 +278,8 @@ totalEmissiveRadiance += vec3(0.95, 0.83, 0.57) * glintDot * glintPulse * step(0
     fade(mats, solidO);
     if (solid.current) solid.current.visible = solidO > 0.01;
     if (starRef.current) {
+      starRef.current.scale.setScalar((mobile ? 0.34 : 0.2) * sequence.star);
+      starRef.current.visible = sequence.star > 0;
       starRef.current.rotation.y = Math.sin(t * 0.6) * 0.3;
       starRef.current.rotation.z = t * 0.05;
     }
@@ -278,12 +288,12 @@ totalEmissiveRadiance += vec3(0.95, 0.83, 0.57) * glintDot * glintPulse * step(0
       const u = (cloud.material as THREE.ShaderMaterial).uniforms;
       setUniform(u, "uTime", t);
       setUniform(u, "uScatter", (1 - i) * 0.5 + sm(0.03, 0.75, dive) * 1.4);
-      setUniform(u, "uAlpha", (0.06 * i + 1.3 * sm(0.0, 0.18, dive)) * (1 - sm(0.55, 0.92, dive)));
+      setUniform(u, "uAlpha", (0.06 * (cloud === starPts ? sequence.star : i) + 1.3 * sm(0.0, 0.18, dive)) * (1 - sm(0.55, 0.92, dive)));
     }
     const c = (t % EXPERIENCE.sweepSeconds) / EXPERIENCE.sweepSeconds;
     sweepUniforms.uSweepX.value = (-0.6 + c * 1.2) * width * layout.fit;
     sweepUniforms.uSweepWidth.value = width * layout.fit * 0.16;
-    sweepUniforms.uGlintTime.value = t;
+    sweepUniforms.uGlintTime.value = elapsed ?? 0;
 
     // Mergulho da câmera: avança pelo cenário e abre o campo de visão.
     const cam = camera as THREE.PerspectiveCamera;
@@ -774,7 +784,7 @@ export default function StageCanvas() {
   const wrap = useRef<HTMLDivElement>(null);
 
   return (
-    <div ref={wrap} className="absolute inset-0">
+    <div ref={wrap} className="stage-scene absolute inset-0">
       <Canvas
         dpr={mobile ? [1, 1.2] : [1, 1.5]}
         camera={{ position: [0, 0, 8], fov: 45, near: 0.1, far: 90 }}

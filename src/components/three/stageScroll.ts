@@ -20,6 +20,9 @@ export const stageScroll = {
   skipped: false,
   /** Top of the HTML phrase, measured on resize, in CSS pixels. */
   portalSafeTop: 0,
+  /** R3F clock origin established only after shader preparation and warm frames. */
+  portalStartedAt: null as number | null,
+  portalStep: 0,
 };
 
 type PhaseListener = () => void;

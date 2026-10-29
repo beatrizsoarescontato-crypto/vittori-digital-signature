@@ -1,7 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { eclipseState, portalLayout } from "./experienceRules";
+import { eclipseState, portalLayout, portalSequence } from "./experienceRules";
 
 describe("approved experience rules", () => {
+  it("holds all portal elements until actual scene readiness", () => {
+    expect(portalSequence(null)).toEqual({ word: 0, star: 0, step: 0 });
+    expect(portalSequence(0)).toEqual({ word: 0, star: 0, step: 1 });
+  });
+  it("reveals the word before the star, phrase and buttons", () => {
+    expect(portalSequence(1).word).toBeGreaterThan(0);
+    expect(portalSequence(1).star).toBe(0);
+    expect(portalSequence(2.6)).toEqual({ word: 1, star: 0, step: 3 });
+    expect(portalSequence(3.4)).toEqual({ word: 1, star: 1, step: 4 });
+    expect(portalSequence(4.3).step).toBe(5);
+  });
   for (const [width, height] of [[1910, 861], [1440, 900], [1280, 720], [390, 844], [360, 740]] as const) {
     it(`keeps the star below the word and above controls at ${width}×${height}`, () => {
       const mobile = width < 768;
