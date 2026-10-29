@@ -1,12 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import {
-  EMAIL,
-  HENRIQUE_WHATS_LABEL,
-  INSTAGRAM,
-  VITTORI_WHATS_LABEL,
-  henriqueLink,
-  whatsappLink,
-} from "@/lib/contato";
+import { EMAIL, INSTAGRAM, VITTORI_WHATS_LABEL, whatsappLink } from "@/lib/contato";
 
 export function Footer() {
   return (
@@ -26,15 +19,9 @@ export function Footer() {
           <p className="label-mono mb-5 text-dourado">Contato</p>
           <p>Brasília, DF. Atendemos todo o Brasil e o exterior.</p>
           <p>
-            <strong className="font-semibold text-marfim">Beatriz Soares</strong>: {" "}
+            <strong className="font-semibold text-marfim">Telefone</strong>: {" "}
             <a href={whatsappLink()} target="_blank" rel="noopener noreferrer" className="text-marfim hover:text-dourado">
               {VITTORI_WHATS_LABEL}
-            </a>
-          </p>
-          <p>
-            Henrique, Consultor de Novos Projetos:{" "}
-            <a href={henriqueLink()} target="_blank" rel="noopener noreferrer" className="text-marfim hover:text-dourado">
-              {HENRIQUE_WHATS_LABEL}
             </a>
           </p>
           {EMAIL && (
