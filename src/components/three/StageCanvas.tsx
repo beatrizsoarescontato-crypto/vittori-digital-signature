@@ -1,31 +1,34 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Lightformer } from "@react-three/drei";
+import { Bloom, EffectComposer, Vignette } from "@react-three/postprocessing";
 import { Suspense, useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { Font } from "three/examples/jsm/loaders/FontLoader.js";
 import { MeshSurfaceSampler } from "three/examples/jsm/math/MeshSurfaceSampler.js";
-import { brushedTexture, radialTexture, starGeometry, vGeometry } from "./shapes";
+import { brushedTexture, createStarShape, createVShape } from "./shapes";
 import { stageScroll, startStageScroll } from "./stageScroll";
 import fontJson from "./vittoriFont.json";
 
 /**
- * Universo contínuo da Vittori: um único palco 3D fixo atrás do site inteiro.
- * VITTORI monumental em metal bordô com aresta dourada, estrelas ✦ em órbita,
- * névoa bordô infinita e três camadas de partículas que "mergulham" com o scroll.
+ * Universo único da Vittori: a MESMA cena serve o portal e o site.
+ * Portal: VITTORI em ouro 3D fino + estrela ✦ abaixo, varredura de luz.
+ * Clique: palavra e estrela viram poeira, a câmera mergulha, o V nasce em
+ * partículas com eclipse e contraluz. O V nunca é renderizado sólido.
  */
 
-/* Keyframes do V ao longo da página: [x, y, z, rotX, rotY, escala] (x/y em fração da tela). */
 type Key = { p: number; v: number[] };
+/* [x, y, z, rotX, rotY, escala] do V interno ao longo do scroll (x/y em fração da tela). */
 const KEYS: Key[] = [
-  { p: 0, v: [0, 0, -2, 0, 0, 1] },
-  { p: 0.12, v: [0.2, 0, -1, 0.06, -0.45, 1] }, // Sobre: V sólido com luz
-  { p: 0.32, v: [0.24, 0, -2, 0.04, -0.5, 1.05] }, // Serviços: V de partículas
-  { p: 0.55, v: [0.24, 0, -3, -0.05, -1.2, 0.95] }, // Método/Pilares: gira de lado
-  { p: 0.78, v: [0.05, 0.05, -9, 0, 0.3, 0.85] }, // Portfólio: recua ao fundo
-  { p: 1, v: [0, 0.04, -1.5, 0, 0, 1.05] }, // Final: V volta ao centro
+  { p: 0, v: [0.2, 0.02, -1, 0, -0.2, 1] },
+  { p: 0.12, v: [0.22, 0, -1, 0.06, -0.45, 1] },
+  { p: 0.32, v: [0.24, 0, -2, 0.04, -0.5, 1.05] },
+  { p: 0.55, v: [0.24, 0, -3, -0.05, -1.2, 0.95] },
+  { p: 0.78, v: [0.05, 0.05, -9, 0, 0.3, 0.85] },
+  { p: 1, v: [0, 0.04, -1.5, 0, 0, 1.05] },
 ];
+const KEYS_MOBILE_X = 0; // no celular o V fica centrado atrás do texto
 
-const BG = "#14050a";
+const BG = "#12040a";
 const mouse = { x: 0, y: 0 };
 
 function sample(p: number): number[] {
@@ -44,42 +47,14 @@ function sample(p: number): number[] {
 }
 
 const damp = (c: number, t: number, k: number, dt: number) => c + (t - c) * (1 - Math.exp(-k * dt));
-
-/* ------------------------------------------------------------------ */
-function useMaterials() {
-  return useMemo(() => {
-    const brushed = brushedTexture();
-    const face = new THREE.MeshStandardMaterial({
-      color: new THREE.Color("#4E0710"),
-      metalness: 0.9,
-      roughness: 0.38,
-      roughnessMap: brushed,
-      envMapIntensity: 1.1,
-    });
-    const edge = new THREE.MeshStandardMaterial({
-      color: new THREE.Color("#D4AE63"),
-      metalness: 1,
-      roughness: 0.18,
-      envMapIntensity: 2.8,
-    });
-    const star = new THREE.MeshStandardMaterial({
-      color: new THREE.Color("#F0D394"),
-      metalness: 1,
-      roughness: 0.12,
-      envMapIntensity: 3.2,
-      emissive: new THREE.Color("#5a3a10"),
-      emissiveIntensity: 0.4,
-    });
-    return { face, edge, star };
-  }, []);
-}
-
 const sm = (a: number, b: number, x: number) => {
   const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
   return t * t * (3 - 2 * t);
 };
 
-/* Nuvem de pontos amostrada da superfície de uma geometria (para dissolver/montar). */
+/* ------------------------------------------------------------------ *
+ * Nuvem de pontos amostrada de superfícies (dissolver / montar)
+ * ------------------------------------------------------------------ */
 const ptVert = /* glsl */ `
 attribute vec3 aDir;
 attribute float aRand;
@@ -88,11 +63,12 @@ uniform float uTime;
 uniform float uSize;
 varying float vR;
 void main() {
-  vec3 p = position + aDir * uScatter * (2.5 + aRand * 7.0);
-  p += vec3(sin(uTime * 0.9 + aRand * 40.0), cos(uTime * 0.7 + aRand * 30.0), 0.0) * 0.012 * (1.0 + uScatter * 8.0);
+  float s = uScatter * (1.0 + aRand * 0.6);
+  vec3 p = position + aDir * s * (2.0 + aRand * 9.0);
+  p += vec3(sin(uTime * 0.9 + aRand * 40.0), cos(uTime * 0.7 + aRand * 30.0), sin(uTime * 0.5 + aRand * 12.0)) * 0.01 * (1.0 + s * 10.0);
   vec4 mv = modelViewMatrix * vec4(p, 1.0);
   vR = aRand;
-  gl_PointSize = uSize * (0.45 + aRand * 0.9) / -mv.z;
+  gl_PointSize = uSize * (0.4 + aRand * 0.9) / max(0.2, -mv.z);
   gl_Position = projectionMatrix * mv;
 }`;
 const ptFrag = /* glsl */ `
@@ -103,8 +79,8 @@ varying float vR;
 void main() {
   float d = length(gl_PointCoord - 0.5);
   float a = smoothstep(0.5, 0.0, d);
-  float tw = 0.65 + 0.35 * sin(uTime * (1.5 + vR * 3.0) + vR * 60.0);
-  gl_FragColor = vec4(uColor, a * a * uAlpha * tw);
+  float tw = 0.6 + 0.4 * sin(uTime * (1.5 + vR * 3.0) + vR * 60.0);
+  gl_FragColor = vec4(uColor * (1.0 + vR * 0.6), a * a * uAlpha * tw);
 }`;
 
 function samplePoints(meshes: THREE.Mesh[], total: number, forward: number, size: number, color: string) {
@@ -112,11 +88,17 @@ function samplePoints(meshes: THREE.Mesh[], total: number, forward: number, size
   const dir = new Float32Array(total * 3);
   const rnd = new Float32Array(total);
   const v = new THREE.Vector3();
-  const per = Math.ceil(total / meshes.length);
+  const areas = meshes.map((m) => {
+    m.geometry.computeBoundingBox();
+    const b = m.geometry.boundingBox!;
+    return (b.max.x - b.min.x) * (b.max.y - b.min.y) * m.scale.x * m.scale.y;
+  });
+  const sum = areas.reduce((a, b) => a + b, 0);
   let k = 0;
-  for (const m of meshes) {
+  meshes.forEach((m, mi) => {
     const s = new MeshSurfaceSampler(m).build();
-    for (let i = 0; i < per && k < total; i++, k++) {
+    const n = mi === meshes.length - 1 ? total - k : Math.round((total * areas[mi]!) / sum);
+    for (let i = 0; i < n && k < total; i++, k++) {
       s.sample(v);
       v.applyMatrix4(m.matrix);
       pos.set([v.x, v.y, v.z], k * 3);
@@ -124,7 +106,7 @@ function samplePoints(meshes: THREE.Mesh[], total: number, forward: number, size
       dir.set([d.x, d.y, d.z], k * 3);
       rnd[k] = Math.random();
     }
-  }
+  });
   const g = new THREE.BufferGeometry();
   g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
   g.setAttribute("aDir", new THREE.BufferAttribute(dir, 3));
@@ -157,164 +139,395 @@ function fade(mats: THREE.Material[], o: number) {
 }
 
 /* ------------------------------------------------------------------ *
- * Coreografia: VITTORI monumental > dissolve em poeira dourada > V sólido
- * com faixa de luz > V vira partículas > V sólido volta no final.
+ * PORTAL: VITTORI em ouro, chanfro fino, estrela ✦ centrada abaixo
  * ------------------------------------------------------------------ */
-function Monument({ mobile }: { mobile: boolean }) {
-  const { viewport, gl } = useThree();
-  const mats = useMaterials();
-  const wordGroup = useRef<THREE.Group>(null);
-  const vGroup = useRef<THREE.Group>(null);
-  const vSolid = useRef<THREE.Group>(null);
+function Portal({ mobile }: { mobile: boolean }) {
+  const { viewport, gl, camera } = useThree();
+  const group = useRef<THREE.Group>(null);
+  const solid = useRef<THREE.Group>(null);
+  const starRef = useRef<THREE.Mesh>(null);
   const sweep = useRef<THREE.PointLight>(null);
-  const stars = useRef<(THREE.Mesh | null)[]>([]);
+  const sweep2 = useRef<THREE.SpotLight>(null);
   const intro = useRef(0);
-  const spin = useRef(0);
 
-  const wordMats = useMemo(() => [mats.face.clone(), mats.edge.clone()], [mats]);
-  const vMats = useMemo(() => [mats.face.clone(), mats.edge.clone()], [mats]);
+  const mats = useMemo(() => {
+    const brushed = brushedTexture();
+    const face = new THREE.MeshPhysicalMaterial({
+      color: new THREE.Color("#D8B46C"),
+      metalness: 1,
+      roughness: 0.2,
+      roughnessMap: brushed,
+      clearcoat: 0.6,
+      clearcoatRoughness: 0.15,
+      envMapIntensity: 2.2,
+    });
+    const side = new THREE.MeshStandardMaterial({
+      color: new THREE.Color("#8F6A2C"),
+      metalness: 1,
+      roughness: 0.32,
+      envMapIntensity: 1.6,
+    });
+    return [face, side];
+  }, []);
 
-  const { letters, width, wordPts } = useMemo(() => {
+  const { letters, width, pts } = useMemo(() => {
     const font = new Font(fontJson as never);
-    const tracking = 0.16;
+    const tracking = 0.1;
     const glyphs = (fontJson as { glyphs: Record<string, { ha: number }> }).glyphs;
     let x = 0;
     const out: { geo: THREE.ExtrudeGeometry; x: number }[] = [];
     for (const ch of "VITTORI") {
       const geo = new THREE.ExtrudeGeometry(font.generateShapes(ch, 1), {
-        depth: 0.22,
+        depth: 0.06,
         bevelEnabled: true,
-        bevelThickness: 0.035,
-        bevelSize: 0.022,
-        bevelSegments: 4,
-        curveSegments: mobile ? 6 : 10,
+        bevelThickness: 0.018,
+        bevelSize: 0.009,
+        bevelSegments: 6,
+        curveSegments: mobile ? 8 : 14,
       });
       out.push({ geo, x });
-      x += ((glyphs[ch]?.ha ?? 600) / 1000) + tracking;
+      x += (glyphs[ch]?.ha ?? 600) / 1000 + tracking;
     }
     const w = x - tracking;
     const placed = out.map((l) => ({ ...l, x: l.x - w / 2 }));
     const tmp = placed.map((l) => {
       const m = new THREE.Mesh(l.geo);
-      m.position.set(l.x, -0.32, -0.11);
+      m.position.set(l.x, -0.32, -0.03);
       m.updateMatrix();
       return m;
     });
-    const pts = samplePoints(tmp, mobile ? 2600 : 6000, 1.6, 26 * gl.getPixelRatio(), "#F0D394");
-    return { letters: placed, width: w, wordPts: pts };
+    const starGeo = new THREE.ExtrudeGeometry(createStarShape(0.22), {
+      depth: 0.03,
+      bevelEnabled: true,
+      bevelThickness: 0.02,
+      bevelSize: 0.02,
+      bevelSegments: 4,
+    }).center();
+    const sm_ = new THREE.Mesh(starGeo);
+    sm_.position.set(0, -0.82, 0);
+    sm_.scale.setScalar(0.17);
+    sm_.updateMatrix();
+    const pts = samplePoints([...tmp, sm_], mobile ? 3200 : 7500, 1.8, 22 * gl.getPixelRatio(), "#F3D79A");
+    return { letters: placed, width: w, pts, starGeo };
   }, [mobile, gl]);
+  const starGeo = useMemo(
+    () =>
+      new THREE.ExtrudeGeometry(createStarShape(0.22), {
+        depth: 0.03,
+        bevelEnabled: true,
+        bevelThickness: 0.02,
+        bevelSize: 0.02,
+        bevelSegments: 4,
+      }).center(),
+    [],
+  );
 
-  const vGeo = useMemo(() => vGeometry(), []);
+  useFrame((s, delta) => {
+    const dt = Math.min(delta, 0.05);
+    const t = s.clock.elapsedTime;
+    const dive = stageScroll.dive;
+    const g = group.current;
+    if (!g) return;
+    intro.current = damp(intro.current, 1, 0.9, dt);
+    const i = intro.current;
+    g.visible = dive < 0.98;
+    if (!g.visible) return;
+
+    const fit = (viewport.width * (mobile ? 0.9 : 0.8)) / width;
+    g.scale.setScalar(fit * (0.92 + 0.08 * i));
+    g.position.set(0, viewport.height * (mobile ? 0.08 : 0.06) + Math.sin(t * 0.45) * 0.03, -1.2 * (1 - i));
+    g.rotation.x = damp(g.rotation.x, -0.04 + mouse.y * 0.08, 2.2, dt);
+    g.rotation.y = damp(g.rotation.y, mouse.x * 0.14, 2.2, dt);
+
+    const solidO = sm(0.0, 1.0, i) * (1 - sm(0.02, 0.22, dive));
+    fade(mats, solidO);
+    if (solid.current) solid.current.visible = solidO > 0.01;
+    if (starRef.current) {
+      starRef.current.rotation.y = Math.sin(t * 0.6) * 0.5;
+      starRef.current.rotation.z = t * 0.05;
+    }
+
+    const u = (pts.material as THREE.ShaderMaterial).uniforms;
+    u["uTime"]!.value = t;
+    // Antes do clique: brilho de poeira sobre as letras; no clique: explode rumo à câmera.
+    u["uScatter"]!.value = (1 - i) * 0.5 + sm(0.03, 0.75, dive) * 1.4;
+    u["uAlpha"]!.value = (0.22 * i + 1.3 * sm(0.0, 0.18, dive)) * (1 - sm(0.55, 0.92, dive));
+
+    // Varredura de luz: atravessa o nome a cada ~5,5s, nasce na aparição.
+    const c = ((t + 1.5) % 5.5) / 5.5;
+    if (sweep.current) {
+      sweep.current.position.set((-0.65 + c * 1.3) * width, 0.1, 0.55);
+      sweep.current.intensity = 9 * Math.sin(Math.PI * c) * solidO;
+    }
+    if (sweep2.current) {
+      sweep2.current.position.set((-0.6 + c * 1.2) * width, 1.5, 2.5);
+      sweep2.current.intensity = 26 * Math.sin(Math.PI * c) * solidO;
+    }
+
+    // Mergulho da câmera: avança pelo cenário e abre o campo de visão.
+    const cam = camera as THREE.PerspectiveCamera;
+    const k = Math.sin(Math.PI * Math.min(1, dive));
+    cam.position.z = 8 - 5.5 * k;
+    cam.fov = 45 + 22 * k;
+    cam.updateProjectionMatrix();
+  });
+
+  return (
+    <group ref={group}>
+      <group ref={solid}>
+        {letters.map((l, i) => (
+          <mesh key={i} geometry={l.geo} material={mats} position={[l.x, -0.32, -0.03]} />
+        ))}
+        <mesh ref={starRef} geometry={starGeo} material={mats} position={[0, -0.82, 0]} scale={0.17} />
+      </group>
+      <primitive object={pts} />
+      <pointLight ref={sweep} distance={1.6} decay={1.2} color="#FFF4D6" intensity={0} />
+      <spotLight ref={sweep2} angle={0.35} penumbra={1} distance={8} color="#FFF1CC" intensity={0} />
+    </group>
+  );
+}
+
+/* ------------------------------------------------------------------ *
+ * V interno: só partículas + eclipse com contraluz
+ * ------------------------------------------------------------------ */
+const eclVert = /* glsl */ `
+varying vec2 vUv;
+void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
+const eclFrag = /* glsl */ `
+varying vec2 vUv;
+uniform float uTime;
+uniform float uAlpha;
+uniform vec2 uOff;
+void main() {
+  vec2 p = vUv - 0.5;
+  float r = length(p);
+  vec2 q = p - uOff;
+  float rq = length(q);
+  float disc = 0.22;
+  float core = smoothstep(disc + 0.004, disc - 0.004, rq);
+  float rim = exp(-pow((rq - disc) * 38.0, 2.0));
+  float ang = atan(q.y, q.x);
+  float rays = 0.55 + 0.45 * sin(ang * 9.0 + uTime * 0.25) * sin(ang * 4.0 - uTime * 0.18);
+  float corona = exp(-max(0.0, rq - disc) * 9.0) * (1.0 - core) * rays;
+  float halo = exp(-r * 4.2) * 0.35;
+  vec3 gold = vec3(0.95, 0.76, 0.42);
+  vec3 col = gold * (rim * 1.8 + corona * 0.9 + halo);
+  float a = max(core * 0.92, clamp(rim * 1.2 + corona * 0.85 + halo, 0.0, 1.0));
+  vec3 dark = vec3(0.05, 0.01, 0.02);
+  gl_FragColor = vec4(mix(col, dark, core), a * uAlpha * smoothstep(0.5, 0.36, r));
+}`;
+
+function Monogram({ mobile }: { mobile: boolean }) {
+  const { viewport, gl } = useThree();
+  const vGroup = useRef<THREE.Group>(null);
+  const stars = useRef<(THREE.Mesh | null)[]>([]);
+  const spin = useRef(0);
+  const born = useRef(0);
+
   const vPts = useMemo(() => {
-    const m = new THREE.Mesh(vGeo);
+    const geo = new THREE.ExtrudeGeometry(createVShape(), { depth: 0.3, bevelEnabled: false }).center();
+    const m = new THREE.Mesh(geo);
     m.updateMatrix();
-    return samplePoints([m], mobile ? 2200 : 5000, 0, 60 * gl.getPixelRatio(), "#F3D79A");
-  }, [vGeo, mobile, gl]);
-  const sGeo = useMemo(() => starGeometry(), []);
+    return samplePoints([m], mobile ? 2600 : 6000, 0, 58 * gl.getPixelRatio(), "#F3D79A");
+  }, [mobile, gl]);
+  const ecl = useMemo(
+    () =>
+      new THREE.ShaderMaterial({
+        vertexShader: eclVert,
+        fragmentShader: eclFrag,
+        transparent: true,
+        depthWrite: false,
+        fog: false,
+        uniforms: { uTime: { value: 0 }, uAlpha: { value: 0 }, uOff: { value: new THREE.Vector2(0.4, 0.1) } },
+      }),
+    [],
+  );
+  const starMat = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: "#F0D394",
+        metalness: 1,
+        roughness: 0.14,
+        envMapIntensity: 3,
+        emissive: new THREE.Color("#5a3a10"),
+        emissiveIntensity: 0.5,
+      }),
+    [],
+  );
+  const sGeo = useMemo(
+    () =>
+      new THREE.ExtrudeGeometry(createStarShape(0.24), {
+        depth: 0.04,
+        bevelEnabled: true,
+        bevelThickness: 0.02,
+        bevelSize: 0.02,
+        bevelSegments: 3,
+      }).center(),
+    [],
+  );
 
   useFrame((s, delta) => {
     const dt = Math.min(delta, 0.05);
     const t = s.clock.elapsedTime;
     const p = stageScroll.p;
+    const vg = vGroup.current;
+    if (!vg) return;
+    const appear = sm(0.5, 1, stageScroll.dive);
+    vg.visible = appear > 0.001;
+    if (!vg.visible) return;
+    born.current = damp(born.current, appear >= 1 ? 1 : 0, 0.8, dt);
     spin.current = damp(spin.current, stageScroll.vel, 2.2, dt);
     stageScroll.vel = damp(stageScroll.vel, 0, 3, dt);
-    if (stageScroll.entered) intro.current = damp(intro.current, 1, 1.1, dt);
 
-    /* 1. VITTORI monumental, revelado depois da entrada */
-    const dissolve = sm(0.004, 0.075, p);
-    const wg = wordGroup.current;
-    if (wg) {
-      const fit = (viewport.width * (mobile ? 0.92 : 0.72)) / width;
-      const i = intro.current;
-      wg.scale.setScalar(fit * (0.86 + 0.14 * i));
-      wg.position.set(0, viewport.height * 0.2 + Math.sin(t * 0.5) * 0.05, -2 * (1 - i));
-      wg.rotation.x = damp(wg.rotation.x, -0.1 + mouse.y * 0.14, 2.4, dt);
-      wg.rotation.y = damp(wg.rotation.y, mouse.x * 0.26, 2.4, dt);
-      const solid = i * (1 - sm(0.0, 0.035, p));
-      fade(wordMats, solid);
-      wg.children[0]!.visible = solid > 0.01;
-      const u = (wordPts.material as THREE.ShaderMaterial).uniforms;
-      u["uTime"]!.value = t;
-      // Antes da entrada a poeira está montada sobre as letras (brilho de chegada); depois explode em direção à câmera.
-      u["uScatter"]!.value = Math.max(dissolve, (1 - i) * 0.6);
-      u["uAlpha"]!.value = (0.35 + 0.65 * sm(0, 0.02, p)) * (1 - sm(0.05, 0.09, p)) * i;
-    }
+    const [x, y, z, rx, ry, sc] = sample(p);
+    const base = Math.min(viewport.height * (mobile ? 0.22 : 0.27), viewport.width * (mobile ? 0.34 : 0.2));
+    vg.scale.setScalar(damp(vg.scale.x || base, base * (sc ?? 1), 3, dt));
+    vg.position.x = damp(vg.position.x, viewport.width * (mobile ? KEYS_MOBILE_X : x ?? 0), 2.6, dt);
+    vg.position.y = damp(vg.position.y, viewport.height * ((y ?? 0) + (mobile ? 0.12 : 0)) + Math.sin(t * 0.5) * 0.06, 2.6, dt);
+    vg.position.z = damp(vg.position.z, (z ?? 0) - Math.abs(spin.current) * 0.8, 2.4, dt);
+    vg.rotation.x = damp(vg.rotation.x, (rx ?? 0) + mouse.y * 0.18, 2.6, dt);
+    vg.rotation.y = damp(vg.rotation.y, (ry ?? 0) + mouse.x * 0.32 + spin.current * 0.35, 2.4, dt);
 
-    /* 2. V monumental */
-    const vg = vGroup.current;
-    if (vg) {
-      const [x, y, z, rx, ry, sc] = sample(p);
-      const base = Math.min(viewport.height * 0.27, viewport.width * (mobile ? 0.3 : 0.2));
-      const vIn = sm(0.05, 0.12, p);
-      vg.scale.setScalar(damp(vg.scale.x || 0.001, base * (sc ?? 1) * (0.6 + 0.4 * vIn), 3, dt));
-      vg.position.x = damp(vg.position.x, viewport.width * (x ?? 0), 2.6, dt);
-      vg.position.y = damp(vg.position.y, viewport.height * (y ?? 0) + Math.sin(t * 0.5) * 0.06, 2.6, dt);
-      vg.position.z = damp(vg.position.z, (z ?? 0) - 6 * (1 - vIn) - Math.abs(spin.current) * 0.8, 2.4, dt);
-      vg.rotation.x = damp(vg.rotation.x, (rx ?? 0) + mouse.y * 0.18, 2.6, dt);
-      vg.rotation.y = damp(vg.rotation.y, (ry ?? 0) + mouse.x * 0.32 + spin.current * 0.35, 2.4, dt);
+    // Partículas: chegam espalhadas do mergulho e se montam; respiram nos Serviços.
+    const breathe = sm(0.22, 0.34, p) * (1 - sm(0.5, 0.6, p)) * 0.12;
+    const u = (vPts.material as THREE.ShaderMaterial).uniforms;
+    u["uTime"]!.value = t;
+    u["uScatter"]!.value = (1 - appear) * 1.2 + breathe + Math.abs(spin.current) * 0.12 + (1 - born.current) * 0.05;
+    u["uAlpha"]!.value = appear * 1.25;
 
-      const morph = sm(0.2, 0.32, p) * (1 - sm(0.84, 0.95, p));
-      const solid = vIn * (1 - morph);
-      fade(vMats, solid);
-      if (vSolid.current) vSolid.current.visible = solid > 0.01;
-      const u = (vPts.material as THREE.ShaderMaterial).uniforms;
-      u["uTime"]!.value = t;
-      u["uScatter"]!.value = (1 - morph) * 0.9 + Math.abs(spin.current) * 0.15;
-      u["uAlpha"]!.value = morph * 1.2;
+    // Eclipse: o disco escuro desliza até cobrir o centro, a coroa se acende por trás (contraluz).
+    const eu = ecl.uniforms;
+    eu["uTime"]!.value = t;
+    const e = born.current;
+    (eu["uOff"]!.value as THREE.Vector2).set(0.42 * (1 - e) + Math.sin(t * 0.2) * 0.012, 0.12 * (1 - e) + Math.cos(t * 0.17) * 0.01);
+    eu["uAlpha"]!.value = appear * (0.75 + 0.25 * Math.sin(t * 0.6)) * (1 - sm(0.7, 0.8, p) * 0.5);
 
-      // Faixa de luz de vitrine atravessando o V a cada ~6s.
-      const l = sweep.current;
-      if (l) {
-        const c = (t % 6) / 6;
-        l.position.set(-2.2 + c * 4.4, 0.6 - c * 1.2, 1.1);
-        l.intensity = 22 * Math.sin(Math.PI * c) * solid;
-      }
-
-      stars.current.forEach((m, i) => {
-        if (!m) return;
-        const a = t * (0.32 + i * 0.07) + i * 2.1 + p * 6;
-        m.position.set(Math.cos(a) * 1.9 * (1 - i * 0.12), Math.sin(a * 1.3) * 0.7 + (i - 1) * 0.2, Math.sin(a) * 1.2);
-        m.rotation.z += dt * (0.6 + i * 0.2);
-        m.rotation.y += dt * 0.3;
-        m.visible = vIn > 0.05;
-      });
-    }
+    stars.current.forEach((m, i) => {
+      if (!m) return;
+      const a = t * (0.32 + i * 0.07) + i * 2.1 + p * 6;
+      m.position.set(Math.cos(a) * 1.9 * (1 - i * 0.12), Math.sin(a * 1.3) * 0.7 + (i - 1) * 0.2, Math.sin(a) * 1.2);
+      m.rotation.z += dt * (0.6 + i * 0.2);
+      m.rotation.y += dt * 0.3;
+      m.visible = appear > 0.6;
+    });
   });
 
   return (
-    <>
-      <group ref={wordGroup}>
-        <group>
-          {letters.map((l, i) => (
-            <mesh key={i} geometry={l.geo} material={wordMats} position={[l.x, -0.32, -0.11]} />
-          ))}
-        </group>
-        <primitive object={wordPts} />
-      </group>
-      <group ref={vGroup} scale={0.001}>
-        <group ref={vSolid}>
-          <mesh geometry={vGeo} material={vMats} />
-        </group>
-        <primitive object={vPts} />
-        <pointLight ref={sweep} distance={4} decay={1.6} color="#FFF1CC" intensity={0} />
-        {[0.2, 0.13, 0.09].map((s, i) => (
-          <mesh
-            key={i}
-            ref={(m) => {
-              stars.current[i] = m;
-            }}
-            geometry={sGeo}
-            material={mats.star}
-            scale={s}
-          />
-        ))}
-      </group>
-    </>
+    <group ref={vGroup} visible={false}>
+      <mesh position={[0, 0.05, -0.6]} material={ecl} scale={4.6}>
+        <planeGeometry args={[1, 1]} />
+      </mesh>
+      <primitive object={vPts} />
+      {[0.2, 0.13, 0.09].map((sc, i) => (
+        <mesh
+          key={i}
+          ref={(m) => {
+            stars.current[i] = m;
+          }}
+          geometry={sGeo}
+          material={starMat}
+          scale={sc}
+        />
+      ))}
+    </group>
   );
 }
 
 /* ------------------------------------------------------------------ *
- * Estrelas cadentes: filamentos finos, raros, também ao rolar rápido.
+ * Nebulosa: gradientes bordô profundos em movimento (fundo infinito)
+ * ------------------------------------------------------------------ */
+const nebFrag = /* glsl */ `
+varying vec2 vUv;
+uniform float uTime;
+uniform float uTravel;
+float h(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float n(vec2 p){ vec2 i=floor(p), f=fract(p); f=f*f*(3.0-2.0*f);
+  return mix(mix(h(i),h(i+vec2(1,0)),f.x), mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x), f.y); }
+float fbm(vec2 p){ float v=0.0, a=0.5; for(int i=0;i<5;i++){ v+=a*n(p); p*=2.03; a*=0.5; } return v; }
+void main(){
+  vec2 uv = vUv - 0.5;
+  vec2 q = uv * 3.0 + vec2(uTime * 0.012, uTravel * 0.04);
+  float f = fbm(q + fbm(q * 1.3 + uTime * 0.02));
+  float r = length(uv);
+  vec3 deep = vec3(0.055, 0.012, 0.024);
+  vec3 bordo = vec3(0.38, 0.035, 0.07);
+  vec3 wine = vec3(0.22, 0.02, 0.05);
+  vec3 gold = vec3(0.55, 0.36, 0.16);
+  vec3 col = mix(deep, wine, smoothstep(0.25, 0.75, f));
+  col = mix(col, bordo, smoothstep(0.55, 0.9, f) * (1.0 - r * 1.2));
+  col += gold * pow(smoothstep(0.62, 0.95, f), 3.0) * 0.12;
+  col += bordo * exp(-r * 3.0) * 0.35;
+  col *= 1.0 - smoothstep(0.3, 0.72, r) * 0.65;
+  gl_FragColor = vec4(col, 1.0);
+}`;
+
+function Nebula() {
+  const mat = useMemo(
+    () =>
+      new THREE.ShaderMaterial({
+        vertexShader: eclVert,
+        fragmentShader: nebFrag,
+        depthWrite: false,
+        fog: false,
+        uniforms: { uTime: { value: 0 }, uTravel: { value: 0 } },
+      }),
+    [],
+  );
+  useFrame((s) => {
+    mat.uniforms["uTime"]!.value = s.clock.elapsedTime;
+    mat.uniforms["uTravel"]!.value = stageScroll.p * 6 + stageScroll.dive * 2;
+  });
+  return (
+    <mesh position={[0, 0, -40]} material={mat} renderOrder={-1}>
+      <planeGeometry args={[110, 70]} />
+    </mesh>
+  );
+}
+
+/* Estrelas distantes cintilantes (campo fixo muito ao fundo). */
+function TwinkleField({ count }: { count: number }) {
+  const { gl } = useThree();
+  const pts = useMemo(() => {
+    const pos = new Float32Array(count * 3);
+    const rnd = new Float32Array(count);
+    for (let i = 0; i < count; i++) {
+      pos.set([(Math.random() - 0.5) * 80, (Math.random() - 0.5) * 50, -30 - Math.random() * 8], i * 3);
+      rnd[i] = Math.random();
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    g.setAttribute("aRand", new THREE.BufferAttribute(rnd, 1));
+    const m = new THREE.ShaderMaterial({
+      transparent: true,
+      depthWrite: false,
+      fog: false,
+      blending: THREE.AdditiveBlending,
+      uniforms: { uTime: { value: 0 }, uPx: { value: gl.getPixelRatio() } },
+      vertexShader: `attribute float aRand; uniform float uTime; uniform float uPx; varying float vA; varying float vR;
+        void main(){ vec4 mv = modelViewMatrix * vec4(position,1.0);
+          vA = pow(0.5 + 0.5 * sin(uTime * (0.6 + aRand * 2.4) + aRand * 80.0), 3.0);
+          vR = aRand; gl_PointSize = uPx * (1.5 + aRand * aRand * 5.0); gl_Position = projectionMatrix * mv; }`,
+      fragmentShader: `varying float vA; varying float vR;
+        void main(){ vec2 c = gl_PointCoord - 0.5; float d = length(c);
+          float core = smoothstep(0.5, 0.0, d);
+          float cross = vR > 0.85 ? max(smoothstep(0.05,0.0,abs(c.x)), smoothstep(0.05,0.0,abs(c.y))) * smoothstep(0.5,0.0,d) : 0.0;
+          gl_FragColor = vec4(vec3(1.0, 0.92, 0.78), (core*core + cross) * (0.25 + 0.75 * vA)); }`,
+    });
+    const p = new THREE.Points(g, m);
+    p.frustumCulled = false;
+    return p;
+  }, [count, gl]);
+  const ref = useRef<THREE.Points>(pts);
+  useFrame((s) => {
+    (pts.material as THREE.ShaderMaterial).uniforms["uTime"]!.value = s.clock.elapsedTime;
+    ref.current.rotation.z = s.clock.elapsedTime * 0.003 + stageScroll.p * 0.15;
+    ref.current.position.y = stageScroll.p * 4;
+  });
+  return <primitive object={pts} />;
+}
+
+/* ------------------------------------------------------------------ *
+ * Estrelas cadentes: filamentos finos e raros
  * ------------------------------------------------------------------ */
 function ShootingStars() {
   const { viewport } = useThree();
@@ -343,13 +556,12 @@ function ShootingStars() {
     [tex],
   );
   const refs = useRef<(THREE.Mesh | null)[]>([]);
-  const next = useRef(3 + Math.random() * 5);
+  const next = useRef(2.5 + Math.random() * 4);
 
   useFrame((s, delta) => {
     const dt = Math.min(delta, 0.05);
     const t = s.clock.elapsedTime;
-    const fast = Math.abs(stageScroll.vel) > 0.9;
-    if (t > next.current || (fast && t > next.current - 6)) {
+    if (t > next.current) {
       const i = pool.findIndex((o) => o.life < 0);
       const m = refs.current[i];
       if (i >= 0 && m) {
@@ -359,16 +571,16 @@ function ShootingStars() {
         m.position.set((Math.random() * 0.8 - 0.2) * W, viewport.height * (0.9 + Math.random() * 0.5), -10 - Math.random() * 6);
         o.dir.set(-1, -0.42 - Math.random() * 0.25, 0).normalize();
         m.rotation.z = Math.atan2(o.dir.y, o.dir.x) + Math.PI;
-        m.scale.set(3 + Math.random() * 3, 0.06, 1);
+        m.scale.set(3 + Math.random() * 3, 0.05, 1);
       }
-      next.current = t + 8 + Math.random() * 7;
+      next.current = t + 9 + Math.random() * 8;
     }
     pool.forEach((o, i) => {
       const m = refs.current[i];
       if (!m || o.life < 0) return;
       o.life += dt;
       m.position.addScaledVector(o.dir, dt * 22);
-      o.mat.opacity = Math.sin(Math.PI * Math.min(1, o.life / 1.3)) * 0.9;
+      o.mat.opacity = Math.sin(Math.PI * Math.min(1, o.life / 1.3)) * 0.85;
       if (o.life > 1.3) {
         o.life = -1;
         o.mat.opacity = 0;
@@ -393,62 +605,15 @@ function ShootingStars() {
   );
 }
 
-/* Constelações finas em linhas douradas muito sutis, no fundo do infinito. */
-function Constellations({ mobile }: { mobile: boolean }) {
-  const ref = useRef<THREE.Group>(null);
-  const { lines, dots } = useMemo(() => {
-    const seg: number[] = [];
-    const pts: number[] = [];
-    const n = mobile ? 4 : 7;
-    for (let c = 0; c < n; c++) {
-      const cx = (Math.random() - 0.5) * 44;
-      const cy = (Math.random() - 0.5) * 24;
-      const cz = -20 - Math.random() * 8;
-      let prev = new THREE.Vector3(cx, cy, cz);
-      pts.push(prev.x, prev.y, prev.z);
-      const k = 4 + Math.floor(Math.random() * 3);
-      for (let i = 0; i < k; i++) {
-        const nx = prev.clone().add(new THREE.Vector3((Math.random() - 0.5) * 5, (Math.random() - 0.5) * 4, 0));
-        seg.push(prev.x, prev.y, prev.z, nx.x, nx.y, nx.z);
-        pts.push(nx.x, nx.y, nx.z);
-        prev = nx;
-      }
-    }
-    const lg = new THREE.BufferGeometry();
-    lg.setAttribute("position", new THREE.Float32BufferAttribute(seg, 3));
-    const lines = new THREE.LineSegments(
-      lg,
-      new THREE.LineBasicMaterial({ color: "#C8A25A", transparent: true, opacity: 0.16, blending: THREE.AdditiveBlending, depthWrite: false, fog: false }),
-    );
-    const dg = new THREE.BufferGeometry();
-    dg.setAttribute("position", new THREE.Float32BufferAttribute(pts, 3));
-    const dots = new THREE.Points(
-      dg,
-      new THREE.PointsMaterial({ color: "#F6DFA8", size: 0.14, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending, depthWrite: false, fog: false }),
-    );
-    return { lines, dots };
-  }, [mobile]);
-  useFrame((s) => {
-    if (!ref.current) return;
-    ref.current.rotation.z = s.clock.elapsedTime * 0.004 + stageScroll.p * 0.25;
-    ref.current.position.y = stageScroll.p * 6;
-  });
-  return (
-    <group ref={ref}>
-      <primitive object={lines} />
-      <primitive object={dots} />
-    </group>
-  );
-}
-
 /* ------------------------------------------------------------------ *
- * Poeira infinita em três camadas: o visitante "desce" pelo universo.
+ * Poeira cósmica em três planos: o visitante atravessa o universo
  * ------------------------------------------------------------------ */
 const dustVert = /* glsl */ `
 attribute float aRand;
 uniform float uTravel;
 uniform float uTime;
 uniform float uSize;
+uniform float uStretch;
 varying float vA;
 varying float vR;
 void main() {
@@ -462,7 +627,7 @@ void main() {
   float far = smoothstep(-40.0, -26.0, p.z);
   vA = near * far * (0.55 + 0.45 * sin(uTime * (1.0 + aRand * 2.5) + aRand * 50.0));
   vR = aRand;
-  gl_PointSize = uSize * (0.4 + aRand) / -mv.z;
+  gl_PointSize = uSize * (0.4 + aRand) * (1.0 + uStretch) / -mv.z;
   gl_Position = projectionMatrix * mv;
 }`;
 const dustFrag = /* glsl */ `
@@ -473,8 +638,7 @@ void main() {
   vec2 c = gl_PointCoord - 0.5;
   float d = length(c);
   float core = smoothstep(0.5, 0.0, d);
-  // brilho em cruz nas partículas mais fortes (cintilar de estrela)
-  float cross = vR > 0.9 ? max(smoothstep(0.06, 0.0, abs(c.x)), smoothstep(0.06, 0.0, abs(c.y))) * smoothstep(0.5, 0.1, d) : 0.0;
+  float cross = vR > 0.92 ? max(smoothstep(0.06, 0.0, abs(c.x)), smoothstep(0.06, 0.0, abs(c.y))) * smoothstep(0.5, 0.1, d) : 0.0;
   gl_FragColor = vec4(uColor, (core * core + cross * 0.8) * vA);
 }`;
 
@@ -502,6 +666,7 @@ function DustLayer({ count, size, speed, color, spread }: { count: number; size:
         uTravel: { value: 0 },
         uTime: { value: 0 },
         uSize: { value: size * gl.getPixelRatio() },
+        uStretch: { value: 0 },
         uColor: { value: new THREE.Color(color) },
       },
     });
@@ -513,43 +678,19 @@ function DustLayer({ count, size, speed, color, spread }: { count: number; size:
   const travel = useRef(0);
   useFrame((s, delta) => {
     const dt = Math.min(delta, 0.05);
-    travel.current += dt * 0.35 * speed;
+    const warp = Math.sin(Math.PI * Math.min(1, stageScroll.dive));
+    travel.current += dt * (0.35 + warp * 14) * speed;
     const u = (points.material as THREE.ShaderMaterial).uniforms;
     u["uTime"]!.value = s.clock.elapsedTime;
     u["uTravel"]!.value = travel.current + stageScroll.p * 90 * speed;
+    u["uStretch"]!.value = warp * 0.8;
     points.position.x = damp(points.position.x, -mouse.x * 0.6 * speed, 2, dt);
     points.position.y = damp(points.position.y, mouse.y * 0.4 * speed, 2, dt);
   });
   return <primitive object={points} />;
 }
 
-/* Halo bordô no fundo do infinito. */
-function Glow() {
-  const ref = useRef<THREE.Mesh>(null);
-  const mat = useMemo(
-    () =>
-      new THREE.MeshBasicMaterial({
-        map: radialTexture("#9A1424", BG),
-        transparent: true,
-        depthWrite: false,
-        toneMapped: false,
-        fog: false,
-      }),
-    [],
-  );
-  useFrame((s) => {
-    const k = 1 + Math.sin(s.clock.elapsedTime * 0.25) * 0.04;
-    ref.current?.scale.setScalar(k);
-    mat.opacity = 0.75 + Math.sin(s.clock.elapsedTime * 0.25) * 0.08 - stageScroll.p * 0.15;
-  });
-  return (
-    <mesh ref={ref} position={[0, 0, -34]} material={mat}>
-      <planeGeometry args={[70, 70]} />
-    </mesh>
-  );
-}
-
-/* Luz dourada que segue o cursor e faz as arestas brilharem. */
+/* Luz dourada que segue o cursor e acende as arestas. */
 function CursorLight() {
   const ref = useRef<THREE.PointLight>(null);
   const { viewport } = useThree();
@@ -560,7 +701,7 @@ function CursorLight() {
     l.position.x = damp(l.position.x, mouse.x * viewport.width, 3, dt);
     l.position.y = damp(l.position.y, -mouse.y * viewport.height, 3, dt);
   });
-  return <pointLight ref={ref} position={[0, 0, 3]} intensity={18} distance={14} color="#F3D79A" />;
+  return <pointLight ref={ref} position={[0, 0, 3]} intensity={10} distance={12} color="#F3D79A" />;
 }
 
 function Rig() {
@@ -584,7 +725,7 @@ export default function StageCanvas() {
     <div ref={wrap} className="absolute inset-0">
       <Canvas
         dpr={mobile ? [1, 1.4] : [1, 1.75]}
-        camera={{ position: [0, 0, 8], fov: 45, near: 0.1, far: 80 }}
+        camera={{ position: [0, 0, 8], fov: 45, near: 0.1, far: 90 }}
         gl={{ antialias: !mobile, powerPreference: "high-performance" }}
         style={{ pointerEvents: "none" }}
         onCreated={() => {
@@ -592,28 +733,34 @@ export default function StageCanvas() {
         }}
       >
         <color attach="background" args={[BG]} />
-        <fogExp2 attach="fog" args={[BG, 0.05]} />
+        <fogExp2 attach="fog" args={[BG, 0.035]} />
         <Rig />
-        <ambientLight intensity={0.25} />
-        <directionalLight position={[2, 3, 7]} intensity={2.4} color="#F2DDAA" />
-        <spotLight position={[-6, 4, 6]} angle={0.6} penumbra={1} intensity={90} color="#F2EFE6" />
-        <spotLight position={[6, -3, 4]} angle={0.7} penumbra={1} intensity={60} color="#C8203A" />
+        <ambientLight intensity={0.2} />
+        <directionalLight position={[2, 3, 7]} intensity={1.8} color="#F2DDAA" />
+        <spotLight position={[-6, 4, 6]} angle={0.6} penumbra={1} intensity={60} color="#F2EFE6" />
+        <spotLight position={[6, -3, 4]} angle={0.7} penumbra={1} intensity={40} color="#C8203A" />
         <CursorLight />
-        <Glow />
-        <Constellations mobile={mobile} />
+        <Nebula />
+        <TwinkleField count={mobile ? 260 : 650} />
         <ShootingStars />
-        <DustLayer count={mobile ? 500 : 1400} size={22} speed={0.4} color="#E8C27A" spread={34} />
-        <DustLayer count={mobile ? 220 : 600} size={46} speed={1} color="#F6DFA8" spread={22} />
-        <DustLayer count={mobile ? 50 : 120} size={120} speed={1.8} color="#D9485A" spread={16} />
+        <DustLayer count={mobile ? 500 : 1400} size={20} speed={0.4} color="#E8C27A" spread={34} />
+        <DustLayer count={mobile ? 220 : 600} size={42} speed={1} color="#F6DFA8" spread={22} />
+        <DustLayer count={mobile ? 50 : 120} size={110} speed={1.8} color="#D9485A" spread={16} />
         <Suspense fallback={null}>
-          <Environment resolution={128}>
-            <Lightformer intensity={6} position={[0, 4, 4]} scale={[12, 12, 1]} color="#F0DCA8" />
+          <Environment resolution={256}>
+            <Lightformer intensity={7} position={[0, 4, 4]} scale={[12, 3, 1]} color="#FFF0CF" />
             <Lightformer intensity={3} position={[3, -2, 4]} scale={[8, 8, 1]} color="#E4C98F" />
-            <Lightformer intensity={2} color="#E0C48A" position={[-5, 0, 1]} rotation-y={Math.PI / 2} scale={[14, 3, 1]} />
+            <Lightformer intensity={2.5} color="#E0C48A" position={[-5, 0, 1]} rotation-y={Math.PI / 2} scale={[14, 1.5, 1]} />
             <Lightformer intensity={2.4} color="#8B0F1A" position={[5, -1, 1]} rotation-y={-Math.PI / 2} scale={[14, 3, 1]} />
+            <Lightformer intensity={1.2} color="#3a0610" position={[0, -5, 0]} rotation-x={-Math.PI / 2} scale={[20, 20, 1]} />
           </Environment>
-          <Monument mobile={mobile} />
+          {!stageScroll.skipped && <Portal mobile={mobile} />}
+          <Monogram mobile={mobile} />
         </Suspense>
+        <EffectComposer multisampling={0} enableNormalPass={false}>
+          <Bloom mipmapBlur intensity={mobile ? 0.6 : 0.85} luminanceThreshold={0.55} luminanceSmoothing={0.25} />
+          <Vignette offset={0.25} darkness={0.7} />
+        </EffectComposer>
       </Canvas>
     </div>
   );
