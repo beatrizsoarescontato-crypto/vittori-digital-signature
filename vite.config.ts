@@ -11,7 +11,17 @@ export default defineConfig({
     optimizeDeps: {
       // Prebundle the portfolio primitives with React rather than discovering
       // them after a preview has already loaded an older dependency graph.
-      include: ["@radix-ui/react-dialog", "@radix-ui/react-slot"],
+      include: [
+        "@radix-ui/react-dialog",
+        "@radix-ui/react-slot",
+        "three",
+        "three/examples/jsm/loaders/FontLoader.js",
+        "@react-three/fiber",
+        "@react-three/drei",
+        "gsap",
+        "gsap/ScrollTrigger",
+        "embla-carousel-react",
+      ],
     },
   },
   tanstackStart: {

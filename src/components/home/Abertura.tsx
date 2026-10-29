@@ -1,34 +1,29 @@
-import { ClientStage } from "@/components/ClientCanvas";
 import { Line } from "@/components/site/Lines";
 import { Btn } from "@/components/site/ui";
 
 export function Abertura() {
   return (
-    <section id="top" className="relative flex min-h-[100svh] items-end overflow-hidden pb-20 pt-36 md:items-center md:pb-0">
-      <div aria-hidden className="pointer-events-none absolute inset-0 z-0">
-        <ClientStage />
-      </div>
+    <section id="top" className="relative flex min-h-[100svh] items-end overflow-hidden pb-16 pt-36 md:pb-20">
       <div aria-hidden className="vignette pointer-events-none absolute inset-0 z-0" />
 
       <div className="relative z-10 mx-auto w-full max-w-[1440px] px-6 md:px-12">
         <div className="max-w-3xl">
-          <p data-reveal className="mb-8">
+          <p data-reveal className="mb-6">
             <span className="reveal-item label-mono inline-flex items-center gap-3 text-dourado">
               <span>✦</span> Brasília · Casa criativa
             </span>
           </p>
-          <h1 data-lines className="display text-marfim">
-            <Line>Criamos</Line>
+          <h1 data-lines className="title-1 text-marfim">
             <Line>
-              <em className="italic text-dourado">presença.</em>
+              Criamos <em className="italic text-dourado">presença.</em>
             </Line>
           </h1>
-          <div data-reveal className="mt-10 max-w-xl">
-            <p className="reveal-item text-base leading-loose text-marfim/75 md:text-lg">
+          <div data-reveal className="mt-6 max-w-xl">
+            <p className="reveal-item text-base leading-relaxed text-marfim/90 md:text-lg">
               Social media, tráfego pago, audiovisual, sites e inteligência artificial para negócios
               que querem ser escolhidos pela qualidade.
             </p>
-            <div className="reveal-item mt-10 flex flex-col gap-4 sm:flex-row">
+            <div className="reveal-item mt-8 flex flex-col gap-4 sm:flex-row">
               <Btn to="/comece">Quero uma conversa</Btn>
               <Btn to="/" hash="servicos" variant="ghost">
                 Ver serviços
@@ -36,6 +31,9 @@ export function Abertura() {
             </div>
           </div>
         </div>
+        <p aria-hidden className="label-mono absolute bottom-0 right-6 hidden items-center gap-3 text-dourado md:right-12 md:flex">
+          Role para mergulhar <span className="scroll-cue inline-block">↓</span>
+        </p>
       </div>
     </section>
   );
@@ -48,7 +46,7 @@ export function Resolve() {
     "Atendimento e números organizados para você decidir com clareza.",
   ];
   return (
-    <section className="relative border-t border-border/50 bg-marrom py-28 md:py-40">
+    <section className="relative border-t border-border/50 bg-marrom/50 py-28 md:py-40">
       <div className="mx-auto grid max-w-[1440px] gap-16 px-6 md:grid-cols-12 md:px-12">
         <h2 data-lines className="title-2 text-marfim md:col-span-6">
           <Line>Você é bom no que faz.</Line>

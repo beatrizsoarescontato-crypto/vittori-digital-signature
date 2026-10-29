@@ -2,253 +2,288 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Lightformer } from "@react-three/drei";
 import { Suspense, useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
+import { Font } from "three/examples/jsm/loaders/FontLoader.js";
 import { brushedTexture, radialTexture, starGeometry, vGeometry } from "./shapes";
 import { stageScroll, startStageScroll } from "./stageScroll";
-import { ParticleWord } from "./ParticleWord";
+import fontJson from "./vittoriFont.json";
 
+/**
+ * Universo contínuo da Vittori: um único palco 3D fixo atrás do site inteiro.
+ * VITTORI monumental em metal bordô com aresta dourada, estrelas ✦ em órbita,
+ * névoa bordô infinita e três camadas de partículas que "mergulham" com o scroll.
+ */
 
-/** Keyframes: [x, y, z, rotX, rotY, rotZ, escala, bordô, presença] */
+/* Keyframes do monumento ao longo da página: [x, y, z, rotX, rotY, escala] (x/y em fração da tela). */
 type Key = { p: number; v: number[] };
+const KEYS: Key[] = [
+  { p: 0, v: [0, 0.15, 0, 0, 0, 1] },
+  { p: 0.07, v: [0.16, 0.06, -5, 0.08, -0.5, 0.82] },
+  { p: 0.35, v: [-0.18, 0.02, -8, 0.04, 0.55, 0.8] },
+  { p: 0.65, v: [0.2, -0.02, -8, -0.04, -0.6, 0.8] },
+  { p: 0.9, v: [-0.05, 0.02, -6, 0, 0.3, 0.85] },
+  { p: 1, v: [0, 0.06, -3.5, 0, 0, 0.9] },
+];
 
-// Só na abertura: o monograma fica à direita do título e reage ao mouse e ao scroll.
-const DESKTOP: Key[] = [{ p: 0, v: [0.26, 0.02, 0, -0.05, 0.22, 0, 0.26, 1, 1] }];
-const MOBILE: Key[] = [{ p: 0, v: [0.12, 0.24, -0.5, -0.05, 0.25, 0, 0.12, 1, 1] }];
-
+const BG = "#14050a";
 const mouse = { x: 0, y: 0 };
 
-function sample(keys: Key[], p: number): number[] {
-  let a = keys[0]!;
-  let b = keys[keys.length - 1]!;
-  for (let i = 0; i < keys.length - 1; i++) {
-    if (p >= keys[i]!.p && p <= keys[i + 1]!.p) {
-      a = keys[i]!;
-      b = keys[i + 1]!;
+function sample(p: number): number[] {
+  let a = KEYS[0]!;
+  let b = KEYS[KEYS.length - 1]!;
+  for (let i = 0; i < KEYS.length - 1; i++) {
+    if (p >= KEYS[i]!.p && p <= KEYS[i + 1]!.p) {
+      a = KEYS[i]!;
+      b = KEYS[i + 1]!;
       break;
     }
   }
-  const span = b.p - a.p || 1;
-  const raw = Math.min(1, Math.max(0, (p - a.p) / span));
-  // easeInOutQuint — entra e sai com peso, sem "elástico de template".
-  const t = raw < 0.5 ? 16 * raw ** 5 : 1 - (-2 * raw + 2) ** 5 / 2;
+  const raw = Math.min(1, Math.max(0, (p - a.p) / (b.p - a.p || 1)));
+  const t = raw < 0.5 ? 4 * raw ** 3 : 1 - (-2 * raw + 2) ** 3 / 2;
   return a.v.map((v, i) => v + (b.v[i]! - v) * t);
 }
 
+const damp = (c: number, t: number, k: number, dt: number) => c + (t - c) * (1 - Math.exp(-k * dt));
 
-const damp = (current: number, target: number, k: number, dt: number) =>
-  current + (target - current) * (1 - Math.exp(-k * dt));
-
-/* ------------------------------------------------------------------ *
- * Parede bordô — o "estúdio" atrás do monograma.
- * ------------------------------------------------------------------ */
-function BordoWall({ state }: { state: React.MutableRefObject<number[]> }) {
-  const ref = useRef<THREE.Mesh>(null);
-  const { viewport } = useThree();
-  const material = useMemo(() => {
-    const tex = radialTexture("#5A0B14", "#0D0D0D");
-    return new THREE.MeshBasicMaterial({
-      map: tex,
-      transparent: true,
-      depthWrite: false,
-      toneMapped: false,
+/* ------------------------------------------------------------------ */
+function useMaterials() {
+  return useMemo(() => {
+    const brushed = brushedTexture();
+    const face = new THREE.MeshStandardMaterial({
+      color: new THREE.Color("#4E0710"),
+      metalness: 0.9,
+      roughness: 0.38,
+      roughnessMap: brushed,
+      envMapIntensity: 1.1,
     });
+    const edge = new THREE.MeshStandardMaterial({
+      color: new THREE.Color("#D4AE63"),
+      metalness: 1,
+      roughness: 0.18,
+      envMapIntensity: 2.8,
+    });
+    const star = new THREE.MeshStandardMaterial({
+      color: new THREE.Color("#F0D394"),
+      metalness: 1,
+      roughness: 0.12,
+      envMapIntensity: 3.2,
+      emissive: new THREE.Color("#5a3a10"),
+      emissiveIntensity: 0.4,
+    });
+    return { face, edge, star };
   }, []);
-
-  useFrame((_, delta) => {
-    const dt = Math.min(delta, 0.05);
-    const mat = ref.current?.material as THREE.MeshBasicMaterial | undefined;
-    if (mat) mat.opacity = damp(mat.opacity, state.current[7] ?? 1, 6, dt);
-  });
-
-  const size = Math.max(viewport.width, viewport.height) * 1.9;
-
-  return (
-    <mesh ref={ref} position={[0, 0, -6]} material={material}>
-      <circleGeometry args={[size / 2, 64]} />
-    </mesh>
-  );
 }
 
 /* ------------------------------------------------------------------ *
- * Monograma "V" em latão + estrela ✦ em órbita.
+ * VITTORI monumental + monograma V + estrelas orbitando.
  * ------------------------------------------------------------------ */
-function Monogram({
-  state,
-  mobile,
-}: {
-  state: React.MutableRefObject<number[]>;
-  mobile: boolean;
-}) {
+function Monument({ mobile }: { mobile: boolean }) {
   const group = useRef<THREE.Group>(null);
-  const star = useRef<THREE.Mesh>(null);
-  const star2 = useRef<THREE.Mesh>(null);
+  const stars = useRef<(THREE.Mesh | null)[]>([]);
   const { viewport } = useThree();
+  const mats = useMaterials();
+
+  const { letters, width, height } = useMemo(() => {
+    const font = new Font(fontJson as never);
+    const size = 1;
+    const tracking = 0.16;
+    const word = "VITTORI";
+    const glyphs = (fontJson as { glyphs: Record<string, { ha: number }> }).glyphs;
+    let x = 0;
+    const out: { geo: THREE.ExtrudeGeometry; x: number }[] = [];
+    for (const ch of word) {
+      const shapes = font.generateShapes(ch, size);
+      const geo = new THREE.ExtrudeGeometry(shapes, {
+        depth: 0.22,
+        bevelEnabled: true,
+        bevelThickness: 0.035,
+        bevelSize: 0.022,
+        bevelSegments: 4,
+        curveSegments: mobile ? 6 : 10,
+      });
+      out.push({ geo, x });
+      x += ((glyphs[ch]?.ha ?? 600) / 1000) * size + tracking;
+    }
+    const w = x - tracking;
+    return { letters: out.map((l) => ({ ...l, x: l.x - w / 2 })), width: w, height: 0.64 };
+  }, [mobile]);
 
   const vGeo = useMemo(() => vGeometry(), []);
   const sGeo = useMemo(() => starGeometry(), []);
-
-  // Corpo em metal bordô; aresta (bevel/laterais) em dourado.
-  const brass = useMemo(() => {
-    const brushed = brushedTexture();
-    return new THREE.MeshStandardMaterial({
-      color: new THREE.Color("#5E0811"),
-      metalness: 0.8,
-      roughness: 0.4,
-      roughnessMap: brushed,
-      envMapIntensity: 0.9,
-      transparent: true,
-    });
-  }, []);
-  const edge = useMemo(
-    () =>
-      new THREE.MeshStandardMaterial({
-        color: new THREE.Color("#C8A25A"),
-        metalness: 1,
-        roughness: 0.22,
-        envMapIntensity: 2.6,
-        transparent: true,
-      }),
-    [],
-  );
-
-  const brassStar = useMemo(
-    () =>
-      new THREE.MeshStandardMaterial({
-        color: new THREE.Color("#EBCB8A"),
-        metalness: 1,
-        roughness: 0.16,
-        envMapIntensity: 3,
-        transparent: true,
-      }),
-    [],
-  );
-
   const spin = useRef(0);
-  const drift = useRef(0);
 
   useFrame((s, delta) => {
     const dt = Math.min(delta, 0.05);
-    const [x, y, z, rx, ry, rz, scale, , presence] = state.current as number[];
     const g = group.current;
     if (!g) return;
-
     const t = s.clock.elapsedTime;
+    const [x, y, z, rx, ry, sc] = sample(stageScroll.p);
 
-    // Aceleração: a velocidade do scroll empurra o giro e "afunda" o V no eixo Z.
-    spin.current = damp(spin.current, stageScroll.vel, 2.4, dt);
-    drift.current = damp(drift.current, Math.abs(stageScroll.vel), 1.8, dt);
-    stageScroll.vel = damp(stageScroll.vel, 0, 3.2, dt);
-    const boost = spin.current;
+    spin.current = damp(spin.current, stageScroll.vel, 2.2, dt);
+    stageScroll.vel = damp(stageScroll.vel, 0, 3, dt);
 
-    g.position.x = damp(g.position.x, viewport.width * (x ?? 0) + boost * 0.12, 3.2, dt);
-    g.position.y = damp(
-      g.position.y,
-      viewport.height * (y ?? 0) + Math.sin(t * 0.55) * 0.08 - boost * 0.16,
-      3.2,
-      dt,
-    );
-    g.position.z = damp(g.position.z, (z ?? 0) - drift.current * 0.5, 2.6, dt);
-    g.rotation.x = damp(
-      g.rotation.x,
-      (rx ?? 0) + mouse.y * 0.25 + Math.sin(t * 0.4) * 0.035 + boost * 0.1,
-      3,
-      dt,
-    );
-    g.rotation.y = damp(g.rotation.y, (ry ?? 0) + t * 0.06 + mouse.x * 0.5 + boost * 0.55, 2.8, dt);
-    g.rotation.z = damp(g.rotation.z, (rz ?? 0) - boost * 0.14, 3, dt);
+    // Encaixa a palavra na largura da tela (monumental, sem cortar).
+    const fit = (viewport.width * (mobile ? 0.9 : 0.74)) / width;
+    g.scale.setScalar(damp(g.scale.x, fit * (sc ?? 1), 3, dt));
+    g.position.x = damp(g.position.x, viewport.width * (x ?? 0), 2.6, dt);
+    g.position.y = damp(g.position.y, viewport.height * (y ?? 0) + Math.sin(t * 0.5) * 0.06, 2.6, dt);
+    g.position.z = damp(g.position.z, (z ?? 0) - Math.abs(spin.current) * 0.8, 2.4, dt);
+    g.rotation.x = damp(g.rotation.x, (rx ?? 0) + mouse.y * 0.18 + Math.sin(t * 0.35) * 0.02, 2.6, dt);
+    g.rotation.y = damp(g.rotation.y, (ry ?? 0) + mouse.x * 0.32 + spin.current * 0.35, 2.4, dt);
 
-    // Escala com leve "respiro" no impulso — nunca borrachudo.
-    const target = viewport.height * (scale ?? 0.2) * (1 + drift.current * 0.035);
-    const s0 = damp(g.scale.x, target, 3.4, dt);
-    g.scale.setScalar(s0);
-
-    brass.roughness = damp(brass.roughness, 0.3 - drift.current * 0.1, 3, dt);
-    brass.opacity = damp(brass.opacity, presence ?? 1, 4, dt);
-    brassStar.opacity = brass.opacity;
-    edge.opacity = brass.opacity;
-
-
-    // Estrela orbitando o "V"
-    if (star.current) {
-      const a = t * 0.42;
-      star.current.position.set(Math.cos(a) * 1.45, Math.sin(a * 0.8) * 0.6, Math.sin(a) * 1.45);
-      star.current.rotation.z += dt * 0.7;
-      star.current.rotation.y += dt * 0.35;
-    }
-    if (star2.current) {
-      const a = -t * 0.3 + 2;
-      star2.current.position.set(Math.cos(a) * 1.75, -0.8 + Math.sin(a) * 0.45, Math.sin(a) * 1.1);
-      star2.current.rotation.z -= dt * 0.5;
-      star2.current.rotation.x += dt * 0.25;
-    }
+    const R = width * 0.62;
+    stars.current.forEach((m, i) => {
+      if (!m) return;
+      const a = t * (0.32 + i * 0.07) + i * 2.1 + stageScroll.p * 6;
+      m.position.set(Math.cos(a) * R * (1 - i * 0.12), Math.sin(a * 1.3) * 0.5 + (i - 1) * 0.15, Math.sin(a) * 1.2);
+      m.rotation.z += dt * (0.6 + i * 0.2);
+      m.rotation.y += dt * 0.3;
+    });
   });
 
   return (
     <group ref={group}>
-      <mesh geometry={vGeo} material={[brass, edge]} castShadow />
-      <mesh ref={star} geometry={sGeo} material={brassStar} scale={mobile ? 0.26 : 0.3} />
-      <mesh ref={star2} geometry={sGeo} material={brassStar} scale={mobile ? 0.14 : 0.18} />
+      {letters.map((l, i) => (
+        <mesh key={i} geometry={l.geo} material={[mats.face, mats.edge]} position={[l.x, -height / 2, -0.11]} />
+      ))}
+      <mesh geometry={vGeo} material={[mats.face, mats.edge]} position={[0, height * 1.2, -0.2]} scale={0.28} />
+      {[0.16, 0.1, 0.07].map((s, i) => (
+        <mesh
+          key={i}
+          ref={(m) => {
+            stars.current[i] = m;
+          }}
+          geometry={sGeo}
+          material={mats.star}
+          scale={s}
+        />
+      ))}
     </group>
   );
 }
 
 /* ------------------------------------------------------------------ *
- * Poeira dourada — pouca, grande, com profundidade.
+ * Poeira infinita em três camadas: o visitante "desce" pelo universo.
  * ------------------------------------------------------------------ */
-function GoldDust({ count, state }: { count: number; state: React.MutableRefObject<number[]> }) {
-  const ref = useRef<THREE.Points>(null);
+const dustVert = /* glsl */ `
+attribute float aRand;
+uniform float uTravel;
+uniform float uTime;
+uniform float uSize;
+varying float vA;
+varying float vR;
+void main() {
+  vec3 p = position;
+  float range = 48.0;
+  p.z = mod(p.z + uTravel + 40.0, range) - 40.0;
+  p.x += sin(uTime * 0.2 + aRand * 30.0) * 0.15;
+  p.y += cos(uTime * 0.17 + aRand * 20.0) * 0.15;
+  vec4 mv = modelViewMatrix * vec4(p, 1.0);
+  float near = smoothstep(7.5, 4.0, p.z);
+  float far = smoothstep(-40.0, -26.0, p.z);
+  vA = near * far * (0.55 + 0.45 * sin(uTime * (1.0 + aRand * 2.5) + aRand * 50.0));
+  vR = aRand;
+  gl_PointSize = uSize * (0.4 + aRand) / -mv.z;
+  gl_Position = projectionMatrix * mv;
+}`;
+const dustFrag = /* glsl */ `
+uniform vec3 uColor;
+varying float vA;
+varying float vR;
+void main() {
+  vec2 c = gl_PointCoord - 0.5;
+  float d = length(c);
+  float core = smoothstep(0.5, 0.0, d);
+  // brilho em cruz nas partículas mais fortes (cintilar de estrela)
+  float cross = vR > 0.9 ? max(smoothstep(0.06, 0.0, abs(c.x)), smoothstep(0.06, 0.0, abs(c.y))) * smoothstep(0.5, 0.1, d) : 0.0;
+  gl_FragColor = vec4(uColor, (core * core + cross * 0.8) * vA);
+}`;
 
-  const geometry = useMemo(() => {
-    const positions = new Float32Array(count * 3);
+function DustLayer({ count, size, speed, color, spread }: { count: number; size: number; speed: number; color: string; spread: number }) {
+  const { gl } = useThree();
+  const points = useMemo(() => {
+    const pos = new Float32Array(count * 3);
+    const rnd = new Float32Array(count);
     for (let i = 0; i < count; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 16;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 12;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 6 - 1;
+      pos[i * 3] = (Math.random() - 0.5) * spread * 1.6;
+      pos[i * 3 + 1] = (Math.random() - 0.5) * spread;
+      pos[i * 3 + 2] = Math.random() * 48 - 40;
+      rnd[i] = Math.random();
     }
     const g = new THREE.BufferGeometry();
-    g.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-    return g;
-  }, [count]);
-
-  const material = useMemo(() => {
-    const canvas = document.createElement("canvas");
-    canvas.width = canvas.height = 64;
-    const ctx = canvas.getContext("2d")!;
-    const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-    g.addColorStop(0, "rgba(255,232,178,1)");
-    g.addColorStop(0.4, "rgba(200,162,90,0.5)");
-    g.addColorStop(1, "rgba(200,162,90,0)");
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, 64, 64);
-    const tex = new THREE.CanvasTexture(canvas);
-    return new THREE.PointsMaterial({
-      map: tex,
-      size: 0.09,
+    g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    g.setAttribute("aRand", new THREE.BufferAttribute(rnd, 1));
+    const m = new THREE.ShaderMaterial({
+      vertexShader: dustVert,
+      fragmentShader: dustFrag,
       transparent: true,
-      opacity: 0.6,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
-      sizeAttenuation: true,
+      uniforms: {
+        uTravel: { value: 0 },
+        uTime: { value: 0 },
+        uSize: { value: size * gl.getPixelRatio() },
+        uColor: { value: new THREE.Color(color) },
+      },
     });
-  }, []);
+    const p = new THREE.Points(g, m);
+    p.frustumCulled = false;
+    return p;
+  }, [count, size, color, spread, gl]);
 
+  const travel = useRef(0);
   useFrame((s, delta) => {
     const dt = Math.min(delta, 0.05);
-    const p = ref.current;
-    if (!p) return;
-    p.rotation.y += dt * 0.02;
-    p.position.y = Math.sin(s.clock.elapsedTime * 0.08) * 0.25 - (state.current[2] ?? 0) * 0.2;
+    travel.current += dt * 0.35 * speed;
+    const u = (points.material as THREE.ShaderMaterial).uniforms;
+    u["uTime"]!.value = s.clock.elapsedTime;
+    u["uTravel"]!.value = travel.current + stageScroll.p * 90 * speed;
+    points.position.x = damp(points.position.x, -mouse.x * 0.6 * speed, 2, dt);
+    points.position.y = damp(points.position.y, mouse.y * 0.4 * speed, 2, dt);
   });
-
-  return <points ref={ref} geometry={geometry} material={material} />;
+  return <primitive object={points} />;
 }
 
-function Rig({
-  state,
-  keys,
-}: {
-  state: React.MutableRefObject<number[]>;
-  keys: Key[];
-}) {
+/* Halo bordô no fundo do infinito. */
+function Glow() {
+  const ref = useRef<THREE.Mesh>(null);
+  const mat = useMemo(
+    () =>
+      new THREE.MeshBasicMaterial({
+        map: radialTexture("#9A1424", BG),
+        transparent: true,
+        depthWrite: false,
+        toneMapped: false,
+        fog: false,
+      }),
+    [],
+  );
+  useFrame((s) => {
+    const k = 1 + Math.sin(s.clock.elapsedTime * 0.25) * 0.04;
+    ref.current?.scale.setScalar(k);
+    mat.opacity = 0.75 + Math.sin(s.clock.elapsedTime * 0.25) * 0.08 - stageScroll.p * 0.15;
+  });
+  return (
+    <mesh ref={ref} position={[0, 0, -34]} material={mat}>
+      <planeGeometry args={[70, 70]} />
+    </mesh>
+  );
+}
+
+/* Luz dourada que segue o cursor e faz as arestas brilharem. */
+function CursorLight() {
+  const ref = useRef<THREE.PointLight>(null);
+  const { viewport } = useThree();
+  useFrame((_, delta) => {
+    const l = ref.current;
+    if (!l) return;
+    const dt = Math.min(delta, 0.05);
+    l.position.x = damp(l.position.x, mouse.x * viewport.width, 3, dt);
+    l.position.y = damp(l.position.y, -mouse.y * viewport.height, 3, dt);
+  });
+  return <pointLight ref={ref} position={[0, 0, 3]} intensity={18} distance={14} color="#F3D79A" />;
+}
+
+function Rig() {
   useEffect(() => startStageScroll(), []);
   useEffect(() => {
     const onMove = (e: PointerEvent) => {
@@ -258,54 +293,46 @@ function Rig({
     window.addEventListener("pointermove", onMove, { passive: true });
     return () => window.removeEventListener("pointermove", onMove);
   }, []);
-  useFrame(() => {
-    state.current = sample(keys, stageScroll.p);
-  });
   return null;
 }
 
-
 export default function StageCanvas() {
   const mobile = typeof window !== "undefined" && window.innerWidth < 768;
-  const keys = mobile ? MOBILE : DESKTOP;
-  const state = useRef<number[]>(keys[0]!.v.slice());
+  const wrap = useRef<HTMLDivElement>(null);
 
   return (
-    <Canvas
-      dpr={mobile ? [1, 1.4] : [1, 1.75]}
-      camera={{ position: [0, 0, 6], fov: 42 }}
-      gl={{ antialias: !mobile, alpha: true, powerPreference: "high-performance" }}
-      style={{ pointerEvents: "none" }}
-    >
-      <Rig state={state} keys={keys} />
-      <ambientLight intensity={0.2} />
-      <directionalLight position={[1, 1.6, 6]} intensity={2.2} color="#EFD49B" />
-      <spotLight position={[4, 6, 5]} angle={0.5} penumbra={0.9} intensity={140} color="#E4C98F" />
-      <spotLight position={[-5, -2, 2]} angle={0.7} penumbra={1} intensity={30} color="#F2EFE6" />
-      <Suspense fallback={null}>
-        <Environment resolution={128}>
-          <Lightformer intensity={7} position={[0, 4, 4]} scale={[12, 12, 1]} color="#F0DCA8" />
-          <Lightformer intensity={3.4} position={[3, -2, 4]} scale={[8, 8, 1]} color="#E4C98F" />
-          <Lightformer
-            intensity={2.2}
-            color="#E0C48A"
-            position={[-5, 0, 1]}
-            rotation-y={Math.PI / 2}
-            scale={[14, 3, 1]}
-          />
-          <Lightformer
-            intensity={1.6}
-            color="#8B0F1A"
-            position={[5, -1, 1]}
-            rotation-y={-Math.PI / 2}
-            scale={[14, 3, 1]}
-          />
-        </Environment>
-        <BordoWall state={state} />
-        <ParticleWord mobile={mobile} />
-        <Monogram state={state} mobile={mobile} />
-        <GoldDust count={mobile ? 160 : 420} state={state} />
-      </Suspense>
-    </Canvas>
+    <div ref={wrap} className="absolute inset-0">
+      <Canvas
+        dpr={mobile ? [1, 1.4] : [1, 1.75]}
+        camera={{ position: [0, 0, 8], fov: 45, near: 0.1, far: 80 }}
+        gl={{ antialias: !mobile, powerPreference: "high-performance" }}
+        style={{ pointerEvents: "none" }}
+        onCreated={() => {
+          requestAnimationFrame(() => wrap.current?.setAttribute("data-scene-ready", "true"));
+        }}
+      >
+        <color attach="background" args={[BG]} />
+        <fogExp2 attach="fog" args={[BG, 0.05]} />
+        <Rig />
+        <ambientLight intensity={0.25} />
+        <directionalLight position={[2, 3, 7]} intensity={2.4} color="#F2DDAA" />
+        <spotLight position={[-6, 4, 6]} angle={0.6} penumbra={1} intensity={90} color="#F2EFE6" />
+        <spotLight position={[6, -3, 4]} angle={0.7} penumbra={1} intensity={60} color="#C8203A" />
+        <CursorLight />
+        <Glow />
+        <DustLayer count={mobile ? 500 : 1400} size={22} speed={0.4} color="#E8C27A" spread={34} />
+        <DustLayer count={mobile ? 220 : 600} size={46} speed={1} color="#F6DFA8" spread={22} />
+        <DustLayer count={mobile ? 50 : 120} size={120} speed={1.8} color="#D9485A" spread={16} />
+        <Suspense fallback={null}>
+          <Environment resolution={128}>
+            <Lightformer intensity={6} position={[0, 4, 4]} scale={[12, 12, 1]} color="#F0DCA8" />
+            <Lightformer intensity={3} position={[3, -2, 4]} scale={[8, 8, 1]} color="#E4C98F" />
+            <Lightformer intensity={2} color="#E0C48A" position={[-5, 0, 1]} rotation-y={Math.PI / 2} scale={[14, 3, 1]} />
+            <Lightformer intensity={2.4} color="#8B0F1A" position={[5, -1, 1]} rotation-y={-Math.PI / 2} scale={[14, 3, 1]} />
+          </Environment>
+          <Monument mobile={mobile} />
+        </Suspense>
+      </Canvas>
+    </div>
   );
 }

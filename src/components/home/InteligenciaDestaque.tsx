@@ -67,7 +67,7 @@ export function ConversaIlustrativa() {
             {m.audio ? (
               <span className="flex items-center gap-3">
                 <span className="text-dourado">▶</span>
-                <span className="h-px w-24 bg-marfim/40" />
+                <span className="h-px w-24 bg-marfim/70" />
                 <span className="caption">{m.texto}</span>
               </span>
             ) : (
@@ -83,7 +83,7 @@ export function ConversaIlustrativa() {
 
 export function InteligenciaDestaque() {
   return (
-    <section id="inteligencia" className="relative border-t border-border/50 bg-bordo-dark py-28 md:py-40">
+    <section id="inteligencia" className="relative border-t border-border/50 bg-bordo-dark/65 py-28 md:py-40">
       <div className="mx-auto max-w-[1440px] px-6 md:px-12">
         <p className="label-mono mb-6 text-dourado">Vittori Inteligência</p>
         <h2 data-lines className="title-2 max-w-4xl text-marfim">

@@ -6,13 +6,19 @@ import { WhatsAppFab } from "./WhatsAppFab";
 import { SoundToggle } from "./SoundToggle";
 import { EntryGate } from "./EntryGate";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { ClientStage } from "@/components/ClientCanvas";
+import { DepthHud } from "./DepthHud";
 
 /** Moldura comum a todas as páginas públicas. */
 export function SiteShell({ children, fab = true }: { children: ReactNode; fab?: boolean }) {
   useScrollReveal();
   return (
     <div className="grain relative min-h-screen bg-preto">
+      <div aria-hidden="true" className="stage-fallback pointer-events-none fixed inset-0 z-0">
+        <ClientStage />
+      </div>
       <Nav />
+      <DepthHud />
       <Cursor />
        <main className="relative z-10">
          <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-20 overflow-hidden">

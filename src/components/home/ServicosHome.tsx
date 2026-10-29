@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import useEmblaCarousel from "embla-carousel-react";
-import { ArrowLeft, ArrowRight, Camera, ChartNoAxesCombined, Globe, Megaphone, MessagesSquare, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, Camera, ChartNoAxesCombined, Globe, Megaphone, MessagesSquare, PenTool, Sparkles, type LucideIcon } from "lucide-react";
 import { LINHAS, LINHA_INTELIGENCIA } from "@/content/servicos";
 import { Line } from "@/components/site/Lines";
 import { Button } from "@/components/ui/button";
 
 const CARDS = [...LINHAS.map((l) => ({ ...l, href: `/servicos/${l.slug}` })), { ...LINHA_INTELIGENCIA, href: "/servicos/inteligencia" }];
-const ICONES = [MessagesSquare, ChartNoAxesCombined, Camera, Globe, Megaphone, Sparkles];
+const ICONES: Record<string, LucideIcon> = { presenca: MessagesSquare, performance: ChartNoAxesCombined, estudio: Camera, digital: Globe, identidade: PenTool, campanha: Megaphone };
 
 /** Native vertical page flow with a draggable, keyboard-accessible services carousel. */
 export function ServicosHome() {
@@ -27,13 +27,13 @@ export function ServicosHome() {
   }, [api, update]);
 
   return (
-    <section id="servicos" className="relative border-t border-border/50 bg-preto py-24 md:py-32">
+    <section id="servicos" className="relative border-t border-border/50 bg-preto/35 py-24 md:py-32">
       <div className="mx-auto w-full max-w-[1440px] px-6 md:px-12">
         <div className="flex items-end justify-between gap-5">
           <div>
             <p className="label-mono mb-6 text-dourado">Serviços</p>
             <h2 data-lines className="title-2 text-marfim">
-              <Line>Seis frentes.</Line>
+              <Line>Sete frentes.</Line>
               <Line><em className="title-shimmer italic text-dourado">Um time só.</em></Line>
             </h2>
           </div>
@@ -45,9 +45,10 @@ export function ServicosHome() {
         <div ref={viewportRef} className="mt-14 overflow-hidden" role="region" aria-label="Serviços da Vittori" tabIndex={0} onKeyDown={(e) => { if (e.key === "ArrowRight") { e.preventDefault(); api?.scrollNext(); } if (e.key === "ArrowLeft") { e.preventDefault(); api?.scrollPrev(); } }}>
           <div className="flex touch-pan-y gap-5 cursor-grab active:cursor-grabbing">
             {CARDS.map((c, i) => {
-              const Icon = ICONES[i] ?? Sparkles;
+              const Icon = ("slug" in c ? ICONES[c.slug] : undefined) ?? Sparkles;
+              const ia = c.href === "/servicos/inteligencia";
               return (
-                <Link key={c.linha} to={c.href} draggable={false} className={`group flex min-w-0 shrink-0 basis-[88%] flex-col justify-between border border-border/60 p-7 transition-colors duration-500 hover:border-dourado/70 sm:basis-[62%] md:p-9 lg:basis-[calc((100%-2.5rem)/3)] ${i === 5 ? "bg-bordo" : i % 2 ? "bg-marrom" : "bg-preto"}`}>
+                <Link key={c.linha} to={c.href} draggable={false} className={`group flex min-w-0 shrink-0 basis-[88%] flex-col justify-between border border-border/60 p-7 transition-colors duration-500 hover:border-dourado/70 sm:basis-[62%] md:p-9 lg:basis-[calc((100%-2.5rem)/3)] ${ia ? "bg-bordo/90" : i % 2 ? "bg-marrom/80" : "bg-preto/75"}`}>
                   <div>
                     <div className="flex items-center justify-between gap-3"><span className="label-mono text-dourado">{c.linha}</span><Icon className="size-6 shrink-0 text-dourado" strokeWidth={1.5} aria-hidden="true" /></div>
                     <h3 className="mt-10 font-serif text-3xl font-medium leading-tight text-marfim md:text-4xl">{c.titulo}</h3>

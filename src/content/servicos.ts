@@ -5,7 +5,8 @@ export type Bloco = { eyebrow?: string; titulo: string; texto?: string; lista?: 
 export type Card = { titulo: string; texto: string };
 
 export type Linha = {
-  slug: "presenca" | "performance" | "estudio" | "digital" | "campanha";
+  slug: "presenca" | "performance" | "estudio" | "digital" | "identidade" | "campanha";
+  cta?: string;
   linha: string;
   titulo: string;
   curta: string;
@@ -274,6 +275,45 @@ export const LINHAS: Linha[] = [
         q: "E depois que o site fica pronto?",
         a: "O Cuidado Mensal mantém tudo atualizado, seguro e com backup.",
       },
+    ],
+  },
+  {
+    slug: "identidade",
+    linha: "Vittori Identidade",
+    titulo: "A primeira impressão é a marca.",
+    curta: "Logo, identidade visual completa, rebranding e perfil organizado.",
+    descricao:
+      "Antes de ler uma palavra, o cliente já decidiu se você parece caro, confiável ou amador. A gente cria a marca que mostra o tamanho do seu trabalho, com estratégia antes do desenho.",
+    muda: [
+      "Uma marca que passa confiança antes da primeira conversa",
+      "Tudo com a mesma cara, do Instagram ao cartão",
+      "Você para de improvisar arte",
+    ],
+    cards: {
+      titulo: "Opções",
+      texto: "Do perfil organizado ao rebranding completo.",
+      itens: [
+        { titulo: "Kit Perfil", texto: "Para quem já tem marca e quer o perfil organizado. Bio, orientação de foto, capas de destaques e templates de post e stories." },
+        { titulo: "Logo", texto: "Logo principal e variações, em PNG, PDF e vetor." },
+        { titulo: "Identidade Visual", texto: "Logo e variações, paleta de cores, tipografia, guia de marca e kit para redes sociais." },
+        { titulo: "Identidade Completa", texto: "O rebranding. Diagnóstico da marca atual, pesquisa de concorrência, dois conceitos, manual completo e papelaria digital." },
+      ],
+    },
+    comoFunciona: [
+      "Questionário de marca e referências",
+      "Conceito apresentado em reunião",
+      "Até duas rodadas de ajuste",
+      "Arquivos finais entregues",
+    ],
+    paraQuem:
+      "Quem está abrindo o negócio, quem cresceu e a marca ficou pequena, quem vai começar a anunciar e precisa parecer à altura.",
+    paraQuemNao: "Quem quer um logo pronto em um dia ou uma cópia da marca de outra empresa.",
+    apoio: "Marca nova pede perfil novo. Combine com a Vittori Presença e lance a marca já com conteúdo.",
+    cta: "Quero uma marca à altura",
+    faq: [
+      { q: "Os arquivos são meus?", a: "Sim. Depois da quitação, você recebe os arquivos finais e os direitos de uso." },
+      { q: "Vocês registram a marca no INPI?", a: "O registro não está incluso, mas orientamos o caminho e recomendamos fazer a pesquisa antes." },
+      { q: "Em quanto tempo fica pronto?", a: "Kit Perfil em até 7 dias úteis, logo em até 10 e identidade visual de 15 a 20 dias úteis." },
     ],
   },
   {

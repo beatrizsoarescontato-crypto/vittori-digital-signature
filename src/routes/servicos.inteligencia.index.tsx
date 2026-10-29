@@ -77,7 +77,7 @@ function Page() {
             ]}
           />
         </div>
-        <p className="reveal-item mt-10 text-sm text-marfim/60">
+        <p className="reveal-item mt-10 text-sm text-marfim/85">
           Serve para: clínica, imobiliária, loja, escola, restaurante e prestador de serviço.
         </p>
         <div className="reveal-item mt-10 border-l border-dourado pl-6">
@@ -126,7 +126,7 @@ function Page() {
             "Ranking de equipe de agência de creators",
           ]}
         />
-        <p className="reveal-item mt-6 text-sm text-marfim/60">Também criamos sistemas e apps sob encomenda.</p>
+        <p className="reveal-item mt-6 text-sm text-marfim/85">Também criamos sistemas e apps sob encomenda.</p>
         <SaibaMais to="/servicos/inteligencia/sistemas" />
       </Bloco>
 
