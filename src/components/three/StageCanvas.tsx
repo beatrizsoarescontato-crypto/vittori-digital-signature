@@ -19,7 +19,7 @@ type Key = { p: number; v: number[] };
 const KEYS: Key[] = [
   { p: 0, v: [0, 0, -2, 0, 0, 1] },
   { p: 0.12, v: [0.2, 0, -1, 0.06, -0.45, 1] }, // Sobre: V sólido com luz
-  { p: 0.32, v: [-0.22, 0, -2, 0.04, 0.5, 1.05] }, // Serviços: V de partículas
+  { p: 0.32, v: [0.24, 0, -2, 0.04, -0.5, 1.05] }, // Serviços: V de partículas
   { p: 0.55, v: [0.24, 0, -3, -0.05, -1.2, 0.95] }, // Método/Pilares: gira de lado
   { p: 0.78, v: [0.05, 0.05, -9, 0, 0.3, 0.85] }, // Portfólio: recua ao fundo
   { p: 1, v: [0, 0.04, -1.5, 0, 0, 1.05] }, // Final: V volta ao centro
