@@ -22,11 +22,11 @@ export function Metodo() {
         <div className="relative mt-20">
           <span aria-hidden className="absolute left-0 top-0 hidden h-px w-full bg-preto/15 md:block" />
           <span aria-hidden data-draw className="absolute left-0 top-0 hidden h-px w-full origin-left bg-bordo md:block" />
-          <ol data-reveal className="grid gap-12 md:grid-cols-4 md:gap-8">
+          <ol className="grid gap-12 md:grid-cols-4 md:gap-8">
             {etapas.map(([t, d], i) => {
               const Icon = [Search, ClipboardList, Clapperboard, ChartNoAxesCombined][i] ?? Search;
               return (
-              <li key={t} className="reveal-item border-l border-preto/15 pl-6 md:border-l-0 md:pl-0 md:pt-10">
+              <li key={t} className="border-l border-preto/30 pl-6 md:border-l-0 md:pl-0 md:pt-10">
                 <div className="flex items-center justify-between gap-4"><span className="font-serif text-5xl font-medium text-bordo">0{i + 1}</span><Icon aria-hidden="true" className="size-6 text-bordo" strokeWidth={1.5} /></div>
                 <h3 className="mt-4 font-serif text-3xl font-semibold">{t}</h3>
                 <p className="mt-3 text-sm font-medium leading-loose text-preto">{d}</p>

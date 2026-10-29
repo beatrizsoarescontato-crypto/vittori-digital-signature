@@ -13,7 +13,7 @@ export function SiteShell({ children, fab = true }: { children: ReactNode; fab?:
       <Nav />
       <Cursor />
        <main className="relative z-10">
-         <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+         <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-20 overflow-hidden">
            <span className="signature-sparkle text-2xl">✦</span>
            <span className="signature-sparkle text-lg">✦</span>
            <span className="signature-sparkle text-xl">✦</span>
