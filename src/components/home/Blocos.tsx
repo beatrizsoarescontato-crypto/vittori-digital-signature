@@ -1,3 +1,4 @@
+import { Search, ClipboardList, Clapperboard, ChartNoAxesCombined, Check, X } from "lucide-react";
 import { Line } from "@/components/site/Lines";
 import { Btn, Faq } from "@/components/site/ui";
 import { SHOW_BACKSTAGE_VIDEO, whatsappLink } from "@/lib/contato";
@@ -21,18 +22,20 @@ export function Metodo() {
         <div className="relative mt-20">
           <span aria-hidden className="absolute left-0 top-0 hidden h-px w-full bg-preto/15 md:block" />
           <span aria-hidden data-draw className="absolute left-0 top-0 hidden h-px w-full origin-left bg-bordo md:block" />
-          <ol data-reveal className="grid gap-12 md:grid-cols-4 md:gap-8">
-            {etapas.map(([t, d], i) => (
-              <li key={t} className="reveal-item border-l border-preto/15 pl-6 md:border-l-0 md:pl-0 md:pt-10">
-                <span className="font-serif text-5xl font-light text-bordo">0{i + 1}</span>
-                <h3 className="mt-4 font-serif text-3xl">{t}</h3>
-                <p className="mt-3 text-sm leading-loose text-preto/70">{d}</p>
+          <ol className="grid gap-12 md:grid-cols-4 md:gap-8">
+            {etapas.map(([t, d], i) => {
+              const Icon = [Search, ClipboardList, Clapperboard, ChartNoAxesCombined][i] ?? Search;
+              return (
+              <li key={t} className="border-l border-preto/30 pl-6 md:border-l-0 md:pl-0 md:pt-10">
+                <div className="flex items-center justify-between gap-4"><span className="font-serif text-5xl font-medium text-bordo">0{i + 1}</span><Icon aria-hidden="true" className="size-6 text-bordo" strokeWidth={1.5} /></div>
+                <h3 className="mt-4 font-serif text-3xl font-semibold">{t}</h3>
+                <p className="mt-3 text-sm font-medium leading-loose text-preto">{d}</p>
               </li>
-            ))}
+            ); })}
           </ol>
         </div>
         <p className="mt-20 font-serif text-2xl italic text-preto/80">
-          Contrato, prazos e entregas escritos. Sem surpresa.
+          <strong className="font-semibold">Contrato, prazos e entregas escritos.</strong> Sem surpresa.
         </p>
       </div>
     </section>
@@ -53,7 +56,7 @@ export function Pilares() {
           <li key={t} className="reveal-item grid items-baseline gap-2 border-t border-border/60 py-8 md:grid-cols-12">
             <span className="label-mono text-dourado/70 md:col-span-1">{["I", "II", "III", "IV"][i]}</span>
             <span className="font-serif text-4xl font-light text-marfim md:col-span-5 md:text-6xl">{t}</span>
-            <span className="font-serif text-xl italic text-marfim/60 md:col-span-6 md:text-2xl">{d}</span>
+            <span className="font-serif text-xl italic text-marfim/85 md:col-span-6 md:text-2xl">{d}</span>
           </li>
         ))}
       </ul>
@@ -80,7 +83,7 @@ export function ParaQuem() {
         <h2 data-lines className="title-2 max-w-4xl text-marfim">
           <Line>A Vittori é para quem pensa</Line>
           <Line>
-            <em className="italic text-dourado">em meses, não em dias.</em>
+            <em className="title-shimmer italic text-dourado">em meses, não em dias.</em>
           </Line>
         </h2>
         <div className="mt-20 grid gap-16 md:grid-cols-2">
@@ -92,8 +95,8 @@ export function ParaQuem() {
               <p className={`label-mono mb-6 ${cor}`}>{t as string}</p>
               <ul>
                 {(itens as string[]).map((i) => (
-                  <li key={i} className="reveal-item border-t border-border/60 py-5 text-base leading-relaxed text-marfim/85">
-                    {i}
+                  <li key={i} className="reveal-item flex items-start gap-3 border-t border-border/60 py-5 text-base font-normal leading-relaxed text-marfim/90">
+                    {t === "É para você se" ? <Check aria-hidden="true" className="mt-1 size-4 shrink-0 text-dourado" /> : <X aria-hidden="true" className="mt-1 size-4 shrink-0 text-marfim/80" />}<span>{i}</span>
                   </li>
                 ))}
               </ul>
@@ -121,7 +124,7 @@ export function OQueEsperar() {
         <h2 data-lines className="title-2 max-w-3xl text-marfim">
           <Line>O que acontece</Line>
           <Line>
-            <em className="italic text-dourado">depois que você fecha.</em>
+            <em className="title-shimmer italic text-dourado">depois que você fecha.</em>
           </Line>
         </h2>
         <div className="relative mt-20">
@@ -135,9 +138,9 @@ export function OQueEsperar() {
             ))}
           </ol>
         </div>
-        <p className="measure mt-16 text-sm leading-loose text-marfim/60">
-          Trabalhamos sempre com um mês de antecedência. O conteúdo de dezembro fica pronto em novembro.
-          Nada é feito às pressas.
+        <p className="measure mt-16 text-sm font-normal leading-loose text-marfim/85">
+          Trabalhamos sempre com <strong className="font-semibold text-marfim">um mês de antecedência.</strong> O conteúdo de dezembro fica pronto em novembro.
+          <strong className="font-semibold text-marfim">Nada é feito às pressas.</strong>
         </p>
       </div>
     </section>
@@ -157,7 +160,7 @@ export function Bastidores() {
       <h2 data-lines className="display relative mx-auto max-w-[1440px] px-6 text-marfim md:px-12">
         <Line>Uma diária,</Line>
         <Line>
-          <em className="italic text-dourado">conteúdo para semanas.</em>
+          <em className="title-shimmer italic text-dourado">conteúdo para semanas.</em>
         </Line>
       </h2>
     </section>
@@ -203,7 +206,7 @@ export function Perguntas() {
           <h2 data-lines className="title-2 text-marfim">
             <Line>Antes de</Line>
             <Line>
-              <em className="italic text-dourado">conversar.</em>
+              <em className="title-shimmer italic text-dourado">conversar.</em>
             </Line>
           </h2>
         </div>
@@ -227,12 +230,12 @@ export function ChamadaFinal() {
           </Line>
         </h2>
         <p className="measure mt-10 text-base leading-loose text-marfim/80">
-          Uma conversa de até 40 minutos para entender o seu momento e mostrar por onde começar.
+          Uma conversa de <strong className="font-semibold text-marfim">até 40 minutos</strong> para entender o seu momento e mostrar por onde começar.
         </p>
         <div className="mt-12 flex flex-col gap-4 sm:flex-row">
           <Btn to="/comece" variant="light">Agendar uma conversa</Btn>
           <Btn href={whatsappLink()} variant="ghostLight">
-            WhatsApp
+            WhatsApp com Beatriz Soares
           </Btn>
         </div>
       </div>

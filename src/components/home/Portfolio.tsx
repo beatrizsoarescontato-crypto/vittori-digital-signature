@@ -21,7 +21,7 @@ export function PortfolioGrid() {
                   src={p.imagem}
                   alt={`Projeto ${p.nome}`}
                   loading="lazy"
-                  className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                  className={`h-full w-full ${p.midias ? "object-contain object-center" : "object-cover object-top"}`}
                 />
               ) : (
                 <div className="flex h-full items-center justify-center p-8 text-center">
@@ -57,7 +57,7 @@ export function PortfolioGrid() {
           ) : (
             <img key={m.src} src={m.src} alt={m.alt} className="max-h-[75dvh] w-full object-contain" />
           )) : projeto?.imagem ? (
-            <img src={projeto.imagem} alt={`Visualização do site ${projeto.nome}`} className="w-full" />
+            <img src={projeto.imagem} alt={`Visualização do site ${projeto.nome}`} className="w-full object-contain object-center" />
           ) : null}
         </div>
       </DialogContent>

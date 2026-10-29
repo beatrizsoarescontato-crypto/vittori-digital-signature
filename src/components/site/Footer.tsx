@@ -26,7 +26,7 @@ export function Footer() {
           <p className="label-mono mb-5 text-dourado">Contato</p>
           <p>Brasília, DF. Atendemos todo o Brasil e o exterior.</p>
           <p>
-            WhatsApp{" "}
+            <strong className="font-semibold text-marfim">Beatriz Soares</strong>: {" "}
             <a href={whatsappLink()} target="_blank" rel="noopener noreferrer" className="text-marfim hover:text-dourado">
               {VITTORI_WHATS_LABEL}
             </a>

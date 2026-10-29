@@ -1,89 +1,64 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
+import useEmblaCarousel from "embla-carousel-react";
+import { ArrowLeft, ArrowRight, Camera, ChartNoAxesCombined, Globe, Megaphone, MessagesSquare, Sparkles } from "lucide-react";
 import { LINHAS, LINHA_INTELIGENCIA } from "@/content/servicos";
 import { Line } from "@/components/site/Lines";
+import { Button } from "@/components/ui/button";
 
-const CARDS = [
-  ...LINHAS.map((l) => ({ ...l, href: `/servicos/${l.slug}` })),
-  { ...LINHA_INTELIGENCIA, href: "/servicos/inteligencia" },
-];
+const CARDS = [...LINHAS.map((l) => ({ ...l, href: `/servicos/${l.slug}` })), { ...LINHA_INTELIGENCIA, href: "/servicos/inteligencia" }];
+const ICONES = [MessagesSquare, ChartNoAxesCombined, Camera, Globe, Megaphone, Sparkles];
 
-/** Rolagem horizontal fixada no desktop; carrossel com swipe no celular. */
+/** Native vertical page flow with a draggable, keyboard-accessible services carousel. */
 export function ServicosHome() {
-  const section = useRef<HTMLElement>(null);
-  const track = useRef<HTMLDivElement>(null);
-
+  const [viewportRef, api] = useEmblaCarousel({ align: "start", containScroll: "trimSnaps", dragFree: true });
+  const [canPrev, setCanPrev] = useState(false);
+  const [canNext, setCanNext] = useState(true);
+  const update = useCallback(() => {
+    if (!api) return;
+    setCanPrev(api.canScrollPrev());
+    setCanNext(api.canScrollNext());
+  }, [api]);
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    if (window.innerWidth < 1024) return;
-    let ctx: { revert: () => void } | undefined;
-    (async () => {
-      const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
-        import("gsap"),
-        import("gsap/ScrollTrigger"),
-      ]);
-      gsap.registerPlugin(ScrollTrigger);
-      const el = track.current;
-      if (!el || !section.current) return;
-      ctx = gsap.context(() => {
-        const dist = () => el.scrollWidth - window.innerWidth + 96;
-        gsap.to(el, {
-          x: () => -dist(),
-          ease: "none",
-          scrollTrigger: {
-            trigger: section.current,
-            start: "top top",
-            end: () => `+=${dist()}`,
-            pin: true,
-            scrub: 0.8,
-            invalidateOnRefresh: true,
-          },
-        });
-      });
-    })();
-    return () => ctx?.revert();
-  }, []);
+    if (!api) return;
+    update();
+    api.on("select", update).on("scroll", update).on("reInit", update);
+    return () => { api.off("select", update).off("scroll", update).off("reInit", update); };
+  }, [api, update]);
 
   return (
-    <section ref={section} id="servicos" className="relative overflow-hidden border-t border-border/50 bg-preto py-24 lg:flex lg:h-screen lg:flex-col lg:justify-center lg:py-0">
+    <section id="servicos" className="relative border-t border-border/50 bg-preto py-24 md:py-32">
       <div className="mx-auto w-full max-w-[1440px] px-6 md:px-12">
-        <p className="label-mono mb-6 text-dourado">Serviços</p>
-        <h2 data-lines className="title-2 text-marfim">
-          <Line>Seis frentes.</Line>
-          <Line>
-            <em className="italic text-dourado">Um time só.</em>
-          </Line>
-        </h2>
-      </div>
-
-      <div
-        ref={track}
-        className="mt-14 flex snap-x snap-mandatory gap-5 overflow-x-auto px-6 pb-6 md:px-12 lg:snap-none lg:overflow-visible lg:pb-0"
-      >
-        {CARDS.map((c, i) => (
-          <Link
-            key={c.linha}
-            to={c.href}
-            className={`group flex w-[84vw] shrink-0 snap-start flex-col justify-between border border-border/60 p-8 transition-colors duration-500 hover:border-dourado/70 sm:w-[60vw] md:p-10 lg:h-[56vh] lg:w-[30vw] ${
-              i === 5 ? "bg-bordo" : i % 2 ? "bg-marrom" : "bg-preto"
-            }`}
-          >
-            <div>
-              <div className="flex items-center justify-between">
-                <span className="label-mono text-dourado">{c.linha}</span>
-                <span className="font-serif text-lg text-dourado/60">0{i + 1}</span>
-              </div>
-              <h3 className="mt-10 font-serif text-3xl font-light leading-tight text-marfim md:text-4xl">
-                {c.titulo}
-              </h3>
-              <p className="mt-6 text-sm leading-loose text-marfim/70">{c.curta}</p>
-            </div>
-            <span className="label-mono mt-10 inline-flex items-center gap-3 text-dourado">
-              Conhecer
-              <span className="h-px w-8 bg-dourado transition-all duration-500 group-hover:w-16" />
-            </span>
-          </Link>
-        ))}
+        <div className="flex items-end justify-between gap-5">
+          <div>
+            <p className="label-mono mb-6 text-dourado">Serviços</p>
+            <h2 data-lines className="title-2 text-marfim">
+              <Line>Seis frentes.</Line>
+              <Line><em className="title-shimmer italic text-dourado">Um time só.</em></Line>
+            </h2>
+          </div>
+          <div className="flex shrink-0 gap-2">
+            <Button variant="outline" size="icon" className="size-12 border-dourado/60 bg-transparent text-dourado" disabled={!canPrev} onClick={() => api?.scrollPrev()} aria-label="Serviços anteriores" title="Serviços anteriores"><ArrowLeft /></Button>
+            <Button variant="outline" size="icon" className="size-12 border-dourado/60 bg-transparent text-dourado" disabled={!canNext} onClick={() => api?.scrollNext()} aria-label="Próximos serviços" title="Próximos serviços"><ArrowRight /></Button>
+          </div>
+        </div>
+        <div ref={viewportRef} className="mt-14 overflow-hidden" role="region" aria-label="Serviços da Vittori" tabIndex={0} onKeyDown={(e) => { if (e.key === "ArrowRight") { e.preventDefault(); api?.scrollNext(); } if (e.key === "ArrowLeft") { e.preventDefault(); api?.scrollPrev(); } }}>
+          <div className="flex touch-pan-y gap-5 cursor-grab active:cursor-grabbing">
+            {CARDS.map((c, i) => {
+              const Icon = ICONES[i] ?? Sparkles;
+              return (
+                <Link key={c.linha} to={c.href} draggable={false} className={`group flex min-w-0 shrink-0 basis-[88%] flex-col justify-between border border-border/60 p-7 transition-colors duration-500 hover:border-dourado/70 sm:basis-[62%] md:p-9 lg:basis-[calc((100%-2.5rem)/3)] ${i === 5 ? "bg-bordo" : i % 2 ? "bg-marrom" : "bg-preto"}`}>
+                  <div>
+                    <div className="flex items-center justify-between gap-3"><span className="label-mono text-dourado">{c.linha}</span><Icon className="size-6 shrink-0 text-dourado" strokeWidth={1.5} aria-hidden="true" /></div>
+                    <h3 className="mt-10 font-serif text-3xl font-medium leading-tight text-marfim md:text-4xl">{c.titulo}</h3>
+                    <p className="mt-6 text-sm font-normal leading-loose text-marfim/90">{c.curta}</p>
+                  </div>
+                  <span className="label-mono mt-10 inline-flex items-center gap-3 text-dourado">Conhecer <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" aria-hidden="true" /></span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </section>
   );

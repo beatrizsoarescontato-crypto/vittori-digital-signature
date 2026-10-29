@@ -1,4 +1,5 @@
 import bsb from "@/assets/portfolio/bsb-limpeza.jpg.asset.json";
+import dayane from "@/assets/portfolio/dayane-site.jpg.asset.json";
 import ods from "@/assets/portfolio/conferencia-ods.jpg.asset.json";
 import valor from "@/assets/portfolio/valor-ambiental.jpg.asset.json";
 import cactus from "@/assets/portfolio/curaca-cactus.jpg.asset.json";
@@ -38,6 +39,7 @@ export const PROJETOS: Projeto[] = [
     nome: "Professora Dayane Pimentel",
     tipo: "Página pessoal",
     resumo: "Coragem e trabalho pela Bahia. Página de apresentação da Professora Dayane Pimentel.",
+    imagem: dayane.url,
   },
   {
     nome: "1º Conferência Nacional ODS",

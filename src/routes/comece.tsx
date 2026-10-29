@@ -21,6 +21,7 @@ export const Route = createFileRoute("/comece")({
     <PaginaSimples eyebrow="Comece" titulo="Conte o que você está construindo.">
       <p>{D}</p>
       <div className="pt-6">
+        <p className="mb-5 font-semibold text-marfim">Beatriz Soares</p>
         <Btn href={whatsappLink()}>Falar no WhatsApp</Btn>
       </div>
     </PaginaSimples>

@@ -12,12 +12,14 @@ export function useScrollReveal() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     let ctx: { revert: () => void } | undefined;
+    let cancelled = false;
 
     (async () => {
       const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
         import("gsap"),
         import("gsap/ScrollTrigger"),
       ]);
+      if (cancelled) return;
       gsap.registerPlugin(ScrollTrigger);
 
       ctx = gsap.context(() => {
@@ -102,6 +104,6 @@ export function useScrollReveal() {
       ScrollTrigger.refresh();
     })();
 
-    return () => ctx?.revert();
+    return () => { cancelled = true; ctx?.revert(); };
   }, []);
 }
