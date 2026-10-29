@@ -20,6 +20,18 @@ export function SiteShell({ children, fab = true }: { children: ReactNode; fab?:
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-phase"] });
     return () => observer.disconnect();
   }, []);
+  // Celular: controles flutuantes saem do caminho durante a rolagem e voltam ao parar.
+  useEffect(() => {
+    let t: number | undefined;
+    const root = document.documentElement;
+    const onScroll = () => {
+      root.dataset["scrolling"] = "";
+      clearTimeout(t);
+      t = window.setTimeout(() => delete root.dataset["scrolling"], 450);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => { window.removeEventListener("scroll", onScroll); clearTimeout(t); delete root.dataset["scrolling"]; };
+  }, []);
   return (
     <div className="grain relative min-h-screen bg-preto">
       <div aria-hidden="true" className="stage-fallback pointer-events-none fixed inset-0 z-0">
