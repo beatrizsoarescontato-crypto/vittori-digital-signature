@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { stageScroll } from "./stageScroll";
-import { HalfFloatType, NoToneMapping, WebGLRenderTarget, type Object3D } from "three";
+import { HalfFloatType, NoToneMapping, Vector4, WebGLRenderTarget, type Object3D } from "three";
 
 type Report = { phase: string; intervalMs: number; calls: number; triangles: number; dpr: number };
 declare global {
