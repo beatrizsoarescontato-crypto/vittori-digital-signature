@@ -10,9 +10,48 @@ export const stageScroll = {
   p: 0,
   raw: 0,
   vel: 0,
-  /** true quando o visitante atravessou a entrada (dispara a revelação do VITTORI). */
+  /** true quando o visitante clicou para entrar. */
   entered: false,
+  /** "portal": VITTORI monumental; "inside": site. A cena é a mesma nas duas fases. */
+  phase: "portal" as "portal" | "inside",
+  /** 0..1 progresso do mergulho cinematográfico disparado pelo clique. */
+  dive: 0,
+  /** true quando a sessão pulou o portal (já entrou antes). */
+  skipped: false,
 };
+
+type PhaseListener = () => void;
+const phaseListeners = new Set<PhaseListener>();
+export function onPhase(l: PhaseListener) {
+  phaseListeners.add(l);
+  return () => {
+    phaseListeners.delete(l);
+  };
+}
+export function setPhase(next: "portal" | "inside") {
+  stageScroll.phase = next;
+  phaseListeners.forEach((l) => l());
+}
+
+/** Dispara o mergulho: a cena dissolve o VITTORI e revela o site ao final. */
+export function startDive(duration = 3.4) {
+  stageScroll.entered = true;
+  gsap.to(stageScroll, {
+    dive: 1,
+    duration,
+    ease: "power2.inOut",
+    onUpdate: () => {
+      if (stageScroll.dive > 0.78 && stageScroll.phase === "portal") setPhase("inside");
+    },
+  });
+}
+
+export function skipPortal() {
+  stageScroll.entered = true;
+  stageScroll.skipped = true;
+  stageScroll.dive = 1;
+  setPhase("inside");
+}
 
 let started = false;
 
