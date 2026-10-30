@@ -18,12 +18,12 @@ export function WhatsAppFab() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Falar com a Vittori no WhatsApp"
-      className={`float-ctl group fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 z-40 flex size-12 items-center justify-center gap-3 text-dourado md:bottom-8 md:right-8 md:w-auto md:px-5 ${
+      title="Falar com a Vittori no WhatsApp"
+      className={`float-ctl group fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 z-40 flex size-12 items-center justify-center gap-3 text-dourado ${
         visivel ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-6 opacity-0"
       }`}
     >
       <MessageCircle className="size-5" aria-hidden="true" />
-      <span className="label-mono hidden text-marfim md:inline">Falar agora</span>
     </a>
   );
 }

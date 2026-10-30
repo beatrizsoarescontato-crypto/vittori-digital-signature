@@ -27,9 +27,10 @@
 - [x] Navegação contextual: voltar à seção de origem, trilha, links do cabeçalho com âncora, voltar/avançar do navegador.
 - [ ] Etapa 4.1 (antes da Etapa 5): legibilidade nas páginas internas, sobreposição do eclipse, padronização dos cards, apresentação dos planos, Vittori Inteligência, paleta de cores, botões e controles flutuantes.
 - [ ] Rodada autorizada 4.1: retorno discreto no conteúdo, proteção compartilhada das áreas reais de leitura/demonstração, hierarquia tipográfica e grade dos sete serviços; validar computador/celular e navegação.
-- [ ] Item 5 do novo anexo (planos): documento recebido termina em “É”; aguarda continuação das instruções antes de concluir sua apresentação definitiva.
+- [ ] Lote B autorizado com texto completo: planos em largura própria, variações editoriais, Inteligência, paleta/CTAs, faixas remanescentes e narrativa universal de entregas; validar sem tocar na FAQ sobre senhas ou contatos.
 - [x] Exportar arquivo com o código completo do site atual.
 - [ ] Etapa 5 (depois da 4.1): portfólio editorial e rodapé refinado.
+- [ ] Etapa 5: proporções variadas, nomes compactos, prévias por mídia, modal refinado e tratamento sem imagem real; preservar mídias e créditos, sem inventar a captura da Roberta.
 
 # Pendências para a rodada de refinamento (não corrigir antes)
 - [ ] Etapa 3: movimentos de câmera específicos por seção.
