@@ -1,3 +1,9 @@
+# Intervenção nos 4 pendentes (30/10, 06h)
+- [x] Arraste dos serviços: mouse testado em Chromium, Firefox e WebKit; toque no celular; rolagem vertical livre; clique abre o card. Aguarda confirmação da usuária na prévia.
+- [ ] Halo com partículas: visível no computador nas capturas; no celular ainda discreto. Aguarda avaliação visual.
+- [x] Emenda entre primeira e segunda seção: borda inferior da vinheta suavizada. Aguarda avaliação visual.
+- [x] Rodapé compacto (cerca de 130 px no computador). Aguarda avaliação visual.
+
 # Refinamento visual com preservação de textos (30/10)
 - [x] Textos autorizados: Método Vittori (4 etapas novas), Vittori Performance (Implementação pontual + Gestão recorrente com Direcionada/Integrada), descritivos de Digital (3 opções) e de Identidade (4 modalidades). Nenhum outro texto alterado.
 - [x] Estrutura: portfólio oculto da home e fora da navegação (rota e conteúdo preservados); FAQ geral fora da home; FAQs das seis páginas convencionais removidas da exibição; FAQs dos produtos de Inteligência preservadas; ordem dos serviços com Inteligência primeiro e Identidade por último.

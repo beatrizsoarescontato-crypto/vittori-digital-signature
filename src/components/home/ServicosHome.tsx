@@ -108,7 +108,7 @@ export function ServicosHome() {
             <Button type="button" variant="ghost" className="vicon" disabled={!canNext} onClick={() => api?.scrollNext()} aria-label="Próximos serviços" title="Próximos serviços"><ArrowRight className="size-5" strokeWidth={1.5} /></Button>
           </div>
         </div>
-        <div ref={viewportRef} className="-mx-2 mt-7 overflow-hidden px-2 py-4" role="region" aria-label="Serviços da Vittori" tabIndex={0} onKeyDown={(e) => { if (e.key === "ArrowRight") { e.preventDefault(); api?.scrollNext(); } if (e.key === "ArrowLeft") { e.preventDefault(); api?.scrollPrev(); } }}>
+        <div ref={viewportRef} className="-mx-2 mt-7 overflow-hidden px-2 py-4" role="region" aria-label="Serviços da Vittori" tabIndex={0} onDragStart={(e) => e.preventDefault()} onKeyDown={(e) => { if (e.key === "ArrowRight") { e.preventDefault(); api?.scrollNext(); } if (e.key === "ArrowLeft") { e.preventDefault(); api?.scrollPrev(); } }}>
           <div className="flex touch-pan-y select-none gap-5 cursor-grab active:cursor-grabbing">
             {CARDS.map((c, i) => {
               const Icon = ICONES[c.key] ?? Sparkles;
