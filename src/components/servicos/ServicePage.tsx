@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import type { Linha } from "@/content/servicos";
 import { Check, Gem, Layers, Star, MonitorCog, ChartNoAxesCombined, Sparkles, Crosshair, GitMerge, Fingerprint, PenTool, Palette, BookOpen } from "lucide-react";
 import { Line } from "@/components/site/Lines";
-import { Btn, Faq } from "@/components/site/ui";
+import { Btn } from "@/components/site/ui";
 import { VoltarContexto } from "@/components/site/Navegacao";
 import { whatsappLink } from "@/lib/contato";
 

@@ -44,7 +44,7 @@ export function portalSequence(elapsed: number | null) {
 export function eclipseState(formation: number, dispersion: number, readingSafety: number) {
   const peak = smoothProgress(0.2, 0.9, dispersion);
   return {
-    halo: formation * (EXPERIENCE.formationHalo + (EXPERIENCE.dispersionHalo - EXPERIENCE.formationHalo) * peak) * (1 - 0.75 * readingSafety),
+    halo: formation * (EXPERIENCE.formationHalo + (EXPERIENCE.dispersionHalo - EXPERIENCE.formationHalo) * peak) * (1 - 0.6 * readingSafety),
     peak,
     softness: 1 - 0.7 * peak,
     particleAlpha: formation * (1 - 0.28 * dispersion),

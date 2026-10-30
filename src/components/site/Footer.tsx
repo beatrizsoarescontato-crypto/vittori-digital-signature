@@ -3,14 +3,14 @@ import { EMAIL, INSTAGRAM, VITTORI_WHATS_LABEL, whatsappLink } from "@/lib/conta
 
 export function Footer() {
   return (
-    <footer className="relative z-10 border-t border-border/60 bg-preto/85 py-20">
-      <div className="mx-auto grid max-w-[1440px] gap-12 px-6 md:grid-cols-12 md:px-12">
+    <footer className="relative z-10 border-t border-border/60 bg-preto/85 py-12">
+      <div className="mx-auto grid max-w-[1440px] gap-10 px-6 md:grid-cols-12 md:px-12">
         <div className="md:col-span-5">
-          <p className="font-serif text-4xl font-light text-marfim">
+          <p className="font-serif text-3xl font-light text-marfim">
             VITTORI<span className="text-dourado">.</span>
           </p>
-          <p className="caption mt-3">Creative House</p>
-          <p className="mt-8 font-serif text-2xl italic text-marfim/80">
+          <p className="caption mt-2">Creative House</p>
+          <p className="mt-5 font-serif text-xl italic text-marfim/80">
             Criamos presença. <span className="text-dourado">✦</span>
           </p>
         </div>
