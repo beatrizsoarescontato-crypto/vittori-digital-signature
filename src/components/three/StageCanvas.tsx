@@ -341,7 +341,7 @@ void main() {
   float ang = atan(q.y, q.x);
   float rays = 0.55 + 0.45 * sin(ang * 9.0 + uTime * 0.25) * sin(ang * 4.0 - uTime * 0.18);
   float corona = exp(-max(0.0, rq - disc) * 9.0) * (1.0 - core) * rays;
-  float halo = exp(-r * 4.2) * 0.35;
+  float halo = exp(-r * mix(4.2, 3.0, uPeak)) * (0.35 + 0.45 * uPeak);
   vec3 gold = vec3(0.95, 0.76, 0.42);
   float arc = mix(0.18 + 0.82 * pow(0.5 + 0.5 * cos(ang - 0.6), 2.0), 1.0, uPeak);
   vec3 col = gold * (rim * 1.2 * arc + corona * 0.7 + halo);
@@ -354,6 +354,7 @@ function Monogram({ mobile }: { mobile: boolean }) {
   const { viewport, gl, camera } = useThree();
   const vGroup = useRef<THREE.Group>(null);
   const stars = useRef<(THREE.Mesh | null)[]>([]);
+  const eclMesh = useRef<THREE.Mesh>(null);
   const spin = useRef(0);
   const born = useRef(0);
   const formationStart = useRef<number | null>(null);
@@ -477,7 +478,7 @@ function Monogram({ mobile }: { mobile: boolean }) {
     const choreography = eclipseState(appear, dispersion, reading.current);
     const u = (vPts.material as THREE.ShaderMaterial).uniforms;
     setUniform(u, "uTime", t);
-    setUniform(u, "uScatter", (1 - born.current) * 0.9 + breathe + Math.abs(spin.current) * 0.1);
+    setUniform(u, "uScatter", (1 - born.current) * 0.9 + breathe + 0.35 * sm(0.2, 0.9, dispersion) + Math.abs(spin.current) * 0.1);
     setUniform(u, "uAlpha", choreography.particleAlpha * (1 - chor.dim * reading.current) * (mobile ? 0.8 : 1.25));
 
     // Eclipse: o disco escuro desliza até cobrir o centro, a coroa se acende por trás (contraluz).
@@ -489,6 +490,7 @@ function Monogram({ mobile }: { mobile: boolean }) {
     haloLevel.current = damp(haloLevel.current, choreography.halo, 3.5, dt);
     setUniform(eu, "uAlpha", haloLevel.current);
     setUniform(eu, "uPeak", choreography.peak);
+    eclMesh.current?.scale.setScalar(3.4 + 1.4 * choreography.peak);
     setUniform(eu, "uSoftness", choreography.softness);
 
     stars.current.forEach((m, i) => {
@@ -503,7 +505,7 @@ function Monogram({ mobile }: { mobile: boolean }) {
 
   return (
     <group ref={vGroup} visible={false}>
-      <mesh position={[0, 0.05, -0.6]} material={ecl} scale={3.4}>
+      <mesh ref={eclMesh} position={[0, 0.05, -0.6]} material={ecl} scale={3.4}>
         <planeGeometry args={[1, 1]} />
       </mesh>
       <primitive object={vPts} />
