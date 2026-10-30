@@ -58,7 +58,7 @@ export function useNavegacaoContextual() {
       const secao = a.closest("section[id]")?.id;
       const destino = a.getAttribute("href") ?? "";
       if (secao && destino.startsWith("/") && !destino.startsWith("/#")) {
-        sessionStorage.setItem(CHAVE, JSON.stringify({ secao, destino: destino.split(/[?#]/)[0]!.replace(/\/+$/, "") }));
+        sessionStorage.setItem(CHAVE, JSON.stringify({ secao, destino: (destino.split(/[?#]/)[0] ?? "").replace(/\/+$/, "") }));
       }
       // Mesmo link de âncora já ativo: o roteador não navega, então rolamos nós.
       if (destino.startsWith("/#") && location.hash === destino.slice(1)) rolarParaSecao(destino.slice(2));
@@ -82,7 +82,7 @@ function origemPara(pathname: string): string | null {
   } catch { return null; }
 }
 
-/** Link discreto de retorno + trilha, no topo de toda página interna. */
+/** Retorno integrado ao conteúdo, sem barra ou trilha visual. */
 export function VoltarContexto() {
   const { pathname } = useLocation();
   const [origem, setOrigem] = useState<string | null>(null);
@@ -90,27 +90,9 @@ export function VoltarContexto() {
   const r = retornoPara(pathname, origem);
   if (!r) return null;
   return (
-    <nav aria-label="Navegação de retorno" className="relative z-20 mx-auto max-w-[1440px] px-6 pt-28 md:px-12 md:pt-32">
-      <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-        <Link to={r.to} {...(r.hash ? { hash: r.hash } : {})} className="vlink t-meta inline-flex items-center gap-2">
-          <ArrowLeft aria-hidden="true" className="size-4" strokeWidth={1.5} />
-          <span>{r.label}</span>
-        </Link>
-        {r.trilha.length > 0 && (
-          <ol className="t-meta flex flex-wrap items-center gap-2 text-marfim/60">
-            {r.trilha.map((t, i) => (
-              <li key={t.label} className="flex items-center gap-2">
-                {i > 0 && <span aria-hidden="true" className="text-dourado/60">/</span>}
-                {t.to ? (
-                  <Link to={t.to} {...(t.hash ? { hash: t.hash } : {})} className="transition-colors hover:text-dourado">{t.label}</Link>
-                ) : (
-                  <span aria-current="page" className="text-marfim/85">{t.label}</span>
-                )}
-              </li>
-            ))}
-          </ol>
-        )}
-      </div>
-    </nav>
+    <Link to={r.to} {...(r.hash ? { hash: r.hash } : {})} title={r.label} className="back-link mb-8 inline-flex min-h-11 items-center gap-2">
+      <ArrowLeft aria-hidden="true" className="size-4" strokeWidth={1.25} />
+      <span>Voltar</span>
+    </Link>
   );
 }
