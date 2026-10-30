@@ -65,3 +65,26 @@ describe("dispersion peak in clear space", () => {
   it("keeps the halo bright at the peak when the pocket is clear", () => expect(eclipseState(1, 1, sc("wide", false, leftText, 1).readingSafety).halo).toBeGreaterThan(0.6));
   it("keeps full protection when no clear pocket exists", () => expect(sc("wide", false, [{ left: 0, right: 1, top: 0, bottom: 1 }], 1).readingSafety).toBe(1));
 });
+import { peakPocket } from "./experienceRules";
+describe("eclipse peak uses the largest measured empty space", () => {
+  const leftText = [{ left: 0.05, right: 0.55, top: 0.1, bottom: 0.9 }];
+  it("places the eclipse in the empty right half on desktop", () => {
+    const p = peakPocket(leftText, 16 / 9);
+    expect(p.x).toBeGreaterThan(0.7);
+    expect(p.radius).toBeGreaterThan(0.3);
+  });
+  it("never overlaps a reading box", () => {
+    const p = peakPocket(leftText, 16 / 9);
+    expect(p.x - p.radius / (16 / 9)).toBeGreaterThanOrEqual(0.55 - 1e-9);
+  });
+  it("shows a luminous halo sized to the pocket at the peak", () => {
+    const r = sc("wide", false, leftText, 1, 16 / 9);
+    expect(r.radius).toBeGreaterThan(0.3);
+    expect(eclipseState(1, 1, r.readingSafety).halo).toBeGreaterThan(0.7);
+  });
+  it("keeps full protection when the screen is entirely text", () => {
+    const r = sc("wide", false, [{ left: 0, right: 1, top: 0, bottom: 1 }], 1, 16 / 9);
+    expect(r.radius).toBe(0);
+    expect(r.readingSafety).toBe(1);
+  });
+});
