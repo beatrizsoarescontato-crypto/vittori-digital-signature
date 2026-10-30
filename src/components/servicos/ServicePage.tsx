@@ -94,24 +94,52 @@ function PresencaPlanos({ l }: { l: Linha }) {
 }
 
 function PerformanceModalidades({ l }: { l: Linha }) {
+  const [implementacao, gestao] = l.blocos ?? [];
   return <>
     <section data-stage-section="wide" className="internal-page reading-veil relative section-seam py-14 md:py-20">
       <div data-stage-zone="reading" className="mx-auto max-w-[1440px] px-6 md:px-12">
         <p className="t-label mb-3">Implementação ou gestão</p>
         <h2 className="section-heading mb-8">Duas formas de contratar.</h2>
         <div className="grid gap-5 lg:grid-cols-2">
-          {l.blocos?.map((b,i) => <article key={b.titulo} className="glass rounded-md border border-dourado/30 p-6 md:p-8">
+          {[implementacao, gestao].filter(Boolean).map((b, i) => <article key={b!.titulo} className="glass offer-card glow-edge flex flex-col rounded-md p-6 md:p-8">
             <span className="inline-flex size-12 items-center justify-center rounded-full border border-dourado/40 mb-5">{i===0?<MonitorCog className="size-6 text-dourado-claro"/>:<ChartNoAxesCombined className="size-6 text-dourado-claro"/>}</span>
-            <p className="t-label mb-2">{b.eyebrow}</p>
-            <h3 className="font-serif text-3xl text-marfim">{b.titulo}</h3>
-            <p className="t-body mt-4">{b.texto}</p>
-            <div className="mt-6">{b.lista && <Lista itens={b.lista} />}</div>
-            <Btn href={whatsappLink(`Olá! Vim pelo site da Vittori e quero saber mais sobre ${i===0?"Implementação de Tráfego":"Gestão de Tráfego"}.`)} variant="link">Conversar sobre {i===0?"implementação":"gestão"}</Btn>
+            <p className="t-label mb-2">{b!.eyebrow}</p>
+            <h3 className="font-serif text-3xl text-marfim">{b!.titulo}</h3>
+            <p className="t-body mt-4">{b!.texto}</p>
+            {b!.para && <p className="t-meta mt-4 border-l border-dourado/50 pl-4"><strong className="text-marfim">{b!.para}</strong></p>}
+            <Btn href={whatsappLink(`Olá! Vim pelo site da Vittori e quero saber mais sobre ${i===0?"Implementação de Tráfego":"Gestão de Tráfego Pago"}.`)} variant="link" className="mt-auto pt-5">Conversar sobre {i===0?"implementação":"gestão"}</Btn>
           </article>)}
         </div>
-        <p className="t-body mt-7 max-w-4xl"><strong>A implementação inicial necessária já está incluída na Gestão de Tráfego contratada.</strong> A verba de mídia é paga pelo cliente diretamente às plataformas. Sites, integrações especiais e produções extras exigem orçamento próprio.</p>
       </div>
     </section>
+    {implementacao?.grupos && <Bloco eyebrow="Escopo técnico" titulo="O que a implementação organiza.">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {implementacao.grupos.map(g => <div key={g.titulo} className="reveal-item border-t border-dourado/40 pt-4">
+          <p className="service-name">{g.titulo}</p>
+          <p className="t-meta mt-2">{g.texto}</p>
+        </div>)}
+      </div>
+    </Bloco>}
+    {gestao?.lista && <Bloco eyebrow="Entregas comuns" titulo="O que a gestão inclui."><Lista itens={gestao.lista} colunas /></Bloco>}
+    {l.planos && <section data-stage-section="wide" className="internal-page reading-veil relative section-seam py-14 md:py-20">
+      <div data-stage-zone="reading" className="mx-auto max-w-[1440px] px-6 md:px-12">
+        <p className="t-label mb-3">Níveis de gestão</p>
+        <h2 className="section-heading mb-8">Compare as opções.</h2>
+        <div className="grid gap-5 md:grid-cols-2">
+          {l.planos.map((p, i) => <article key={p.nome} className={`offer-card glass glow-edge flex flex-col gap-4 rounded-md p-6 md:p-8 ${i===1?"offer-card--featured":""}`}>
+            <div className="flex items-center justify-between gap-3">
+              <span className="inline-flex size-12 items-center justify-center rounded-full border border-dourado/50">{i===0?<Crosshair className="size-6 text-dourado-claro" strokeWidth={1.5}/>:<GitMerge className="size-6 text-dourado-claro" strokeWidth={1.5}/>}</span>
+              <span className="t-label">0{i + 1}</span>
+            </div>
+            <h3 className="font-serif text-3xl text-marfim">{p.nome}</h3>
+            <p className="font-serif text-xl italic text-dourado-claro">{p.resumo}</p>
+            <p className="t-body flex-1">{p.detalhe}</p>
+            <Btn href={whatsappLink(`Olá! Vim pelo site da Vittori e quero saber mais sobre a ${p.nome} da Vittori Performance.`)} variant="secondary">Conversar sobre {p.nome}</Btn>
+          </article>)}
+        </div>
+      </div>
+    </section>}
+    {l.extra && <Bloco eyebrow={l.extra.eyebrow} titulo={l.extra.titulo}><p className="t-body max-w-4xl">{l.extra.texto}</p></Bloco>}
   </>;
 }
 
