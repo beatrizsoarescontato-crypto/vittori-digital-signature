@@ -59,3 +59,9 @@ describe("sectionChoreography", () => {
   it("never centers the V close behind text on mobile", () => expect(sc("left", true).zOffset).toBe(-9));
   it("leaves the V free between sections", () => expect(sc("none", false).active).toBe(false));
 });
+describe("dispersion peak in clear space", () => {
+  const leftText = [{ left: 0, right: 0.6, top: 0, bottom: 1 }];
+  it("grows the dispersed V into the clear pocket at the peak", () => expect(sc("wide", false, leftText, 1).scale).toBeCloseTo(0.6));
+  it("keeps the halo bright at the peak when the pocket is clear", () => expect(eclipseState(1, 1, sc("wide", false, leftText, 1).readingSafety).halo).toBeGreaterThan(0.6));
+  it("keeps full protection when no clear pocket exists", () => expect(sc("wide", false, [{ left: 0, right: 1, top: 0, bottom: 1 }], 1).readingSafety).toBe(1));
+});
