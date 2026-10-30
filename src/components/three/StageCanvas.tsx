@@ -458,7 +458,8 @@ function Monogram({ mobile }: { mobile: boolean }) {
     stageScroll.vel = damp(stageScroll.vel, 0, 3, dt);
 
     const [x, y, z, rx, ry, sc] = sample(p);
-    const chor = sectionChoreography(section.current, mobile, stageScroll.dive >= 1 && born.current >= 1 ? protectedBounds.current : undefined);
+    const dispersion = Math.max(sm(0.22, 0.34, p) * (1 - sm(0.5, 0.6, p)), Math.min(1, Math.abs(spin.current) * 1.2));
+    const chor = sectionChoreography(section.current, mobile, stageScroll.dive >= 1 && born.current >= 1 ? protectedBounds.current : undefined, sm(0.2, 0.9, dispersion));
     reading.current = damp(reading.current, chor.readingSafety, 2.2, dt);
     const targetX = chor.active ? chor.x : mobile ? KEYS_MOBILE_X : x ?? 0;
     const targetScale = (sc ?? 1) * (chor.active ? chor.scale : 1);
@@ -473,7 +474,6 @@ function Monogram({ mobile }: { mobile: boolean }) {
 
     // Partículas: chegam espalhadas do mergulho e se montam; respiram nos Serviços.
     const breathe = sm(0.22, 0.34, p) * (1 - sm(0.5, 0.6, p)) * 0.18;
-    const dispersion = Math.max(sm(0.22, 0.34, p) * (1 - sm(0.5, 0.6, p)), Math.min(1, Math.abs(spin.current) * 1.2));
     const choreography = eclipseState(appear, dispersion, reading.current);
     const u = (vPts.material as THREE.ShaderMaterial).uniforms;
     setUniform(u, "uTime", t);

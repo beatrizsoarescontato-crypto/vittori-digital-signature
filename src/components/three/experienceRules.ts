@@ -54,22 +54,29 @@ export type TextSide = "left" | "right" | "wide" | "none";
 export type ReadingBounds = { left: number; right: number; top: number; bottom: number };
 
 /** Normalized DOM rectangles; padding/empty sections are not reading regions. */
-export function readingPlacement(bounds: ReadingBounds[]) {
+export function readingPlacement(bounds: ReadingBounds[], radius = 0.1) {
   const visible = bounds.filter(b => b.bottom > 0.08 && b.top < 0.95 && b.right > 0 && b.left < 1);
   if (!visible.length) return null;
-  const radius = 0.1;
   const candidates = [{ x: 0.12, y: 0.22 }, { x: 0.88, y: 0.22 }, { x: 0.12, y: 0.82 }, { x: 0.88, y: 0.82 }];
   const clear = candidates.find(c => visible.every(b => c.x + radius < b.left || c.x - radius > b.right || c.y + radius < b.top || c.y - radius > b.bottom));
   // With full-width reading, retain a peripheral glimpse, never a center halo.
-  return { x: (clear?.x ?? 1.14) - 0.5, y: 0.5 - (clear?.y ?? 0.28) };
+  return { x: (clear?.x ?? 1.14) - 0.5, y: 0.5 - (clear?.y ?? 0.28), clear: !!clear };
 }
 
 /** Where the interior V sits while a section is read. x is a viewport fraction. */
-export function sectionChoreography(side: TextSide, mobile: boolean, bounds?: ReadingBounds[]) {
+/**
+ * peak (0..1) is the dispersion moment: when a clear empty area exists, the dispersed V
+ * grows into it and the halo is far less attenuated, so the eclipse is actually seen.
+ */
+export function sectionChoreography(side: TextSide, mobile: boolean, bounds?: ReadingBounds[], peak = 0) {
   if (bounds) {
-    const placement = readingPlacement(bounds);
+    const radius = 0.1 + (mobile ? 0.03 : 0.06) * peak;
+    let placement = readingPlacement(bounds, radius);
+    if (placement && !placement.clear && peak > 0) placement = readingPlacement(bounds);
     if (!placement) return { active: false, x: 0, y: 0, zOffset: 0, scale: 1, readingSafety: 0, dim: 0 };
-    return { active: true, ...placement, zOffset: -9, scale: 0.34, readingSafety: 1, dim: 0.35 };
+    const { x, y, clear } = placement;
+    const k = clear ? peak : 0;
+    return { active: true, x, y, zOffset: -9, scale: 0.34 + (mobile ? 0.12 : 0.26) * k, readingSafety: 1 - 0.7 * k, dim: 0.35 * (1 - 0.8 * k) };
   }
   if (side === "none") return { active: false, x: 0, y: 0, zOffset: 0, scale: 1, readingSafety: 0, dim: 0 };
   if (mobile || side === "wide") return { active: true, x: mobile ? 0 : 0.36, y: mobile ? 0.36 : 0.3, zOffset: -9, scale: 0.42, readingSafety: 1, dim: 0.5 };
