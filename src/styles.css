@@ -82,10 +82,10 @@
   --ring: var(--dourado);
 
   /* Escala tipográfica fluida (editorial) */
-  --step-display: clamp(3.1rem, 11vw, 10rem);
-  --step-h1: clamp(2.6rem, 7vw, 6.2rem);
-  --step-h2: clamp(2.1rem, 4.4vw, 4.1rem);
-  --step-h3: clamp(1.5rem, 2.6vw, 2.6rem);
+  --step-display: 5rem;
+  --step-h1: 4.5rem;
+  --step-h2: 3rem;
+  --step-h3: 2.25rem;
 }
 
 @layer base {
@@ -131,16 +131,16 @@
 }
 
 @utility eyebrow {
-  font-size: 0.62rem;
-  letter-spacing: 0.34em;
+  font-size: .875rem;
+  letter-spacing: 0;
   text-transform: uppercase;
   font-weight: 500;
   color: var(--color-dourado);
 }
 
 @utility label-mono {
-  font-size: 0.7rem;
-  letter-spacing: 0.26em;
+  font-size: .875rem;
+  letter-spacing: 0;
   text-transform: uppercase;
   font-weight: 500;
 }
@@ -151,7 +151,7 @@
   font-size: var(--step-display);
   font-weight: 300;
   line-height: 0.88;
-  letter-spacing: -0.03em;
+  letter-spacing: 0;
 }
 
 @utility title-1 {
@@ -159,7 +159,7 @@
   font-size: var(--step-h1);
   font-weight: 300;
   line-height: 0.94;
-  letter-spacing: -0.025em;
+  letter-spacing: 0;
 }
 
 @utility title-2 {
@@ -167,11 +167,11 @@
   font-size: var(--step-h2);
   font-weight: 300;
   line-height: 0.98;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
 }
 
 @utility lead {
-  font-size: 0.9375rem;
+  font-size: 1.125rem;
   font-weight: 300;
   line-height: 2;
   max-width: 34ch;
@@ -191,8 +191,8 @@
 }
 
 @utility caption {
-  font-size: 0.68rem;
-  letter-spacing: 0.22em;
+  font-size: .875rem;
+  letter-spacing: 0;
   text-transform: uppercase;
    color: color-mix(in oklab, var(--color-marfim) 75%, transparent);
 }
@@ -308,7 +308,7 @@
 .portal-btn {
   position: relative; display: inline-flex; align-items: center; justify-content: center; gap: .6rem;
   min-height: 3.1rem; padding: 0 2rem; border-radius: 999px;
-  font-family: var(--font-sans, Montserrat, sans-serif); font-size: .72rem; letter-spacing: .28em; text-transform: uppercase;
+  font-family: var(--font-sans, Montserrat, sans-serif); font-size: .875rem; letter-spacing: 0; text-transform: uppercase;
   color: var(--marfim);
   background: color-mix(in oklab, var(--preto) 35%, transparent);
   border: 1px solid color-mix(in oklab, var(--dourado) 45%, transparent);
@@ -457,17 +457,17 @@ html:not([data-phase="inside"]) .site-layer { opacity: 0; visibility: hidden; po
 @keyframes gold-sweep { 0%, 70% { background-position: 100% 50%; } 100% { background-position: -20% 50%; } }
 
 /* Escala de leitura */
-.t-label { font-size: .72rem; letter-spacing: .24em; text-transform: uppercase; font-weight: 600; color: var(--dourado); }
-.t-title { font-family: var(--font-serif); font-size: clamp(1.75rem, 2.4vw, 2.4rem); line-height: 1.12; font-weight: 500; color: var(--marfim); }
+.t-label { font-size: .875rem; letter-spacing: 0; text-transform: uppercase; font-weight: 600; color: var(--dourado); }
+.t-title { font-family: var(--font-serif); font-size: 2.25rem; line-height: 1.12; font-weight: 500; color: var(--marfim); }
 .t-body { font-size: 1rem; line-height: 1.8; font-weight: 400; color: color-mix(in oklab, var(--marfim) 90%, transparent); }
-.t-meta { font-size: .875rem; line-height: 1.7; font-weight: 400; color: color-mix(in oklab, var(--marfim) 78%, transparent); }
+.t-meta { font-size: 1rem; line-height: 1.7; font-weight: 400; color: color-mix(in oklab, var(--marfim) 78%, transparent); }
 
 /* Botões */
 .vbtn {
   position: relative; isolation: isolate; overflow: hidden;
   display: inline-flex; align-items: center; justify-content: center; gap: .85rem;
   min-height: 3.25rem; padding: 0 1.9rem; border-radius: 999px;
-  font-size: .72rem; letter-spacing: .24em; text-transform: uppercase; font-weight: 600;
+  font-size: .875rem; letter-spacing: 0; text-transform: uppercase; font-weight: 600;
   transition: color .5s, border-color .5s, box-shadow .6s, background-color .5s;
 }
 .vbtn svg { transition: transform .5s cubic-bezier(.2,.7,.2,1); }
@@ -493,7 +493,7 @@ html:not([data-phase="inside"]) .site-layer { opacity: 0; visibility: hidden; po
 .vbtn--primary:hover { box-shadow: inset 0 1px 0 color-mix(in oklab, var(--gold-champagne) 30%, transparent), 0 14px 40px -14px color-mix(in oklab, var(--dourado) 45%, transparent); }
 .vbtn--secondary { color: var(--dourado-claro); border: 1px solid color-mix(in oklab, var(--dourado) 45%, transparent); background: color-mix(in oklab, var(--preto) 25%, transparent); }
 .vbtn--secondary:hover { border-color: var(--dourado); color: var(--marfim); background: color-mix(in oklab, var(--dourado) 10%, transparent); }
-.vlink { position: relative; display: inline-flex; align-items: center; gap: .7rem; min-height: 2.75rem; font-size: .72rem; letter-spacing: .24em; text-transform: uppercase; font-weight: 600; color: var(--dourado); }
+.vlink { position: relative; display: inline-flex; align-items: center; gap: .7rem; min-height: 2.75rem; font-size: .875rem; letter-spacing: 0; text-transform: uppercase; font-weight: 600; color: var(--dourado); }
 .vlink::after { content: ""; position: absolute; left: 0; right: 1.6rem; bottom: .55rem; height: 1px; background: currentColor; transform: scaleX(.25); transform-origin: left; transition: transform .6s cubic-bezier(.2,.7,.2,1); }
 .vlink:hover::after, .group:hover .vlink::after { transform: scaleX(1); }
 .vlink svg { transition: transform .5s; } .vlink:hover svg, .group:hover .vlink svg { transform: translateX(4px); }
@@ -513,7 +513,7 @@ html:not([data-phase="inside"]) .site-layer { opacity: 0; visibility: hidden; po
 
 /* Cards dos serviços: cada frente com uma composição própria. */
 .svc-card { transition: transform .7s cubic-bezier(.2,.7,.2,1), border-color .5s; transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); }
-.svc-num { font-family: var(--font-serif); font-weight: 300; line-height: .8; color: transparent; -webkit-text-stroke: 1px color-mix(in oklab, var(--dourado) 32%, transparent); }
+.svc-num { font-family: var(--font-serif); font-weight: 300; line-height: .8; color: color-mix(in oklab, var(--dourado) 65%, transparent); }
 .svc-orn { position: absolute; pointer-events: none; z-index: -1; }
 
 /* Método: fio contínuo e marcos */
@@ -534,4 +534,23 @@ html:not([data-phase="inside"]) .site-layer { opacity: 0; visibility: hidden; po
   .title-shimmer, h1 em.text-dourado, h2 em.text-dourado, .text-gold-rich { animation: none; background-position: 40% 50%; }
   .svc-card { transform: none !important; }
   .vbtn--primary::after { display: none; }
+}
+
+/* Shared internal-page hierarchy and aligned service-card tracks. */
+.back-link { font-size: .875rem; font-weight: 400; color: var(--dourado-claro); transition: color .3s; }
+.back-link:hover { color: var(--marfim); }
+.internal-title { font-family: var(--font-serif); font-size: 3rem; line-height: 1.08; font-weight: 400; overflow-wrap: break-word; }
+.service-name { font-size: 1rem; font-weight: 600; color: var(--dourado-claro); }
+.svc-card { grid-template-rows: 5rem 1fr; }
+.svc-copy { display: grid; grid-template-rows: 2.5rem 8rem 1.5rem 1fr 3.5rem; min-width: 0; }
+.svc-copy .t-title { font-size: 2rem; line-height: 1.15; }
+.svc-copy .vlink { align-self: end; }
+.internal-page p, .internal-page li { overflow-wrap: break-word; }
+.internal-page .text-sm, .internal-page .text-xs { font-size: 1rem; line-height: 1.8; color: color-mix(in oklab, var(--marfim) 90%, transparent); }
+@media (min-width: 1440px) { :root { --step-display: 7rem; --step-h1: 5.5rem; --step-h2: 4rem; } }
+@media (max-width: 767px) {
+  :root { --step-display: 3.5rem; --step-h1: 3rem; --step-h2: 2.5rem; --step-h3: 2rem; }
+  .internal-title { font-size: 2.25rem; }
+  .t-title { font-size: 2rem; }
+  .svc-copy { grid-template-rows: 3rem 9rem 1.5rem 1fr 3.5rem; }
 }

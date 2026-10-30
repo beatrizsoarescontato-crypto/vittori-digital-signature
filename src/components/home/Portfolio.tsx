@@ -30,9 +30,9 @@ export function PortfolioGrid() {
               )}
             </div>
             <div className="p-8">
-              <p className="label-mono text-dourado">{p.tipo}</p>
+              <p className="t-label text-dourado">{p.tipo}</p>
               <h3 className="mt-3 font-serif text-3xl text-marfim">{p.nome}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-marfim/70">{p.resumo}</p>
+              <p className="mt-3 t-body">{p.resumo}</p>
               {(p.imagem || p.midias?.length) ? <Button variant="ghost" className="mt-5 h-auto min-h-11 max-w-full justify-start whitespace-normal px-0 text-dourado hover:bg-transparent hover:text-marfim" onClick={() => setAberto(p.nome)} aria-label={`Visualizar projeto ${p.nome}`}>
                 <Maximize2 aria-hidden="true" /> Visualizar projeto
               </Button> : null}
@@ -72,7 +72,7 @@ export function PortfolioHome() {
       <div className="mx-auto max-w-[1440px] px-6 md:px-12">
         <div className="mb-16 flex flex-wrap items-end justify-between gap-8">
           <SectionTitle eyebrow="Portfólio" lines={["Alguns projetos", <em key="e" className="italic text-dourado">que assinamos.</em>]} />
-          <Link to="/portfolio" className="label-mono text-dourado hover:text-marfim">Visão geral ✦</Link>
+          <Link to="/portfolio" className="t-label text-dourado hover:text-marfim">Visão geral ✦</Link>
         </div>
         <PortfolioGrid />
       </div>

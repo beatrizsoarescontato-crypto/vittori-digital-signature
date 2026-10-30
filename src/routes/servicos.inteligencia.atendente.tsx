@@ -60,16 +60,16 @@ function Abas() {
             role="tab"
             aria-selected={a === i}
             onClick={() => setA(i)}
-            className={`label-mono min-h-11 border px-4 py-3 transition-colors ${a === i ? "border-dourado bg-dourado text-preto" : "border-border text-marfim/70 hover:text-dourado"}`}
+            className={`t-label min-h-11 border px-4 py-3 transition-colors ${a === i ? "border-dourado bg-dourado text-preto" : "border-border text-marfim/70 hover:text-dourado"}`}
           >
             {t}
           </button>
         ))}
       </div>
       <div role="tabpanel" className="mt-6 border border-border/60 bg-preto p-8">
-        <p className="font-serif text-2xl font-light text-marfim">{ABAS[a]![0]}</p>
-        <p className="mt-4 text-sm leading-loose text-marfim/75">{ABAS[a]![1]}</p>
-        <p className="caption mt-8">Dados de demonstração</p>
+        <p className="font-serif text-2xl font-light text-marfim">{(ABAS[a]?.[0] ?? "")}</p>
+        <p className="mt-4 text-sm leading-loose text-marfim/75">{(ABAS[a]?.[1] ?? "")}</p>
+        <p className="t-meta mt-8">Dados de demonstração</p>
       </div>
       <p className="mt-4 text-xs text-marfim/85">Ficha, funil, agenda e painel fazem parte do plano Completa.</p>
     </div>
@@ -88,8 +88,8 @@ function Page() {
         <Btn href={henriqueLink("Atendente de IA")}>Falar com o Henrique</Btn>
       </PageHero>
 
-      <section className="border-b border-border/50 bg-marrom py-24 md:py-32">
-        <ul data-reveal className="mx-auto max-w-[1440px] px-6 md:px-12">
+      <section data-stage-section="wide" className="internal-page reading-veil border-b border-border/50 py-24 md:py-32">
+        <ul data-stage-zone="reading" data-reveal className="mx-auto max-w-[1440px] px-6 md:px-12">
           {[
             "O cliente manda mensagem às 23h. No dia seguinte você responde, e ele já fechou com outro.",
             "Sete conversas abertas e ninguém sabe quem respondeu quem.",
@@ -102,8 +102,8 @@ function Page() {
         </ul>
       </section>
 
-      <section className="border-b border-border/50 py-24 md:py-32">
-        <div className="mx-auto grid max-w-[1440px] gap-8 px-6 md:px-12 lg:grid-cols-2">
+      <section data-stage-section="wide" className="internal-page reading-veil border-b border-border/50 py-24 md:py-32">
+        <div data-stage-zone="reading" className="mx-auto grid max-w-[1440px] gap-8 px-6 md:px-12 lg:grid-cols-2">
           <Calculadora
             titulo="Quanto a demora custa"
             campos={[
@@ -183,8 +183,8 @@ function Page() {
         />
       </Bloco>
 
-      <section className="border-b border-border/50 bg-bordo-dark py-24 md:py-32">
-        <div className="mx-auto max-w-[1440px] px-6 md:px-12">
+      <section data-stage-section="wide" className="internal-page reading-veil border-b border-border/50 py-24 md:py-32">
+        <div data-stage-zone="reading" className="mx-auto max-w-[1440px] px-6 md:px-12">
           <h2 className="title-2 max-w-4xl text-marfim">
             Atendimento rápido. <em className="italic text-dourado">Fechamento humano.</em>
           </h2>
@@ -195,9 +195,9 @@ function Page() {
         </div>
       </section>
 
-      <section className="border-b border-border/50 py-24 md:py-32">
-        <div className="mx-auto max-w-[1440px] px-6 md:px-12">
-          <p className="label-mono mb-6 text-dourado">Para quem é</p>
+      <section data-stage-section="wide" className="internal-page reading-veil border-b border-border/50 py-24 md:py-32">
+        <div data-stage-zone="reading" className="mx-auto max-w-[1440px] px-6 md:px-12">
+          <p className="t-label mb-6 text-dourado">Para quem é</p>
           <div data-reveal className="grid gap-px bg-border/60 sm:grid-cols-2 lg:grid-cols-3">
             {NICHOS.map(([n, q]) => (
               <div key={n} className="reveal-item bg-preto p-7">
@@ -226,8 +226,8 @@ function Page() {
         />
       </Bloco>
 
-      <section className="bg-bordo py-28 md:py-36">
-        <div className="mx-auto max-w-[1440px] px-6 md:px-12">
+      <section data-stage-section="wide" className="internal-page reading-veil finale-glow py-28 md:py-36">
+        <div data-stage-zone="reading" className="mx-auto max-w-[1440px] px-6 md:px-12">
           <h2 className="title-2 max-w-3xl text-marfim">Quer ver com o jeito do seu negócio?</h2>
           <p className="measure mt-8 text-base leading-loose text-marfim/85">
             Em 30 minutos, o Henrique mostra as telas, entende como você atende hoje e diz onde a atendente pode ajudar.

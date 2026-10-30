@@ -30,8 +30,8 @@ function Page() {
         <Btn href={henriqueLink("Estúdio de Posts")}>Falar com o Henrique</Btn>
       </PageHero>
 
-      <section className="border-b border-border/50 bg-marrom py-24 md:py-32">
-        <ul data-reveal className="mx-auto max-w-[1440px] px-6 md:px-12">
+      <section data-stage-section="wide" className="internal-page reading-veil border-b border-border/50 py-24 md:py-32">
+        <ul data-stage-zone="reading" data-reveal className="mx-auto max-w-[1440px] px-6 md:px-12">
           {[
             "Você posta, mas não sabe o que funciona.",
             "Criar do zero toda semana cansa e sai genérico.",
@@ -55,8 +55,8 @@ function Page() {
         />
       </Bloco>
 
-      <section className="border-b border-border/50 bg-bordo-dark py-24 md:py-32">
-        <div className="mx-auto max-w-[1440px] px-6 md:px-12">
+      <section data-stage-section="wide" className="internal-page reading-veil border-b border-border/50 py-24 md:py-32">
+        <div data-stage-zone="reading" className="mx-auto max-w-[1440px] px-6 md:px-12">
           <h2 className="title-2 text-marfim">
             Modelar <em className="italic text-dourado">não é copiar.</em>
           </h2>
@@ -66,10 +66,10 @@ function Page() {
         </div>
       </section>
 
-      <section className="border-b border-border/50 py-24 md:py-32">
-        <div className="mx-auto grid max-w-[1440px] gap-12 px-6 md:px-12 lg:grid-cols-2">
+      <section data-stage-section="wide" className="internal-page reading-veil border-b border-border/50 py-24 md:py-32">
+        <div data-stage-zone="reading" className="mx-auto grid max-w-[1440px] gap-12 px-6 md:px-12 lg:grid-cols-2">
           <div>
-            <p className="label-mono mb-6 text-dourado">Comente e receba</p>
+            <p className="t-label mb-6 text-dourado">Comente e receba</p>
             <p className="font-serif text-3xl font-light leading-snug text-marfim">
               Quem comenta a palavra-chave recebe o material no direct na hora e vira contato.
             </p>
@@ -116,8 +116,8 @@ function Page() {
         />
       </Bloco>
 
-      <section className="bg-bordo py-28 md:py-36">
-        <div className="mx-auto max-w-[1440px] px-6 md:px-12">
+      <section data-stage-section="wide" className="internal-page reading-veil finale-glow py-28 md:py-36">
+        <div data-stage-zone="reading" className="mx-auto max-w-[1440px] px-6 md:px-12">
           <h2 className="title-2 max-w-3xl text-marfim">Quer ver com o jeito do seu negócio?</h2>
           <div className="mt-12">
             <Btn

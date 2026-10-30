@@ -30,8 +30,8 @@ function Page() {
         <Btn href={henriqueLink("Sistemas e Painéis")}>Falar com o Henrique</Btn>
       </PageHero>
 
-      <section className="border-b border-border/50 bg-marrom py-24 md:py-32">
-        <ul data-reveal className="mx-auto max-w-[1440px] px-6 md:px-12">
+      <section data-stage-section="wide" className="internal-page reading-veil border-b border-border/50 py-24 md:py-32">
+        <ul data-stage-zone="reading" data-reveal className="mx-auto max-w-[1440px] px-6 md:px-12">
           {[
             "Toda segunda alguém passa horas montando relatório.",
             "Cada setor tem um número diferente para a mesma coisa.",
@@ -44,8 +44,8 @@ function Page() {
         </ul>
       </section>
 
-      <section className="border-b border-border/50 py-24 md:py-32">
-        <div className="mx-auto max-w-3xl px-6">
+      <section data-stage-section="wide" className="internal-page reading-veil border-b border-border/50 py-24 md:py-32">
+        <div data-stage-zone="reading" className="mx-auto max-w-3xl px-6">
           <Calculadora
             titulo="O custo do relatório feito à mão"
             campos={[
@@ -67,8 +67,8 @@ function Page() {
         </div>
       </section>
 
-      <section className="border-b border-border/50 bg-bordo-dark py-24 md:py-32">
-        <div className="mx-auto max-w-[1440px] px-6 md:px-12">
+      <section data-stage-section="wide" className="internal-page reading-veil border-b border-border/50 py-24 md:py-32">
+        <div data-stage-zone="reading" className="mx-auto max-w-[1440px] px-6 md:px-12">
           <h2 className="title-2 text-marfim">O que você passa a enxergar</h2>
           <div data-reveal className="mt-14 grid gap-px bg-marfim/10 sm:grid-cols-2 lg:grid-cols-4">
             {[
@@ -129,8 +129,8 @@ function Page() {
         />
       </Bloco>
 
-      <section className="bg-bordo py-28 md:py-36">
-        <div className="mx-auto max-w-[1440px] px-6 md:px-12">
+      <section data-stage-section="wide" className="internal-page reading-veil finale-glow py-28 md:py-36">
+        <div data-stage-zone="reading" className="mx-auto max-w-[1440px] px-6 md:px-12">
           <h2 className="title-2 max-w-3xl text-marfim">Quer ver com o jeito do seu negócio?</h2>
           <div className="mt-12">
             <Btn

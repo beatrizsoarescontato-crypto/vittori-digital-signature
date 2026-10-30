@@ -105,8 +105,8 @@ export function ServicePage({ l }: { l: Linha }) {
       ))}
 
       {l.cards && (
-        <section className="relative section-seam reading-veil finale-glow py-24 md:py-32">
-          <div className="mx-auto max-w-[1440px] px-6 md:px-12">
+        <section data-stage-section="wide" className="internal-page relative section-seam reading-veil finale-glow py-24 md:py-32">
+          <div data-stage-zone="reading" className="mx-auto max-w-[1440px] px-6 md:px-12">
             <h2 className="title-2 max-w-3xl text-marfim">{l.cards.titulo}</h2>
             <p className="measure t-body mt-8">{l.cards.texto}</p>
             <div data-reveal className={`mt-16 grid gap-4 sm:grid-cols-2 ${l.cards.itens.length === 4 ? "lg:grid-cols-4" : "lg:grid-cols-5"}`}>
@@ -153,8 +153,8 @@ export function ServicePage({ l }: { l: Linha }) {
       )}
 
       {(l.paraQuem || l.paraQuemNao) && (
-        <section className="relative section-seam reading-veil py-24 md:py-32">
-          <div data-reveal className="mx-auto grid max-w-[1440px] gap-16 px-6 md:grid-cols-2 md:px-12">
+        <section data-stage-section="wide" className="internal-page relative section-seam reading-veil py-24 md:py-32">
+          <div data-stage-zone="reading" data-reveal className="mx-auto grid max-w-[1440px] gap-16 px-6 md:grid-cols-2 md:px-12">
             {l.paraQuem && (
               <div className="reveal-item">
                 <p className="t-label mb-6">Para quem é</p>
@@ -180,8 +180,8 @@ export function ServicePage({ l }: { l: Linha }) {
         </Bloco>
       )}
 
-      <section className="relative section-seam reading-veil finale-glow py-28 md:py-36">
-        <div className="mx-auto max-w-[1440px] px-6 md:px-12">
+      <section data-stage-section="wide" className="internal-page relative section-seam reading-veil finale-glow py-28 md:py-36">
+        <div data-stage-zone="reading" className="mx-auto max-w-[1440px] px-6 md:px-12">
           <h2 className="title-2 max-w-3xl text-marfim">Conte o que você está construindo.</h2>
           <div className="mt-12">
             <Btn to="/comece">{l.cta ?? "Agendar uma conversa"}</Btn>
