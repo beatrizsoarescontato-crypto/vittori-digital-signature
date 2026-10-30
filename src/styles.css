@@ -422,6 +422,11 @@ html:not([data-phase="inside"]) .site-layer { opacity: 0; visibility: hidden; po
   background: radial-gradient(80% 70% at 30% 60%, color-mix(in oklab, var(--color-bordo) 70%, transparent), transparent 80%);
 }
 /* Rodapé como continuação do cosmos: escurecimento progressivo do bordô, sem faixa. */
+/* A luz da chamada final se dissolve antes do rodapé em vez de terminar em linha. */
+#contato.finale-glow::before {
+  -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+}
 .footer-fade {
   background: linear-gradient(to bottom,
     color-mix(in oklab, var(--color-bordo-dark) 22%, transparent) 0%,

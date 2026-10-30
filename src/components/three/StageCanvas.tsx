@@ -392,7 +392,7 @@ function Monogram({ mobile }: { mobile: boolean }) {
     const discover = () => {
       resize.disconnect();
       elements = Array.from(document.querySelectorAll<HTMLElement>("[data-stage-section]"));
-      zones = Array.from(document.querySelectorAll<HTMLElement>("[data-stage-zone], [data-stage-section] :is(h1,h2,h3,p,ul,ol,.glass):not([data-stage-zone])"));
+      zones = Array.from(document.querySelectorAll<HTMLElement>("[data-stage-zone], [data-stage-section] :is(h1,h2,h3,p,ul,ol,.glass):not([data-stage-zone]), footer :is(p,nav)"));
       zones.forEach(el => resize.observe(el));
       schedule();
     };
