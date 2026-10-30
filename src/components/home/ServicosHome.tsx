@@ -6,7 +6,11 @@ import { LINHAS, LINHA_INTELIGENCIA } from "@/content/servicos";
 import { Button } from "@/components/ui/button";
 import { Line } from "@/components/site/Lines";
 
-const CARDS = [...LINHAS.map((l) => ({ ...l, key: l.slug as string, href: `/servicos/${l.slug}` })), { ...LINHA_INTELIGENCIA, key: "inteligencia", href: "/" }];
+const CARDS = [
+  { ...LINHA_INTELIGENCIA, key: "inteligencia", href: "/" },
+  ...LINHAS.filter((l) => l.slug !== "identidade").map((l) => ({ ...l, key: l.slug as string, href: `/servicos/${l.slug}` })),
+  ...LINHAS.filter((l) => l.slug === "identidade").map((l) => ({ ...l, key: l.slug as string, href: `/servicos/${l.slug}` })),
+];
 const ICONES: Record<string, LucideIcon> = { presenca: MessagesSquare, performance: ChartNoAxesCombined, estudio: Camera, digital: Globe, identidade: PenTool, campanha: Megaphone, inteligencia: Sparkles };
 
 const S = "currentColor";
@@ -105,7 +109,7 @@ export function ServicosHome() {
           </div>
         </div>
         <div ref={viewportRef} className="-mx-2 mt-7 overflow-hidden px-2 py-4" role="region" aria-label="Serviços da Vittori" tabIndex={0} onKeyDown={(e) => { if (e.key === "ArrowRight") { e.preventDefault(); api?.scrollNext(); } if (e.key === "ArrowLeft") { e.preventDefault(); api?.scrollPrev(); } }}>
-          <div className="flex touch-pan-y gap-5 cursor-grab active:cursor-grabbing">
+          <div className="flex touch-pan-y select-none gap-5 cursor-grab active:cursor-grabbing">
             {CARDS.map((c, i) => {
               const Icon = ICONES[c.key] ?? Sparkles;
               const ia = c.key === "inteligencia";

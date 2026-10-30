@@ -34,7 +34,7 @@ describe("approved experience rules", () => {
     expect(result.halo).toBeGreaterThan(eclipseState(1, 0, 0).halo);
   });
   it("recedes for reading without removing the eclipse", () => {
-    expect(eclipseState(1, 1, 1).halo).toBeCloseTo(0.205);
+    expect(eclipseState(1, 1, 1).halo).toBeCloseTo(0.328);
   });
 });
 import { sectionChoreography as sc } from "./experienceRules";

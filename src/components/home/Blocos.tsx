@@ -5,13 +5,13 @@ import { SHOW_BACKSTAGE_VIDEO, whatsappLink } from "@/lib/contato";
 
 export function Metodo() {
   const etapas = [
-    ["Diagnóstico", "Reunião de onboarding, leitura do perfil, do site e da concorrência."],
-    ["Plano", "Calendário, roteiros e metas do mês, aprovados por você."],
-    ["Produção", "Gravação, design, edição e campanhas no ar."],
-    ["Leitura", "Relatório, reunião e ajuste do próximo mês."],
+    ["Entendimento", "Conhecemos seu negócio, seus objetivos e o cenário em que sua marca está inserida. Antes de propor, entendemos o que precisa ser resolvido."],
+    ["Direção", "Definimos a estratégia, o escopo, as entregas e o caminho de execução. Cada projeto recebe um planejamento compatível com sua necessidade."],
+    ["Realização", "Transformamos a direção em trabalho concreto: criação, produção, desenvolvimento ou implementação, conforme o serviço contratado."],
+    ["Evolução", "Apresentamos as entregas, avaliamos os indicadores aplicáveis e definimos os próximos passos. Projetos pontuais e serviços contínuos têm acompanhamentos próprios."],
   ];
   return (
-    <section data-stage-section="wide" id="metodo" className="relative section-seam py-28 text-marfim md:py-40 reading-veil">
+    <section data-stage-section="wide" id="metodo" className="relative section-seam py-20 text-marfim md:py-28 reading-veil">
       <div className="mx-auto max-w-[1440px] px-6 md:px-12">
         <p className="t-label mb-6">Como trabalhamos</p>
         <h2 data-lines className="title-1">
@@ -19,30 +19,30 @@ export function Metodo() {
             Método <em className="italic text-dourado">Vittori.</em>
           </Line>
         </h2>
-        <div className="relative mt-20">
+        <div className="relative mt-14">
           {/* fio contínuo: horizontal no computador, vertical no celular */}
           <span aria-hidden className="absolute left-[7px] top-0 h-full w-px bg-marfim/15 md:left-0 md:top-[7px] md:h-px md:w-full" />
           <span aria-hidden data-draw className="absolute left-0 top-[7px] hidden h-px w-full origin-left bg-gradient-to-r from-dourado/80 via-dourado to-dourado/20 md:block" />
-          <ol className="relative grid gap-14 md:grid-cols-4 md:gap-10">
+          <ol className="relative grid gap-10 md:grid-cols-4 md:gap-8">
             {etapas.map(([t, d], i) => {
               const Icon = [Search, ClipboardList, Clapperboard, ChartNoAxesCombined][i] ?? Search;
               return (
-                <li key={t} className="group relative pl-10 md:pl-0 md:pt-14">
+                <li key={t} className="group relative pl-10 md:pl-0 md:pt-12">
                   <span aria-hidden className="metodo-node absolute left-0 top-1 md:top-0" />
-                  <div className="flex items-end gap-5">
-                    <span className="title-shimmer font-serif text-7xl font-light leading-none md:text-8xl">0{i + 1}</span>
-                    <span className="mb-2 flex size-11 items-center justify-center rounded-full border border-dourado/35"><Icon aria-hidden="true" className="size-5 text-dourado" strokeWidth={1.25} /></span>
+                  <div className="flex items-end gap-4">
+                    <span className="title-shimmer font-serif text-6xl font-light leading-none md:text-7xl">0{i + 1}</span>
+                    <span className="mb-1.5 flex size-10 items-center justify-center rounded-full border border-dourado/35"><Icon aria-hidden="true" className="size-[18px] text-dourado" strokeWidth={1.25} /></span>
                   </div>
-                  <p className="t-label mt-8">Etapa {i + 1}</p>
-                  <h3 className="mt-2 font-serif text-3xl font-medium md:text-[2.15rem]">{t}</h3>
-                  <p className="t-body mt-4 max-w-[30ch]">{d}</p>
+                  <p className="t-label mt-6">Etapa {i + 1}</p>
+                  <h3 className="mt-2 font-serif text-3xl font-medium">{t}</h3>
+                  <p className="t-body mt-3 max-w-[32ch]">{d}</p>
                 </li>
               );
             })}
           </ol>
         </div>
-        <p className="mt-20 font-serif text-2xl font-medium italic text-marfim md:text-3xl">
-          <strong className="font-semibold">Contrato, prazos e entregas escritos.</strong> Sem surpresa.
+        <p className="mt-14 font-serif text-2xl font-medium italic text-marfim md:text-3xl">
+          <strong className="font-semibold">Estratégia clara. Entregas definidas.</strong> Cada detalhe com direção.
         </p>
       </div>
     </section>

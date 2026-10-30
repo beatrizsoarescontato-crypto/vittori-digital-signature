@@ -44,7 +44,7 @@ export function portalSequence(elapsed: number | null) {
 export function eclipseState(formation: number, dispersion: number, readingSafety: number) {
   const peak = smoothProgress(0.2, 0.9, dispersion);
   return {
-    halo: formation * (EXPERIENCE.formationHalo + (EXPERIENCE.dispersionHalo - EXPERIENCE.formationHalo) * peak) * (1 - 0.75 * readingSafety),
+    halo: formation * (EXPERIENCE.formationHalo + (EXPERIENCE.dispersionHalo - EXPERIENCE.formationHalo) * peak) * (1 - 0.6 * readingSafety),
     peak,
     softness: 1 - 0.7 * peak,
     particleAlpha: formation * (1 - 0.28 * dispersion),
@@ -69,7 +69,7 @@ export function sectionChoreography(side: TextSide, mobile: boolean, bounds?: Re
   if (bounds) {
     const placement = readingPlacement(bounds);
     if (!placement) return { active: false, x: 0, y: 0, zOffset: 0, scale: 1, readingSafety: 0, dim: 0 };
-    return { active: true, ...placement, zOffset: -9, scale: 0.32, readingSafety: 1, dim: 0.5 };
+    return { active: true, ...placement, zOffset: -9, scale: 0.34, readingSafety: 1, dim: 0.35 };
   }
   if (side === "none") return { active: false, x: 0, y: 0, zOffset: 0, scale: 1, readingSafety: 0, dim: 0 };
   if (mobile || side === "wide") return { active: true, x: mobile ? 0 : 0.36, y: mobile ? 0.36 : 0.3, zOffset: -9, scale: 0.42, readingSafety: 1, dim: 0.5 };

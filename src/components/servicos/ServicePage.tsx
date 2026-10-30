@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 import type { Linha } from "@/content/servicos";
-import { Check, Gem, Layers, Star, MonitorCog, ChartNoAxesCombined, Sparkles } from "lucide-react";
+import { Check, Gem, Layers, Star, MonitorCog, ChartNoAxesCombined, Sparkles, Crosshair, GitMerge, Fingerprint, PenTool, Palette, BookOpen } from "lucide-react";
 import { Line } from "@/components/site/Lines";
-import { Btn, Faq } from "@/components/site/ui";
+import { Btn } from "@/components/site/ui";
 import { VoltarContexto } from "@/components/site/Navegacao";
 import { whatsappLink } from "@/lib/contato";
 
@@ -94,24 +94,52 @@ function PresencaPlanos({ l }: { l: Linha }) {
 }
 
 function PerformanceModalidades({ l }: { l: Linha }) {
+  const [implementacao, gestao] = l.blocos ?? [];
   return <>
     <section data-stage-section="wide" className="internal-page reading-veil relative section-seam py-14 md:py-20">
       <div data-stage-zone="reading" className="mx-auto max-w-[1440px] px-6 md:px-12">
         <p className="t-label mb-3">Implementação ou gestão</p>
         <h2 className="section-heading mb-8">Duas formas de contratar.</h2>
         <div className="grid gap-5 lg:grid-cols-2">
-          {l.blocos?.map((b,i) => <article key={b.titulo} className="glass rounded-md border border-dourado/30 p-6 md:p-8">
+          {[implementacao, gestao].filter(Boolean).map((b, i) => <article key={b!.titulo} className="glass offer-card glow-edge flex flex-col rounded-md p-6 md:p-8">
             <span className="inline-flex size-12 items-center justify-center rounded-full border border-dourado/40 mb-5">{i===0?<MonitorCog className="size-6 text-dourado-claro"/>:<ChartNoAxesCombined className="size-6 text-dourado-claro"/>}</span>
-            <p className="t-label mb-2">{b.eyebrow}</p>
-            <h3 className="font-serif text-3xl text-marfim">{b.titulo}</h3>
-            <p className="t-body mt-4">{b.texto}</p>
-            <div className="mt-6">{b.lista && <Lista itens={b.lista} />}</div>
-            <Btn href={whatsappLink(`Olá! Vim pelo site da Vittori e quero saber mais sobre ${i===0?"Implementação de Tráfego":"Gestão de Tráfego"}.`)} variant="link">Conversar sobre {i===0?"implementação":"gestão"}</Btn>
+            <p className="t-label mb-2">{b!.eyebrow}</p>
+            <h3 className="font-serif text-3xl text-marfim">{b!.titulo}</h3>
+            <p className="t-body mt-4">{b!.texto}</p>
+            {b!.para && <p className="t-meta mt-4 border-l border-dourado/50 pl-4"><strong className="text-marfim">{b!.para}</strong></p>}
+            <Btn href={whatsappLink(`Olá! Vim pelo site da Vittori e quero saber mais sobre ${i===0?"Implementação de Tráfego":"Gestão de Tráfego Pago"}.`)} variant="link" className="mt-auto pt-5">Conversar sobre {i===0?"implementação":"gestão"}</Btn>
           </article>)}
         </div>
-        <p className="t-body mt-7 max-w-4xl"><strong>A implementação inicial necessária já está incluída na Gestão de Tráfego contratada.</strong> A verba de mídia é paga pelo cliente diretamente às plataformas. Sites, integrações especiais e produções extras exigem orçamento próprio.</p>
       </div>
     </section>
+    {implementacao?.grupos && <Bloco eyebrow="Escopo técnico" titulo="O que a implementação organiza.">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {implementacao.grupos.map(g => <div key={g.titulo} className="reveal-item border-t border-dourado/40 pt-4">
+          <p className="service-name">{g.titulo}</p>
+          <p className="t-meta mt-2">{g.texto}</p>
+        </div>)}
+      </div>
+    </Bloco>}
+    {gestao?.lista && <Bloco eyebrow="Entregas comuns" titulo="O que a gestão inclui."><Lista itens={gestao.lista} colunas /></Bloco>}
+    {l.planos && <section data-stage-section="wide" className="internal-page reading-veil relative section-seam py-14 md:py-20">
+      <div data-stage-zone="reading" className="mx-auto max-w-[1440px] px-6 md:px-12">
+        <p className="t-label mb-3">Níveis de gestão</p>
+        <h2 className="section-heading mb-8">Compare as opções.</h2>
+        <div className="grid gap-5 md:grid-cols-2">
+          {l.planos.map((p, i) => <article key={p.nome} className={`offer-card glass glow-edge flex flex-col gap-4 rounded-md p-6 md:p-8 ${i===1?"offer-card--featured":""}`}>
+            <div className="flex items-center justify-between gap-3">
+              <span className="inline-flex size-12 items-center justify-center rounded-full border border-dourado/50">{i===0?<Crosshair className="size-6 text-dourado-claro" strokeWidth={1.5}/>:<GitMerge className="size-6 text-dourado-claro" strokeWidth={1.5}/>}</span>
+              <span className="t-label">0{i + 1}</span>
+            </div>
+            <h3 className="font-serif text-3xl text-marfim">{p.nome}</h3>
+            <p className="font-serif text-xl italic text-dourado-claro">{p.resumo}</p>
+            <p className="t-body flex-1">{p.detalhe}</p>
+            <Btn href={whatsappLink(`Olá! Vim pelo site da Vittori e quero saber mais sobre a ${p.nome} da Vittori Performance.`)} variant="secondary">Conversar sobre {p.nome}</Btn>
+          </article>)}
+        </div>
+      </div>
+    </section>}
+    {l.extra && <Bloco eyebrow={l.extra.eyebrow} titulo={l.extra.titulo}><p className="t-body max-w-4xl">{l.extra.texto}</p></Bloco>}
   </>;
 }
 
@@ -149,14 +177,21 @@ export function ServicePage({l}:{l:Linha}) {
       </Bloco>)}
       {l.cards && <Bloco titulo={l.cards.titulo}>
         <p className="t-body mb-6">{l.cards.texto}</p>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{l.cards.itens.map(c=><article key={c.titulo} className="glass p-6"><h3 className="font-serif text-2xl text-dourado-claro">{c.titulo}</h3><p className="t-meta mt-3">{c.texto}</p></article>)}</div>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{l.cards.itens.map((c,ci)=>{
+          const Icon=[Fingerprint,PenTool,Palette,BookOpen][ci%4]??Sparkles;
+          return <article key={c.titulo} className="glass offer-card glow-edge reveal-item relative flex flex-col overflow-hidden p-6">
+            <span aria-hidden className="svc-num absolute -right-2 -top-4 text-6xl opacity-40">0{ci+1}</span>
+            <span className="inline-flex size-11 items-center justify-center rounded-full border border-dourado/40"><Icon aria-hidden="true" className="size-5 text-dourado-claro" strokeWidth={1.4}/></span>
+            <h3 className="mt-4 font-serif text-2xl text-dourado-claro">{c.titulo}</h3>
+            <p className="t-meta mt-3 flex-1">{c.texto}</p>
+          </article>;})}
+        </div>
       </Bloco>}
       {l.incluso && <Bloco titulo="O que está incluído"><Lista itens={l.incluso} colunas/></Bloco>}
       {l.planos && <OutrosPlanos l={l}/>}
       {l.extra && <Bloco eyebrow={l.extra.eyebrow} titulo={l.extra.titulo}>{l.extra.texto && <p className="t-body">{l.extra.texto}</p>}{l.extra.lista && <Lista itens={l.extra.lista} colunas/>}</Bloco>}
     </>}
     {l.comoFunciona && <Bloco titulo="Como funciona"><Passos itens={l.comoFunciona}/></Bloco>}
-    {l.faq.length>0 && <Bloco titulo="Perguntas frequentes" layout="faq"><Faq itens={l.faq}/></Bloco>}
     <section data-stage-section="left" className="internal-page reading-veil finale-glow relative section-seam py-16 md:py-20">
       <div data-stage-zone="reading" className="mx-auto max-w-[1440px] px-6 md:px-12">
         <h2 className="section-heading max-w-3xl">Vamos conversar sobre seu projeto?</h2>

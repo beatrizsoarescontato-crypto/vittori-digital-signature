@@ -31,7 +31,7 @@ const KEYS: Key[] = [
 ];
 const KEYS_MOBILE_X = 0; // no celular o V fica centrado atrás do texto
 
-const BG = "#12040a";
+const BG = "#1a060f";
 const mouse = { x: 0, y: 0 };
 
 function setUniform(uniforms: Record<string, THREE.IUniform>, name: string, value: number) {
@@ -472,7 +472,7 @@ function Monogram({ mobile }: { mobile: boolean }) {
     vg.rotation.y = damp(vg.rotation.y, (ry ?? 0) + mouse.x * 0.32 + spin.current * 0.35, 2.4, dt);
 
     // Partículas: chegam espalhadas do mergulho e se montam; respiram nos Serviços.
-    const breathe = sm(0.22, 0.34, p) * (1 - sm(0.5, 0.6, p)) * 0.12;
+    const breathe = sm(0.22, 0.34, p) * (1 - sm(0.5, 0.6, p)) * 0.18;
     const dispersion = Math.max(sm(0.22, 0.34, p) * (1 - sm(0.5, 0.6, p)), Math.min(1, Math.abs(spin.current) * 1.2));
     const choreography = eclipseState(appear, dispersion, reading.current);
     const u = (vPts.material as THREE.ShaderMaterial).uniforms;

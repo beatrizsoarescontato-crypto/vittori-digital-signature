@@ -84,26 +84,25 @@ export function useScrollReveal(pathname: string) {
           });
         });
 
-        // Mergulho entre seções: a próxima chega do fundo, a anterior se desfaz no desfoque.
+        // Mergulho entre seções: a próxima chega do fundo, a anterior recua com suavidade.
+        // Sem desfoque: o blur com scrub ficava preso ao rolar de volta para cima.
         gsap.utils.toArray<HTMLElement>("main > section").forEach((sec, i) => {
           if (i === 0) return;
           gsap.fromTo(
             sec,
-            { opacity: 0.15, scale: 0.94, filter: "blur(10px)" },
+            { opacity: 0.4, scale: 0.97 },
             {
               opacity: 1,
               scale: 1,
-              filter: "blur(0px)",
               ease: "none",
-              scrollTrigger: { trigger: sec, start: "top 100%", end: "top 55%", scrub: 0.6 },
+              scrollTrigger: { trigger: sec, start: "top 100%", end: "top 62%", scrub: 0.4 },
             },
           );
           gsap.to(sec, {
-            opacity: 0.25,
-            filter: "blur(6px)",
+            opacity: 0.45,
             ease: "none",
             immediateRender: false,
-            scrollTrigger: { trigger: sec, start: "bottom 35%", end: "bottom 0%", scrub: 0.6 },
+            scrollTrigger: { trigger: sec, start: "bottom 30%", end: "bottom 0%", scrub: 0.4 },
           });
         });
 
