@@ -1,0 +1,12 @@
+{
+  "source": "same-project-code-archive",
+  "capabilities": [
+    {"capability":"code","source":"VITTORI_CODIGO_ATUALIZADO_30OUT2026.zip","outcome":"selective merge into existing site","status":"in_progress","next_action":"validate pages and navigation"},
+    {"capability":"schema, records, auth identities, authorization","source":"source inspection and existing static public site","outcome":"not applicable; no data store or login detected","status":"not_applicable","next_action":null},
+    {"capability":"uploaded file bytes","source":"existing portfolio asset pointers","outcome":"preserve existing media unchanged","status":"preserved","next_action":"verify previews"},
+    {"capability":"external providers and secrets","source":"centralized WhatsApp contacts","outcome":"preserve official contact destinations; no private keys detected","status":"preserved","next_action":"verify links"},
+    {"capability":"public endpoints, callbacks, webhooks, schedules","source":"sitemap, robots, historical routes","outcome":"preserve sitemap/robots and redirect historical commercial routes","status":"in_progress","next_action":"verify redirects"},
+    {"capability":"cutover","source":"existing published site","outcome":"preview only; no publication requested","status":"pending","next_action":"owner reviews and publishes"},
+    {"capability":"verification","source":"uploaded guide","outcome":"tests and desktop/mobile browser checks required","status":"pending","next_action":"run validation; owner approves halo appearance"}
+  ]
+}
