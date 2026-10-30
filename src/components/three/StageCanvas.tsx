@@ -351,7 +351,7 @@ void main() {
 }`;
 
 function Monogram({ mobile }: { mobile: boolean }) {
-  const { viewport, gl } = useThree();
+  const { viewport, gl, camera } = useThree();
   const vGroup = useRef<THREE.Group>(null);
   const stars = useRef<(THREE.Mesh | null)[]>([]);
   const spin = useRef(0);
@@ -368,10 +368,11 @@ function Monogram({ mobile }: { mobile: boolean }) {
     const measure = () => {
       frame = 0;
       const w = window.innerWidth, h = window.innerHeight;
-      protectedBounds.current = zones.length ? zones.map(el => {
+      const bounds = zones.map(el => {
         const r = el.getBoundingClientRect();
         return { left: r.left / w, right: r.right / w, top: r.top / h, bottom: r.bottom / h };
-      }) : undefined;
+      });
+      protectedBounds.current = document.querySelector(".internal-page") || bounds.some(b => b.bottom > 0.08 && b.top < 0.95) ? bounds : undefined;
       section.current = "none";
       for (const el of elements) {
         const r = el.getBoundingClientRect();
@@ -463,9 +464,10 @@ function Monogram({ mobile }: { mobile: boolean }) {
     const targetScale = (sc ?? 1) * (chor.active ? chor.scale : 1);
     const base = Math.min(viewport.height * (mobile ? 0.22 : 0.27), viewport.width * (mobile ? 0.34 : 0.2));
     vg.scale.setScalar(damp(vg.scale.x || base, base * targetScale, 3, dt));
-    vg.position.x = damp(vg.position.x, viewport.width * targetX, 2.2, dt);
-    vg.position.y = damp(vg.position.y, viewport.height * (chor.active ? chor.y : (y ?? 0) + (mobile ? 0.12 : 0)) + Math.sin(t * 0.5) * 0.06, 2.6, dt);
     vg.position.z = damp(vg.position.z, (z ?? 0) - Math.abs(spin.current) * 0.8 + (chor.active ? chor.zOffset : 0), 2.2, dt);
+    const plane = protectedBounds.current && chor.active ? viewport.getCurrentViewport(camera, vg.position) : viewport;
+    vg.position.x = damp(vg.position.x, plane.width * targetX, 2.2, dt);
+    vg.position.y = damp(vg.position.y, plane.height * (chor.active ? chor.y : (y ?? 0) + (mobile ? 0.12 : 0)) + Math.sin(t * 0.5) * 0.06, 2.6, dt);
     vg.rotation.x = damp(vg.rotation.x, (rx ?? 0) + mouse.y * 0.18, 2.6, dt);
     vg.rotation.y = damp(vg.rotation.y, (ry ?? 0) + mouse.x * 0.32 + spin.current * 0.35, 2.4, dt);
 
