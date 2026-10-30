@@ -195,7 +195,7 @@ const FAQ = [
   { q: "Tem contrato?", a: "Sim, com escopo, prazos, entregas e responsabilidades dos dois lados por escrito." },
   {
     q: "Qual o prazo do contrato?",
-    a: "6 ou 12 meses. É o tempo que o marketing precisa para sair da fase de teste e virar resultado.",
+    a: "Nos serviços contínuos, trabalhamos com contratos de 6 ou 12 meses. Projetos pontuais têm escopo e prazos próprios. O período de contrato não é uma garantia de resultado em um mês fixo.",
   },
   {
     q: "Vocês atendem fora de Brasília?",

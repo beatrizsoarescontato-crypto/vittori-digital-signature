@@ -368,7 +368,7 @@ function Monogram({ mobile }: { mobile: boolean }) {
     const measure = () => {
       frame = 0;
       const w = window.innerWidth, h = window.innerHeight;
-      const bounds = zones.map(el => {
+      const bounds = zones.filter(el => el.getBoundingClientRect().height > 0).map(el => {
         const r = el.getBoundingClientRect();
         return { left: r.left / w, right: r.right / w, top: r.top / h, bottom: r.bottom / h };
       });
@@ -387,7 +387,7 @@ function Monogram({ mobile }: { mobile: boolean }) {
     const discover = () => {
       resize.disconnect();
       elements = Array.from(document.querySelectorAll<HTMLElement>("[data-stage-section]"));
-      zones = Array.from(document.querySelectorAll<HTMLElement>("[data-stage-zone]"));
+      zones = Array.from(document.querySelectorAll<HTMLElement>("[data-stage-zone], [data-stage-section] :is(h1,h2,h3,p,ul,ol):not([data-stage-zone])"));
       zones.forEach(el => resize.observe(el));
       schedule();
     };
