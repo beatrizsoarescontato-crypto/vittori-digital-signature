@@ -3,7 +3,7 @@ import { Environment, Lightformer } from "@react-three/drei";
 import { Bloom, EffectComposer, Vignette } from "@react-three/postprocessing";
 import { Suspense, useEffect, useMemo, useRef } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { EXPERIENCE, eclipseState, portalLayout, portalSequence, sectionChoreography, type TextSide } from "./experienceRules";
+import { EXPERIENCE, eclipseState, portalLayout, portalSequence, sectionChoreography, type TextSide, type ReadingBounds } from "./experienceRules";
 import { SceneReadiness } from "./SceneReadiness";
 import * as THREE from "three";
 import { Font } from "three/examples/jsm/loaders/FontLoader.js";
@@ -359,18 +359,43 @@ function Monogram({ mobile }: { mobile: boolean }) {
   const formationStart = useRef<number | null>(null);
   const reading = useRef(0);
   const section = useRef<TextSide>("none");
+  const protectedBounds = useRef<ReadingBounds[] | undefined>(undefined);
   const haloLevel = useRef(0);
   useEffect(() => {
-    const elements = Array.from(document.querySelectorAll<HTMLElement>("[data-stage-section]"));
-    const ratios = new Map<Element, number>();
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => ratios.set(entry.target, entry.intersectionRatio));
-      let best: Element | null = null; let max = 0.12;
-      ratios.forEach((r, el) => { if (r > max) { max = r; best = el; } });
-      section.current = best ? ((best as HTMLElement).dataset["stageSection"] as TextSide) : "none";
-    }, { threshold: [0, 0.12, 0.25, 0.5, 0.75] });
-    elements.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
+    let elements: HTMLElement[] = [];
+    let zones: HTMLElement[] = [];
+    let frame = 0;
+    const measure = () => {
+      frame = 0;
+      const w = window.innerWidth, h = window.innerHeight;
+      protectedBounds.current = zones.length ? zones.map(el => {
+        const r = el.getBoundingClientRect();
+        return { left: r.left / w, right: r.right / w, top: r.top / h, bottom: r.bottom / h };
+      }) : undefined;
+      section.current = "none";
+      for (const el of elements) {
+        const r = el.getBoundingClientRect();
+        if (r.top < h * 0.6 && r.bottom > h * 0.4) {
+          section.current = el.dataset["stageSection"] as TextSide;
+          break;
+        }
+      }
+    };
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(measure); };
+    const resize = new ResizeObserver(schedule);
+    const discover = () => {
+      resize.disconnect();
+      elements = Array.from(document.querySelectorAll<HTMLElement>("[data-stage-section]"));
+      zones = Array.from(document.querySelectorAll<HTMLElement>("[data-stage-zone]"));
+      zones.forEach(el => resize.observe(el));
+      schedule();
+    };
+    const mutations = new MutationObserver(discover);
+    mutations.observe(document.querySelector("main") ?? document.body, { childList: true, subtree: true });
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    discover();
+    return () => { resize.disconnect(); mutations.disconnect(); cancelAnimationFrame(frame); window.removeEventListener("scroll", schedule); window.removeEventListener("resize", schedule); };
   }, []);
 
   const vPts = useMemo(() => {
@@ -432,7 +457,7 @@ function Monogram({ mobile }: { mobile: boolean }) {
     stageScroll.vel = damp(stageScroll.vel, 0, 3, dt);
 
     const [x, y, z, rx, ry, sc] = sample(p);
-    const chor = sectionChoreography(section.current, mobile);
+    const chor = sectionChoreography(section.current, mobile, stageScroll.dive >= 1 && born.current >= 1 ? protectedBounds.current : undefined);
     reading.current = damp(reading.current, chor.readingSafety, 2.2, dt);
     const targetX = chor.active ? chor.x : mobile ? KEYS_MOBILE_X : x ?? 0;
     const targetScale = (sc ?? 1) * (chor.active ? chor.scale : 1);

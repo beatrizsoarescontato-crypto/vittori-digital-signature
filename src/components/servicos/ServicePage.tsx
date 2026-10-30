@@ -3,15 +3,17 @@ import type { Linha } from "@/content/servicos";
 import { Line } from "@/components/site/Lines";
 import { Check, Crown, Gem, Layers, Sparkles, Star } from "lucide-react";
 import { Btn, Faq } from "@/components/site/ui";
+import { VoltarContexto } from "@/components/site/Navegacao";
 
 const PLANO_ICONES = [Star, Layers, Gem, Crown];
 
 export function PageHero({ eyebrow, titulo, texto, children }: { eyebrow: string; titulo: string; texto: string; children?: ReactNode }) {
   return (
-    <section className="relative reading-veil pb-24 pt-14 md:pb-32 md:pt-20">
-      <div className="mx-auto max-w-[1440px] px-6 md:px-12">
+    <section data-stage-section="left" className="internal-page relative reading-veil pb-24 pt-28 md:pb-32 md:pt-32">
+      <div data-stage-zone="reading" className="mx-auto max-w-[1440px] px-6 md:px-12">
+        <VoltarContexto />
         <p className="t-label mb-8">✦ {eyebrow}</p>
-        <h1 data-lines className="title-1 max-w-5xl text-marfim">
+        <h1 data-lines className="internal-title max-w-5xl text-marfim">
           <Line>{titulo}</Line>
         </h1>
         <p data-reveal className="mt-10 max-w-2xl">
@@ -26,13 +28,13 @@ export function PageHero({ eyebrow, titulo, texto, children }: { eyebrow: string
 export function Bloco({ eyebrow, titulo, children, tom = "preto" }: { eyebrow?: string | undefined; titulo: string; children: ReactNode; tom?: "preto" | "marrom" | "bordo" }) {
   const bg = { preto: "", marrom: "", bordo: "finale-glow" }[tom];
   return (
-    <section className={`relative section-seam reading-veil py-24 md:py-32 ${bg}`}>
+    <section data-stage-section="wide" className={`internal-page relative section-seam reading-veil py-24 md:py-32 ${bg}`}>
       <div className="mx-auto grid max-w-[1440px] gap-12 px-6 md:grid-cols-12 md:px-12">
-        <div className="md:col-span-4">
+        <div data-stage-zone="reading" className="md:col-span-4">
           {eyebrow && <p className="t-label mb-5">{eyebrow}</p>}
           <h2 className="font-serif text-4xl font-light leading-tight text-marfim md:text-5xl">{titulo}</h2>
         </div>
-        <div data-reveal className="md:col-span-7 md:col-start-6">{children}</div>
+        <div data-stage-zone="reading" data-reveal className="min-w-0 md:col-span-7 md:col-start-6">{children}</div>
       </div>
     </section>
   );
@@ -132,7 +134,7 @@ export function ServicePage({ l }: { l: Linha }) {
             {l.planos.map((p, i) => {
               const Icon = PLANO_ICONES[i % PLANO_ICONES.length] ?? Sparkles;
               return (
-                <li key={p.nome} className={`reveal-item glass glow-edge flex flex-col gap-4 p-7 ${i === l.planos!.length - 1 && l.planos!.length > 1 ? "glass--bordo" : ""}`}>
+                <li key={p.nome} className={`reveal-item glass glow-edge flex min-w-0 flex-col gap-4 p-7 ${i === (l.planos?.length ?? 0) - 1 && (l.planos?.length ?? 0) > 1 ? "glass--bordo" : ""}`}>
                   <span className="flex size-12 items-center justify-center rounded-full border border-dourado/35"><Icon aria-hidden="true" className="size-5 text-dourado" strokeWidth={1.25} /></span>
                   <span className="t-label">Opção 0{i + 1}</span>
                   <span className="font-serif text-3xl font-medium text-marfim">{p.nome}</span>

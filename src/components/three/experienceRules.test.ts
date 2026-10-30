@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { eclipseState, portalLayout, portalSequence } from "./experienceRules";
+import { eclipseState, portalLayout, portalSequence, readingPlacement } from "./experienceRules";
 
 describe("approved experience rules", () => {
   it("holds all portal elements until actual scene readiness", () => {
@@ -39,6 +39,20 @@ describe("approved experience rules", () => {
 });
 import { sectionChoreography as sc } from "./experienceRules";
 describe("sectionChoreography", () => {
+  it("protects real left-hand reading bounds by using a clear right pocket", () => {
+    expect(readingPlacement([{ left: 0, right: 0.7, top: 0, bottom: 1 }])?.x).toBeCloseTo(0.38);
+  });
+  it("keeps the monogram and eclipse peripheral for full-width demos", () => {
+    expect(sc("wide", true, [{ left: 0, right: 1, top: 0, bottom: 1 }]).x).toBeCloseTo(0.64);
+  });
+  it("releases reading protection in empty transition space", () => {
+    expect(sc("wide", false, [{ left: 0, right: 1, top: 1.1, bottom: 2 }]).active).toBe(false);
+  });
+  it("measured protection does not alter the approved dispersion peak or particle alpha", () => {
+    const safety = sc("wide", false, [{ left: 0, right: 1, top: 0, bottom: 1 }]).readingSafety;
+    expect(eclipseState(1, 1, safety).peak).toBe(1);
+    expect(eclipseState(1, 1, safety).particleAlpha).toBeCloseTo(0.72);
+  });
   it("moves the V opposite to left-aligned text on desktop", () => expect(sc("left", false).x).toBe(0.3));
   it("moves the V opposite to right-aligned text on desktop", () => expect(sc("right", false).x).toBe(-0.3));
   it("pushes the V deep and dim behind wide text", () => { const r = sc("wide", false); expect(r.zOffset).toBe(-9); expect(r.readingSafety).toBe(1); });

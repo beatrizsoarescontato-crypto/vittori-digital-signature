@@ -29,14 +29,14 @@ export function Btn(props: BtnProps) {
       {(v === "primary" || v === "solid" || v === "light" || v === "link") && <ArrowRight aria-hidden="true" className="size-4 shrink-0" strokeWidth={1.5} />}
     </>
   );
-  if (props.href)
+  if (props.href !== undefined)
     return (
       <a href={props.href} target="_blank" rel="noopener noreferrer" className={cls}>
         {inner}
       </a>
     );
   return (
-    <Link to={props.to!} {...(props.hash ? { hash: props.hash } : {})} className={cls}>
+    <Link to={props.to} {...(props.hash ? { hash: props.hash } : {})} className={cls}>
       {inner}
     </Link>
   );

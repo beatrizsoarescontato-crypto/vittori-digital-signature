@@ -54,17 +54,6 @@ const ORNAMENTOS: Record<string, ReactNode> = {
   ),
 };
 
-/** Posição do ícone e numeral muda por frente: evita sete caixas iguais. */
-const LAYOUT: Record<string, { num: string; icon: string }> = {
-  presenca: { num: "text-[7rem] self-end", icon: "order-first" },
-  performance: { num: "text-6xl", icon: "" },
-  estudio: { num: "text-[7rem]", icon: "order-first" },
-  digital: { num: "text-6xl self-end", icon: "" },
-  identidade: { num: "text-6xl", icon: "order-first" },
-  campanha: { num: "text-[7rem] self-end", icon: "" },
-  inteligencia: { num: "text-6xl", icon: "order-first" },
-};
-
 function tilt(e: PointerEvent<HTMLElement>) {
   if (e.pointerType !== "mouse") return;
   const el = e.currentTarget;
@@ -119,7 +108,6 @@ export function ServicosHome() {
             {CARDS.map((c, i) => {
               const Icon = ICONES[c.key] ?? Sparkles;
               const ia = c.key === "inteligencia";
-              const lay = LAYOUT[c.key] ?? { num: "text-6xl", icon: "" };
               return (
                 <Link
                   key={c.key}
@@ -128,20 +116,20 @@ export function ServicosHome() {
                   onPointerMove={tilt}
                   onPointerLeave={reset}
                   data-service={c.key}
-                  className={`svc-card glow-edge group relative flex min-h-[30rem] min-w-0 shrink-0 basis-[86%] flex-col overflow-hidden p-7 sm:basis-[62%] md:p-9 lg:basis-[calc((100%-2.5rem)/3)] ${ia ? "glass glass--bordo" : "glass"}`}
+                  className={`svc-card glow-edge group relative grid min-w-0 shrink-0 basis-[86%] overflow-hidden p-7 sm:basis-[62%] md:p-9 lg:basis-[calc((100%-2.5rem)/3)] ${ia ? "glass glass--bordo" : "glass"}`}
                 >
                   {ORNAMENTOS[c.key]}
-                  <div className="flex items-start justify-between gap-4">
-                    <span className={`svc-num ${lay.num}`} aria-hidden="true">0{i + 1}</span>
-                    <span className={`flex size-14 shrink-0 items-center justify-center rounded-full border border-dourado/35 ${lay.icon}`}>
+                  <div className="flex h-20 items-center justify-between gap-4">
+                    <span className="svc-num text-7xl" aria-hidden="true">0{i + 1}</span>
+                    <span className="flex size-14 shrink-0 items-center justify-center rounded-full border border-dourado/35">
                       <Icon className="size-6 text-dourado" strokeWidth={1.25} aria-hidden="true" />
                     </span>
                   </div>
-                  <div className="mt-auto pt-10">
-                    <p className="t-label">{c.linha}</p>
-                    <h3 className="t-title mt-4">{c.titulo}</h3>
+                  <div className="svc-copy pt-8">
+                    <p className="service-name">{c.linha}</p>
+                    <h3 className="t-title">{c.titulo}</h3>
                     <span aria-hidden className="mt-6 block h-px w-12 bg-dourado/50 transition-all duration-700 group-hover:w-24" />
-                    <p className="t-meta mt-5">{c.curta}</p>
+                    <p className="t-body mt-5">{c.curta}</p>
                     <span className="vlink mt-6">Conhecer <ArrowRight className="size-4" aria-hidden="true" /></span>
                   </div>
                 </Link>
