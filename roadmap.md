@@ -1,8 +1,8 @@
 # Intervenção nos 4 pendentes (30/10, 06h)
-- [x] Arraste dos serviços: mouse testado em Chromium, Firefox e WebKit; toque no celular; rolagem vertical livre; clique abre o card. Aguarda confirmação da usuária na prévia.
-- [ ] Halo com partículas: visível no computador nas capturas; no celular ainda discreto. Aguarda avaliação visual.
+- [x] Arraste dos serviços (rodada 3 itens): mouse/caneta agora por Pointer Events com captura; toque continua no Embla. Testado arraste rápido e lento em 1280 px e 502 px, setas, clique no card e toque no celular. Aguarda confirmação da usuária na prévia.
+- [ ] Halo com partículas: no pico da dispersão o eclipse vai para o maior espaço vazio medido (cards, textos e rodapé protegidos) e cresce até ele. Visível nas capturas de computador e celular. Aguarda avaliação visual e fluidez em aparelho real.
 - [x] Emenda entre primeira e segunda seção: borda inferior da vinheta suavizada. Aguarda avaliação visual.
-- [x] Rodapé compacto (cerca de 130 px no computador). Aguarda avaliação visual.
+- [x] Rodapé compacto (133 px no computador, altura mantida) e integrado ao cosmos: sem faixa, bordô escurecendo até a base. Aguarda avaliação visual.
 
 # Refinamento visual com preservação de textos (30/10)
 - [x] Textos autorizados: Método Vittori (4 etapas novas), Vittori Performance (Implementação pontual + Gestão recorrente com Direcionada/Integrada), descritivos de Digital (3 opções) e de Identidade (4 modalidades). Nenhum outro texto alterado.

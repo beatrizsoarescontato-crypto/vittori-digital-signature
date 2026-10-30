@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type PointerEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type PointerEvent, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import useEmblaCarousel from "embla-carousel-react";
 import { ArrowLeft, ArrowRight, Camera, ChartNoAxesCombined, Globe, Megaphone, MessagesSquare, PenTool, Sparkles, type LucideIcon } from "lucide-react";
@@ -77,9 +77,13 @@ function reset(e: PointerEvent<HTMLElement>) {
 
 /** Native vertical page flow with a draggable, keyboard-accessible services carousel. */
 export function ServicosHome() {
-  const [viewportRef, api] = useEmblaCarousel({ align: "start", containScroll: "trimSnaps", dragFree: true });
+  // Touch stays with Embla; mouse/pen drag uses Pointer Events with capture (below),
+  // which does not depend on legacy mousedown/mousemove reaching the document.
+  const [viewportRef, api] = useEmblaCarousel({ align: "start", containScroll: "trimSnaps", dragFree: true, watchDrag: (_a, evt) => evt.type === "touchstart" });
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(true);
+  const drag = useRef<{ id: number; startX: number; lastX: number; samples: { x: number; t: number }[]; moved: boolean } | null>(null);
+  const suppressClick = useRef(false);
   const update = useCallback(() => {
     if (!api) return;
     setCanPrev(api.canScrollPrev());
@@ -91,6 +95,45 @@ export function ServicosHome() {
     api.on("select", update).on("scroll", update).on("reInit", update);
     return () => { api.off("select", update).off("scroll", update).off("reInit", update); };
   }, [api, update]);
+
+  const onPointerDown = (e: PointerEvent<HTMLDivElement>) => {
+    if (!api || e.pointerType === "touch" || e.button !== 0) return;
+    const eng = api.internalEngine();
+    eng.scrollBody.useFriction(0).useDuration(0);
+    eng.target.set(eng.location);
+    suppressClick.current = false;
+    drag.current = { id: e.pointerId, startX: e.clientX, lastX: e.clientX, samples: [{ x: e.clientX, t: e.timeStamp }], moved: false };
+  };
+  const onPointerMove = (e: PointerEvent<HTMLDivElement>) => {
+    const d = drag.current;
+    if (!d || !api || e.pointerId !== d.id) return;
+    if (!d.moved) {
+      if (Math.abs(e.clientX - d.startX) < 6) return;
+      d.moved = true;
+      e.currentTarget.setPointerCapture(e.pointerId);
+    }
+    const eng = api.internalEngine();
+    eng.scrollBody.useFriction(0.3).useDuration(0.75);
+    eng.target.add(e.clientX - d.lastX);
+    eng.animation.start();
+    d.lastX = e.clientX;
+    d.samples.push({ x: e.clientX, t: e.timeStamp });
+    if (d.samples.length > 6) d.samples.shift();
+    e.preventDefault();
+  };
+  const onPointerEnd = (e: PointerEvent<HTMLDivElement>) => {
+    const d = drag.current;
+    if (!d || e.pointerId !== d.id) return;
+    drag.current = null;
+    if (!d.moved || !api) return;
+    suppressClick.current = true;
+    const first = d.samples.find((s) => e.timeStamp - s.t < 120) ?? d.samples[d.samples.length - 1]!;
+    const dt = e.timeStamp - first.t;
+    const velocity = dt > 0 ? (e.clientX - first.x) / dt : 0;
+    const eng = api.internalEngine();
+    eng.scrollBody.useDuration(43).useFriction(0.68);
+    eng.scrollTo.distance(Math.abs(velocity) > 0.1 ? velocity * 500 : 0, false);
+  };
 
   return (
     <section data-stage-section="wide" id="servicos" className="relative section-seam py-14 md:py-20 reading-veil">
@@ -108,7 +151,7 @@ export function ServicosHome() {
             <Button type="button" variant="ghost" className="vicon" disabled={!canNext} onClick={() => api?.scrollNext()} aria-label="Próximos serviços" title="Próximos serviços"><ArrowRight className="size-5" strokeWidth={1.5} /></Button>
           </div>
         </div>
-        <div ref={viewportRef} className="-mx-2 mt-7 overflow-hidden px-2 py-4" role="region" aria-label="Serviços da Vittori" tabIndex={0} onDragStart={(e) => e.preventDefault()} onKeyDown={(e) => { if (e.key === "ArrowRight") { e.preventDefault(); api?.scrollNext(); } if (e.key === "ArrowLeft") { e.preventDefault(); api?.scrollPrev(); } }}>
+        <div ref={viewportRef} className="-mx-2 mt-7 overflow-hidden px-2 py-4" role="region" aria-label="Serviços da Vittori" tabIndex={0} onDragStart={(e) => e.preventDefault()} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerEnd} onPointerCancel={onPointerEnd} onClickCapture={(e) => { if (suppressClick.current) { e.preventDefault(); e.stopPropagation(); suppressClick.current = false; } }} onKeyDown={(e) => { if (e.key === "ArrowRight") { e.preventDefault(); api?.scrollNext(); } if (e.key === "ArrowLeft") { e.preventDefault(); api?.scrollPrev(); } }}>
           <div className="flex touch-pan-y select-none gap-5 cursor-grab active:cursor-grabbing">
             {CARDS.map((c, i) => {
               const Icon = ICONES[c.key] ?? Sparkles;

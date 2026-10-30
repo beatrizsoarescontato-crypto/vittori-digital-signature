@@ -344,8 +344,9 @@ void main() {
   float halo = exp(-r * mix(4.2, 3.0, uPeak)) * (0.35 + 0.45 * uPeak);
   vec3 gold = vec3(0.95, 0.76, 0.42);
   float arc = mix(0.18 + 0.82 * pow(0.5 + 0.5 * cos(ang - 0.6), 2.0), 1.0, uPeak);
-  vec3 col = gold * (rim * 1.2 * arc + corona * 0.7 + halo);
-  float a = max(core * 0.92, clamp(rim * 1.2 * arc + corona * 0.85 + halo, 0.0, 1.0));
+  float glow = 0.7 + 0.8 * uPeak;
+  vec3 col = gold * (rim * (1.2 + 0.6 * uPeak) * arc + corona * glow + halo);
+  float a = max(core * 0.92, clamp(rim * 1.2 * arc + corona * (0.85 + 0.5 * uPeak) + halo, 0.0, 1.0));
   vec3 dark = vec3(0.05, 0.01, 0.02);
   gl_FragColor = vec4(mix(col, dark, core), a * uAlpha * (1.0 - smoothstep(0.36, 0.5, r)));
 }`;
@@ -362,6 +363,9 @@ function Monogram({ mobile }: { mobile: boolean }) {
   const section = useRef<TextSide>("none");
   const protectedBounds = useRef<ReadingBounds[] | undefined>(undefined);
   const haloLevel = useRef(0);
+  const lastPocket = useRef<{ x: number; y: number } | null>(null);
+  const eclWorld = useMemo(() => new THREE.Vector3(), []);
+  const eclTmp = useMemo(() => new THREE.Vector3(), []);
   useEffect(() => {
     let elements: HTMLElement[] = [];
     let zones: HTMLElement[] = [];
@@ -388,7 +392,7 @@ function Monogram({ mobile }: { mobile: boolean }) {
     const discover = () => {
       resize.disconnect();
       elements = Array.from(document.querySelectorAll<HTMLElement>("[data-stage-section]"));
-      zones = Array.from(document.querySelectorAll<HTMLElement>("[data-stage-zone], [data-stage-section] :is(h1,h2,h3,p,ul,ol):not([data-stage-zone])"));
+      zones = Array.from(document.querySelectorAll<HTMLElement>("[data-stage-zone], [data-stage-section] :is(h1,h2,h3,p,ul,ol,.glass):not([data-stage-zone]), footer :is(p,nav)"));
       zones.forEach(el => resize.observe(el));
       schedule();
     };
@@ -460,16 +464,31 @@ function Monogram({ mobile }: { mobile: boolean }) {
 
     const [x, y, z, rx, ry, sc] = sample(p);
     const dispersion = Math.max(sm(0.22, 0.34, p) * (1 - sm(0.5, 0.6, p)), Math.min(1, Math.abs(spin.current) * 1.2));
-    const chor = sectionChoreography(section.current, mobile, stageScroll.dive >= 1 && born.current >= 1 ? protectedBounds.current : undefined, sm(0.2, 0.9, dispersion));
+    const peakNow = sm(0.2, 0.9, dispersion);
+    const chor = sectionChoreography(section.current, mobile, stageScroll.dive >= 1 && born.current >= 1 ? protectedBounds.current : undefined, peakNow, viewport.aspect, lastPocket.current);
+    lastPocket.current = chor.pocket;
     reading.current = damp(reading.current, chor.readingSafety, 2.2, dt);
     const targetX = chor.active ? chor.x : mobile ? KEYS_MOBILE_X : x ?? 0;
     const targetScale = (sc ?? 1) * (chor.active ? chor.scale : 1);
     const base = Math.min(viewport.height * (mobile ? 0.22 : 0.27), viewport.width * (mobile ? 0.34 : 0.2));
-    vg.scale.setScalar(damp(vg.scale.x || base, base * targetScale, 3, dt));
     vg.position.z = damp(vg.position.z, (z ?? 0) - Math.abs(spin.current) * 0.8 + (chor.active ? chor.zOffset : 0), 2.2, dt);
     const plane = protectedBounds.current && chor.active ? viewport.getCurrentViewport(camera, vg.position) : viewport;
-    vg.position.x = damp(vg.position.x, plane.width * targetX, 2.2, dt);
-    vg.position.y = damp(vg.position.y, plane.height * (chor.active ? chor.y : (y ?? 0) + (mobile ? 0.12 : 0)) + Math.sin(t * 0.5) * 0.06, 2.6, dt);
+    // At the peak the eclipse is sized to the measured empty pocket and its projected screen
+    // position is fed back (group rotation/perspective shift it): luminous, never over text.
+    let pocketScale = 0;
+    let pocketTarget: { x: number; y: number } | null = null;
+    if (chor.radius > 0) {
+      // Exact placement of the eclipse centre (offset inside the rotated, scaled group).
+      eclWorld.set(0, 0.05, -0.6).multiplyScalar(vg.scale.x).applyEuler(vg.rotation);
+      const eclPlane = viewport.getCurrentViewport(camera, eclTmp.set(0, 0, vg.position.z + eclWorld.z));
+      pocketScale = (chor.radius * eclPlane.height) / (0.5 * (3.4 + 1.4 * peakNow));
+      pocketTarget = { x: chor.x * eclPlane.width - eclWorld.x, y: chor.y * eclPlane.height - eclWorld.y };
+    }
+    // The halo's soft outer glow (≈0.5 of the plane) fills the pocket; blend in with the peak.
+    const scaleTarget = pocketTarget ? base * targetScale + (pocketScale - base * targetScale) * peakNow : base * targetScale;
+    vg.scale.setScalar(damp(vg.scale.x || base, scaleTarget, 3, dt));
+    vg.position.x = damp(vg.position.x, pocketTarget ? pocketTarget.x : plane.width * targetX, pocketTarget ? 3.5 : 2.2, dt);
+    vg.position.y = damp(vg.position.y, (pocketTarget ? pocketTarget.y : plane.height * (chor.active ? chor.y : (y ?? 0) + (mobile ? 0.12 : 0))) + Math.sin(t * 0.5) * 0.06, pocketTarget ? 3.5 : 2.6, dt);
     vg.rotation.x = damp(vg.rotation.x, (rx ?? 0) + mouse.y * 0.18, 2.6, dt);
     vg.rotation.y = damp(vg.rotation.y, (ry ?? 0) + mouse.x * 0.32 + spin.current * 0.35, 2.4, dt);
 
