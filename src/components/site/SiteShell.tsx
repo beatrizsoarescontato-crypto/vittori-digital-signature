@@ -8,7 +8,6 @@ import { SoundToggle } from "./SoundToggle";
 import { EntryGate } from "./EntryGate";
 import { ScrollRevealController } from "./ScrollRevealController";
 import { ClientStage } from "@/components/ClientCanvas";
-import { DepthHud } from "./DepthHud";
 import { useNavegacaoContextual } from "./Navegacao";
 
 /** Moldura comum a todas as páginas públicas. */
@@ -55,7 +54,6 @@ export function SiteShell({ children, fab = true }: { children: ReactNode; fab?:
       </div>
        <div ref={layer} className="site-layer">
       <Nav />
-      <DepthHud />
       <Cursor />
        <main className="relative z-10">
          <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-20 overflow-hidden">

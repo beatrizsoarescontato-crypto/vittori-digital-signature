@@ -11,7 +11,6 @@ export const Route = createFileRoute("/sitemap.xml")({
           "/",
           "/portfolio",
           ...LINHAS.map((l) => `/servicos/${l.slug}`),
-          "/servicos/inteligencia",
           ...PRODUTOS_IA.map((p) => `/servicos/inteligencia/${p.slug}`),
           "/privacidade",
           "/cookies",

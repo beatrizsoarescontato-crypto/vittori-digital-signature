@@ -3,6 +3,7 @@
 export type Faq = { q: string; a: string };
 export type Bloco = { eyebrow?: string; titulo: string; texto?: string; lista?: string[]; para?: string };
 export type Card = { titulo: string; texto: string };
+export type Plano = { nome: string; detalhe?: string; resumo?: string; publicacoes?: number; reels?: number; duracaoReelSegundos?: number; quantidadeCaptacoes?: number; horasPorCaptacao?: number; directsPorDiaUtil?: number; captacoes?: string; diferenciais?: string[]; destaque?: boolean };
 
 export type Linha = {
   slug: "presenca" | "performance" | "estudio" | "digital" | "identidade" | "campanha";
@@ -13,7 +14,7 @@ export type Linha = {
   descricao: string;
   muda?: string[];
   incluso?: string[];
-  planos?: { nome: string; detalhe?: string }[];
+  planos?: Plano[];
   blocos?: Bloco[];
   cards?: { titulo: string; texto: string; itens: Card[] };
   extra?: Bloco;
@@ -28,149 +29,73 @@ export const LINHAS: Linha[] = [
   {
     slug: "presenca",
     linha: "Vittori Presença",
-    titulo: "Sua marca no ar, todo mês, do jeito certo.",
-    curta:
-      "A gente planeja, grava, edita, desenha e publica. Você aprova e volta a cuidar do seu negócio.",
-    descricao:
-      "A gente planeja, grava, edita, desenha e publica. Você aprova e volta a cuidar do seu negócio. Sem post feito às pressas, sem sumir por semanas.",
+    titulo: "Sua marca merece mais do que publicações improvisadas.",
+    curta: "Planejamento, conteúdo e produção audiovisual para uma presença profissional e consistente.",
+    descricao: "Planejamos, produzimos e gerenciamos sua presença nas redes sociais, unindo estratégia, direção criativa e produção audiovisual para que sua comunicação acompanhe a qualidade do seu trabalho.",
     muda: [
-      "Um perfil que passa confiança antes da primeira conversa.",
-      "Constância sem você pensar em post.",
-      "Tempo de volta para cuidar do negócio.",
+      "Um perfil organizado e alinhado à qualidade do seu negócio.",
+      "Conteúdo planejado com direção criativa e constância.",
+      "Mais tempo para cuidar do seu trabalho enquanto a comunicação acontece.",
     ],
     incluso: [
-      "Reunião de onboarding e diagnóstico do seu perfil",
-      "Planejamento mensal com calendário de publicações",
-      "Reels editados, carrosséis e posts com direção de arte",
-      "Roteiro e artes para stories",
-      "Captação audiovisual no mês, com a nossa equipe",
-      "Relatório de métricas e leitura do que funcionou",
-      "Benchmark de concorrentes e referências",
+      "Diagnóstico, organização inicial da bio e do link do perfil",
+      "Organização dos destaques e criação ou padronização das capas",
+      "Planejamento editorial, calendário e aprovação de pautas",
+      "Roteiros, legendas e direção de arte",
+      "Produção e edição dos formatos previstos no plano, incluindo capas dos Reels",
+      "Publicação do conteúdo e relatório mensal de métricas",
+      "Stories planejados conforme a estratégia, o calendário e os materiais disponíveis",
     ],
     planos: [
-      { nome: "Essencial", detalhe: "3 publicações por semana, 1 captação de até 3h" },
-      {
-        nome: "Assinatura",
-        detalhe: "Publicação dia sim, dia não, 1 captação de até 5h, roteiro diário de stories",
-      },
-      { nome: "Legado", detalhe: "22 publicações por mês, 2 captações, reunião quinzenal" },
+      { nome: "Essencial", resumo: "Sua marca presente, organizada e consistente.", detalhe: "Para uma comunicação profissional com produção audiovisual enxuta.", publicacoes: 12, reels: 2, duracaoReelSegundos: 60, quantidadeCaptacoes: 1, horasPorCaptacao: 2, directsPorDiaUtil: 0, captacoes: "1 captação de até 2h", diferenciais: ["Reunião mensal", "Organização inicial do perfil incluída"] },
+      { nome: "Assinatura", resumo: "Mais conteúdo. Mais vídeo. Mais presença.", detalhe: "Para ampliar a frequência de publicações e a capacidade de produção audiovisual.", publicacoes: 16, reels: 4, duracaoReelSegundos: 60, quantidadeCaptacoes: 1, horasPorCaptacao: 5, directsPorDiaUtil: 0, captacoes: "1 captação de até 5h", diferenciais: ["Reunião mensal", "Organização inicial do perfil incluída"], destaque: true },
+      { nome: "Legado", resumo: "Da produção ao relacionamento com seu público.", detalhe: "Maior volume audiovisual, duas sessões de captação e atendimento inicial por Direct.", publicacoes: 22, reels: 8, duracaoReelSegundos: 60, quantidadeCaptacoes: 2, horasPorCaptacao: 5, directsPorDiaUtil: 2, captacoes: "2 captações de até 5h cada", diferenciais: ["Reunião quinzenal", "Gestão de Directs: duas verificações por dia útil", "Organização inicial do perfil incluída"] },
     ],
     comoFunciona: [
-      "Diagnóstico e perfil reformulado.",
-      "Pautas do mês para você aprovar em 24h.",
-      "Captação com direção.",
-      "Tudo aprovado e agendado com um mês de antecedência.",
+      "Diagnóstico e organização inicial do perfil.",
+      "Planejamento editorial e calendário para sua aprovação.",
+      "Captação, criação, edição e publicação do conteúdo contratado.",
+      "Relatório e ajustes conforme o planejamento.",
     ],
-    paraQuem:
-      "Para quem já é bom no que faz e sente que o Instagram não mostra isso. Profissionais liberais, clínicas, restaurantes, lojas, artistas e marcas locais que querem aparecer com constância e qualidade.",
-    paraQuemNao:
-      "Quem não pode gravar ao menos uma vez por mês, quem não consegue aprovar em até 48h ou quem quer seguidor comprado.",
     faq: [
-      {
-        q: "Preciso aparecer nos vídeos?",
-        a: "Não é obrigatório, mas marca com rosto cresce mais rápido. A gente dirige e deixa você à vontade.",
-      },
-      { q: "Quanto tempo vou gastar?", a: "Uma gravação por mês e alguns minutos para aprovar." },
-      {
-        q: "Vocês respondem o direct?",
-        a: "A gente interage com a comunidade. Dúvida de venda vai para o seu time, que conhece o cliente.",
-      },
+      { q: "Os Reels estão incluídos nas publicações?", a: "Sim. Os limites de Reels fazem parte do total mensal de 12, 16 ou 22 publicações. Cada Reel tem até 60 segundos, com capa incluída. Os demais formatos são distribuídos conforme o calendário aprovado." },
+      { q: "Preciso aparecer nos vídeos?", a: "Não. A captação pode envolver produtos, espaços, equipe e outros formatos adequados ao seu negócio. Apresentadores e modelos podem ser orçados à parte quando necessários." },
+      { q: "Como funcionam os Stories?", a: "São planejados conforme a estratégia e os materiais disponíveis. O escopo aprovado não inclui produção ilimitada sob demanda, e o atendimento de Directs é um serviço separado." },
+      { q: "As captações podem ser acumuladas?", a: "Não. Cada captação vale para o mês contratado, dentro da duração do plano. No Legado são duas sessões independentes, não uma diária de dez horas. Não podem ser transferidas ou utilizadas para eventos, cursos e outros projetos fora do conteúdo dos canais contratados." },
+      { q: "Vocês respondem o Direct?", a: "A Gestão de Directs está incluída somente no Legado: duas verificações por dia útil, em horários definidos. Respondemos dúvidas iniciais conforme roteiro aprovado e encaminhamos negociações, fechamento de vendas, reclamações complexas e demais demandas à sua equipe. Não é atendimento em tempo real." },
     ],
   },
   {
     slug: "performance",
     linha: "Vittori Performance",
-    titulo: "Campanhas orientadas a oportunidades reais de negócio.",
-    curta:
-      "Campanhas no Meta Ads e no Google Ads para gerar conversa, agendamento, visita ou venda.",
-    descricao:
-      "Campanhas no Meta Ads e no Google Ads pensadas para gerar conversa no WhatsApp, agendamento, visita ou venda. Você acompanha cada real investido.",
-    incluso: [
-      "Estratégia de campanhas por objetivo",
-      "Criação e testes de anúncios",
-      "Otimização contínua de públicos, criativos e verba",
-      "Relatório mensal com custo por contato e por venda",
-      "Google Meu Negócio (no plano Completo)",
-      "Acesso total às suas contas, os dados são seus",
-    ],
+    titulo: "Sua estrutura pronta. Suas campanhas sob direção.",
+    curta: "Implementação técnica e gestão de Meta Ads e Google Ads, com estratégia e mensuração.",
+    descricao: "Organizamos a estrutura necessária para anunciar e desenvolvemos campanhas com planejamento, mensuração e acompanhamento. Cada decisão parte dos objetivos e das necessidades reais do seu negócio.",
     blocos: [
-      {
-        eyebrow: "Implementação de tráfego",
-        titulo: "A base que faz o anúncio funcionar.",
-        texto:
-          "Antes de investir em anúncio, a estrutura precisa medir tudo. Muita agência cobra isso escondido na mensalidade ou deixa de fazer. A gente faz, documenta e entrega funcionando.",
-        lista: [
-          "Criação ou organização do Gerenciador de Negócios da Meta e da conta do Google Ads",
-          "Verificação de domínio e configuração de pagamento",
-          "Instalação do Pixel da Meta e da API de Conversões",
-          "Instalação do Google Tag Manager, Google Analytics 4 e tag do Google Ads",
-          "Configuração das conversões que importam (clique no WhatsApp, formulário, compra ou agendamento)",
-          "Conversões aprimoradas do Google (versão Completa)",
-          "Públicos salvos e de remarketing",
-          "Padrão de nomes e UTMs",
-          "Estrutura inicial de campanhas",
-          "Teste de tudo antes do primeiro real investido e documento com o que foi feito",
-        ],
-      },
+      { eyebrow: "Serviço pontual · Implementação de Tráfego", titulo: "A base técnica para começar a anunciar.", texto: "A implementação avulsa prepara contas, acessos e ferramentas de mensuração para a ativação de campanhas. É contratada uma única vez e não inclui gestão contínua de anúncios.", lista: [
+        "Organização ou configuração das contas de anúncios previstas no projeto",
+        "Permissões, domínio e revisão das configurações relevantes",
+        "Configuração de Pixel, tags e Analytics conforme a plataforma e a viabilidade técnica",
+        "Eventos de conversão aplicáveis ao projeto: formulário, contato, compra ou agendamento",
+        "Estrutura inicial de campanhas, públicos e parâmetros de rastreamento quando pertinentes",
+        "Testes técnicos de disparo de eventos e documentação das configurações realizadas",
+      ]},
+      { eyebrow: "Serviço recorrente · Gestão de Tráfego", titulo: "Campanhas acompanhadas do planejamento à otimização.", texto: "Planejamento, criação, testes, análise e otimização de campanhas em Meta Ads e/ou Google Ads. A implementação inicial necessária às campanhas contratadas já está incluída na gestão.", lista: [
+        "Gestão Direcionada: Meta Ads ou Google Ads",
+        "Gestão Integrada: Meta Ads e Google Ads coordenados",
+        "Estratégia e configuração de campanhas de acordo com o objetivo",
+        "Acompanhamento de indicadores e otimização recorrente",
+        "Relatório mensal e leitura dos resultados de cada canal contratado",
+        "Verba de mídia paga diretamente pelo cliente, separada dos honorários",
+      ]},
     ],
-    cards: {
-      titulo: "O anúncio é uma parte da venda.",
-      texto:
-        "O anúncio traz a pessoa. Quem vende é a sua oferta, o seu atendimento e a sua página. Antes de começar, a gente olha tudo isso com você.",
-      itens: [
-        {
-          titulo: "Verba",
-          texto:
-            "Abaixo de R$ 30 por dia, a plataforma aprende devagar. A gente mostra o valor certo para o seu objetivo.",
-        },
-        {
-          titulo: "Testes",
-          texto:
-            "As primeiras semanas são de aprendizado. É assim que se descobre o público e o criativo que vendem.",
-        },
-        {
-          titulo: "Velocidade de resposta",
-          texto:
-            "Quem responde em minutos vende muito mais do que quem responde em horas. O lead esfria rápido.",
-        },
-        {
-          titulo: "Discurso de venda",
-          texto:
-            "Um bom contato mal atendido vira um contato perdido. A gente ajuda a ajustar a primeira mensagem.",
-        },
-        {
-          titulo: "Remarketing",
-          texto:
-            "A maioria não compra na primeira visita. Falar de novo com quem já te viu é parte da estratégia.",
-        },
-      ],
-    },
-    extra: {
-      eyebrow: "Para lojas online",
-      titulo: "Na loja online, o anúncio leva até a porta.",
-      lista: [
-        "Velocidade do site no celular",
-        "Frete e prazo claros antes do checkout",
-        "Compra sem cadastro obrigatório",
-        "Carrinho abandonado recuperado por e-mail e WhatsApp",
-        "Upsell e e-mail marketing para quem já comprou",
-      ],
-      texto: "Se algum desses pontos falhar, a gente avisa antes de investir.",
-    },
-    paraQuem:
-      "Negócios que já têm uma oferta clara e querem previsibilidade de clientes novos todo mês. A implementação é para quem vai começar a anunciar, quem já anunciou sem saber o que deu resultado ou quem está trocando de agência.",
-    paraQuemNao:
-      "Quem quer começar com menos de R$ 1.500 por mês de anúncio, quem não tem quem responda os contatos no mesmo dia ou quem espera venda garantida na primeira semana.",
+    comoFunciona: ["Diagnóstico do negócio e definição do objetivo.", "Configuração ou validação da estrutura de anúncios.", "Ativação e acompanhamento das campanhas contratadas.", "Análise de indicadores e otimizações conforme os dados."],
     faq: [
-      {
-        q: "Quanto preciso investir em anúncio?",
-        a: "Depende do objetivo e do custo da sua venda. Na conversa, a gente calcula com você.",
-      },
-      {
-        q: "Em quanto tempo funciona?",
-        a: "As primeiras semanas são de teste. A partir do segundo mês, a gente escala o que deu certo.",
-      },
-      { q: "A conta fica no meu nome?", a: "Sempre. Cartão, contas e dados são seus." },
+      { q: "Posso contratar somente a implementação?", a: "Sim. É um projeto pontual de organização e preparação técnica. Não inclui a gestão recorrente das campanhas." },
+      { q: "A implementação está incluída na gestão?", a: "Sim. A implementação inicial necessária às plataformas e campanhas previstas na gestão contratada está inclusa. Desenvolvimento de sites, integrações extraordinárias e produção audiovisual complexa têm escopo próprio." },
+      { q: "Quanto preciso investir em anúncios?", a: "Depende dos objetivos, segmento e capacidade de atendimento. Definimos a verba recomendada durante o diagnóstico. O investimento é pago diretamente à plataforma e não integra os honorários da agência." },
+      { q: "Vocês garantem vendas?", a: "Não. Planejamos, acompanhamos e otimizamos campanhas, mas os resultados dependem também da oferta, do mercado, do site e do atendimento da empresa." },
+      { q: "A conta fica no meu nome?", a: "Sim. As contas e os dados permanecem sob a titularidade do cliente, conforme as permissões acordadas." },
     ],
   },
   {
@@ -179,13 +104,13 @@ export const LINHAS: Linha[] = [
     titulo: "Vídeo com roteiro, direção e acabamento.",
     curta: "Produções, cobertura de eventos em tempo real e gravação de cursos.",
     descricao:
-      "Do roteiro ao último corte. Você chega na gravação sabendo o que vai falar e sai com conteúdo para semanas.",
+      "Da ideia à entrega final, criamos vídeos com roteiro, direção, captação e edição. Produção de conteúdo, cobertura de eventos e cursos com planejamento e acabamento profissional.",
     blocos: [
       {
         eyebrow: "Produção",
         titulo: "Vídeo com roteiro, direção e acabamento.",
         texto:
-          "Do roteiro ao último corte. Você chega na gravação sabendo o que vai falar e sai com conteúdo para semanas.",
+          "Da ideia à entrega final, criamos vídeos com roteiro, direção, captação e edição. Produção de conteúdo, cobertura de eventos e cursos com planejamento e acabamento profissional.",
         lista: [
           "Roteiros alinhados ao seu objetivo",
           "Direção na hora da gravação",
@@ -198,11 +123,11 @@ export const LINHAS: Linha[] = [
         eyebrow: "Cobertura de eventos e Real Time",
         titulo: "Seu evento acontecendo também no digital.",
         texto:
-          "Enquanto o evento acontece, ele já está nos stories. No dia seguinte, o teaser. Em poucos dias, o aftermovie que vai vender a próxima edição.",
+          "Captamos os momentos mais importantes e produzimos conteúdo durante o evento conforme o escopo contratado. Formatos e prazos de entrega são definidos no planejamento.",
         lista: [
           "Captação com videomaker",
           "Storymaker publicando em tempo real",
-          "Teaser em até 24 horas",
+          "Teaser conforme o cronograma contratado",
           "Aftermovie editado",
           "Reels de melhores momentos",
         ],
@@ -212,7 +137,7 @@ export const LINHAS: Linha[] = [
         eyebrow: "Cursos",
         titulo: "Seu conhecimento em aulas com cara de curso de verdade.",
         texto:
-          "A gente organiza o roteiro das aulas, grava num só dia e entrega tudo editado, padronizado e pronto para subir na plataforma.",
+          "Planejamos a estrutura das aulas, organizamos a captação e cuidamos da edição e padronização visual. O número de diárias e o cronograma são definidos conforme a dimensão do curso.",
         lista: [
           "Planejamento da sequência de aulas",
           "Diária de gravação com direção",
@@ -232,7 +157,7 @@ export const LINHAS: Linha[] = [
       { q: "Vocês gravam fora de Brasília?", a: "Sim, com deslocamento à parte." },
       {
         q: "Em quanto tempo recebo?",
-        a: "Teaser de evento em até 24h; produções e cursos em prazos definidos no contrato.",
+        a: "Formatos, número de peças e prazos são definidos de acordo com a dimensão da produção e registrados na proposta.",
       },
       {
         q: "O vídeo bruto é meu?",
@@ -248,7 +173,7 @@ export const LINHAS: Linha[] = [
     descricao:
       "Rápido, bonito no celular e feito para transformar visita em contato. Texto, design e estrutura pensados juntos.",
     muda: [
-      "O Google passa a te encontrar.",
+      "Uma estrutura mais preparada para ser encontrada nos buscadores.",
       "O anúncio tem para onde levar.",
       "O cliente entende o que você faz em 5 segundos.",
     ],
@@ -264,7 +189,7 @@ export const LINHAS: Linha[] = [
       { nome: "Landing Page" },
       { nome: "Site Essencial", detalhe: "Até 5 páginas" },
       { nome: "Site Institucional", detalhe: "Até 10 páginas, blog e SEO básico" },
-      { nome: "Sistemas e apps", detalhe: "Ver Vittori Inteligência" },
+      { nome: "Sistemas e aplicativos", detalhe: "Desenvolvimento de soluções sob medida, mediante avaliação do projeto" },
     ],
     paraQuem:
       "Quem ainda depende só do Instagram, quem tem um site antigo que não traz contato e quem vai anunciar e precisa de uma página que converta.",
@@ -322,7 +247,7 @@ export const LINHAS: Linha[] = [
     titulo: "Campanha com estratégia, conteúdo e imprensa num só time.",
     curta: "Da pré-campanha ao dia da eleição, com agenda acompanhada na rua.",
     descricao:
-      "Da pré-campanha ao dia da eleição, um time que pensa a narrativa, produz todos os dias e acompanha a agenda na rua. Você foca no eleitor.",
+      "Planejamento de narrativa, comunicação e conteúdo para pré-campanhas, campanhas e mandatos. A equipe, o acompanhamento de agenda e a produção são definidos conforme o projeto contratado.",
     incluso: [
       "Estratégia, posicionamento e calendário político",
       "Social media diário, com volume e prazos de entrega definidos conforme o tamanho da equipe contratada",
@@ -339,10 +264,10 @@ export const LINHAS: Linha[] = [
       { nome: "Campanha Completa" },
     ],
     paraQuem:
-      "Pré-candidatos, candidatos e mandatos que querem presença profissional sem montar uma equipe do zero.",
+      "Pré-candidaturas, campanhas e mandatos que precisam de comunicação planejada e produção estruturada.",
     apoio: "Campanha começa antes da campanha. Quem chega em agosto sem base, chega atrasado.",
     paraQuemNao:
-      "Quem quer começar a 30 dias da eleição esperando milagre, ou quem não aceita seguir a legislação eleitoral.",
+      "O escopo, as entregas e os procedimentos são definidos conforme a legislação aplicável e as responsabilidades de cada parte.",
     faq: [],
   },
 ];
@@ -352,8 +277,8 @@ export const linhaPorSlug = (slug: string) => LINHAS.find((l) => l.slug === slug
 /** Card da sexta linha (Inteligência) para a lista da home. */
 export const LINHA_INTELIGENCIA = {
   linha: "Vittori Inteligência",
-  titulo: "Nenhum cliente sem resposta.",
-  curta: "Atendente de IA no WhatsApp, sistemas e painéis sob medida e estúdio de posts.",
+  titulo: "Atendimento que organiza conversas e encaminha oportunidades.",
+  curta: "Atendente de IA no WhatsApp, um sistema integrado de gestão e estúdio de posts modelados.",
 };
 
 export const PRODUTOS_IA = [
@@ -362,26 +287,26 @@ export const PRODUTOS_IA = [
     to: "/servicos/inteligencia/atendente" as const,
     produto: "Atendente de IA" as const,
     nome: "Atendente de IA no WhatsApp",
-    titulo: "Nenhum cliente sem resposta.",
+    titulo: "Atendimento que organiza conversas e encaminha oportunidades.",
     resumo:
-      "É uma atendente no WhatsApp da sua empresa que responde na hora, com a sua tabela e as suas regras, conversa como gente, descobre o que o cliente quer e passa para o vendedor já com o resumo. Quando o vendedor entra, ela sai.",
+      "Uma atendente de IA configurada com informações e regras da sua empresa, capaz de responder dúvidas, organizar contatos e encaminhar conversas à equipe quando necessário.",
   },
   {
     slug: "sistemas",
     to: "/servicos/inteligencia/sistemas" as const,
     produto: "Sistemas e Painéis" as const,
     nome: "Sistemas e Painéis",
-    titulo: "Os números da sua empresa num lugar só.",
+    titulo: "Sua operação organizada em um só lugar.",
     resumo:
-      "A gente junta os dados que estão espalhados, no CRM, nos anúncios, na loja e no ERP, num sistema feito para o seu negócio. Atualiza sozinho e mostra de onde vem o cliente, quanto ele custa, quem vende e onde está a margem.",
+      "Um sistema integrado para centralizar conversas, organizar fichas de clientes, acompanhar o funil comercial, visualizar agendas e consultar os principais indicadores da operação em uma única interface.",
   },
   {
     slug: "estudio-de-posts",
     to: "/servicos/inteligencia/estudio-de-posts" as const,
     produto: "Estúdio de Posts" as const,
     nome: "Estúdio de Posts Modelados",
-    titulo: "O que já funciona, com a cara da sua marca.",
+    titulo: "Conteúdo modelado para a identidade da sua marca.",
     resumo:
-      "A gente pega os posts que mais dão resultado no seu mercado, aqui e lá fora, e refaz com a sua marca. Sai reels, carrossel e estático prontos, com a automação de quem comenta e um placar do que funcionou.",
+      "Criamos conteúdos a partir de referências, formatos e estruturas relevantes para seu mercado, adaptando linguagem, design e abordagem aos objetivos da sua marca.",
   },
 ];

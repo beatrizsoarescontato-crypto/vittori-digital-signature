@@ -4,13 +4,9 @@ import { Abertura, Resolve } from "@/components/home/Abertura";
 import { ServicosHome } from "@/components/home/ServicosHome";
 import { InteligenciaDestaque } from "@/components/home/InteligenciaDestaque";
 import {
-  Bastidores,
   ChamadaFinal,
   Metodo,
-  OQueEsperar,
-  ParaQuem,
   Perguntas,
-  Pilares,
 } from "@/components/home/Blocos";
 import { VITTORI_WHATS } from "@/lib/contato";
 import { PortfolioHome } from "@/components/home/Portfolio";
@@ -59,12 +55,8 @@ function Index() {
       <Resolve />
       <ServicosHome />
       <InteligenciaDestaque />
-      <Metodo />
-      <Pilares />
-      <ParaQuem />
-      <OQueEsperar />
       <PortfolioHome />
-      <Bastidores />
+      <Metodo />
       <Perguntas />
       <ChamadaFinal />
     </SiteShell>

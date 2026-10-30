@@ -8,8 +8,8 @@ describe("retornoPara", () => {
   it("página da Inteligência volta à seção Inteligência", () => {
     expect(retornoPara("/servicos/inteligencia/")).toMatchObject({ to: "/", hash: "inteligencia" });
   });
-  it("produto de IA volta à página da Inteligência", () => {
-    expect(retornoPara("/servicos/inteligencia/atendente")).toMatchObject({ to: "/servicos/inteligencia", label: "Voltar à Vittori Inteligência" });
+  it("produto de IA volta à seção Inteligência da home", () => {
+    expect(retornoPara("/servicos/inteligencia/atendente")).toMatchObject({ to: "/", hash: "inteligencia", label: "Voltar à Vittori Inteligência" });
   });
   it("portfólio volta à seção Portfólio", () => {
     expect(retornoPara("/portfolio")).toMatchObject({ to: "/", hash: "portfolio" });
