@@ -1,3 +1,4 @@
+// @refresh reset
 import { useEffect, useRef, type ReactNode } from "react";
 import { Nav } from "./Nav";
 import { Footer } from "./Footer";
@@ -5,14 +6,13 @@ import { Cursor } from "./Cursor";
 import { WhatsAppFab } from "./WhatsAppFab";
 import { SoundToggle } from "./SoundToggle";
 import { EntryGate } from "./EntryGate";
-import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { ScrollRevealController } from "./ScrollRevealController";
 import { ClientStage } from "@/components/ClientCanvas";
 import { DepthHud } from "./DepthHud";
 import { useNavegacaoContextual } from "./Navegacao";
 
 /** Moldura comum a todas as páginas públicas. */
 export function SiteShell({ children, fab = true }: { children: ReactNode; fab?: boolean }) {
-  useScrollReveal();
   useNavegacaoContextual();
   const layer = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -49,6 +49,7 @@ export function SiteShell({ children, fab = true }: { children: ReactNode; fab?:
   }, []);
   return (
     <div className="grain relative min-h-screen bg-preto">
+      <ScrollRevealController />
       <div aria-hidden="true" className="stage-fallback pointer-events-none fixed inset-0 z-0">
         <ClientStage />
       </div>

@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { useLocation } from "@tanstack/react-router";
 
 /**
  * Revelação editorial com GSAP ScrollTrigger:
@@ -8,8 +7,7 @@ import { useLocation } from "@tanstack/react-router";
  * - [data-parallax] desloca no scroll
  * - [data-counter] conta até o valor final
  */
-export function useScrollReveal() {
-  const pathname = useLocation({ select: location => location.pathname });
+export function useScrollReveal(pathname: string) {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
