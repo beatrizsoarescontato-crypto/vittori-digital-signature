@@ -66,7 +66,7 @@ export function readingPlacement(bounds: ReadingBounds[], radius = 0.1) {
 /**
  * Largest genuinely empty area of the viewport for the dispersion peak.
  * Distances are in viewport-height units (x is corrected by aspect = w/h); the halo may
- * bleed up to 40% past the screen edge, never into a measured reading box.
+ * bleed up to 60% past the screen edge (an eclipse rising from the border), never into a measured reading box.
  * `prev` adds hysteresis so the eclipse does not hop between near-equal pockets.
  */
 export function peakPocket(bounds: ReadingBounds[], aspect: number, prev?: { x: number; y: number } | null) {
@@ -75,7 +75,7 @@ export function peakPocket(bounds: ReadingBounds[], aspect: number, prev?: { x: 
   let bestScore = -1;
   for (let cx = 0.06; cx <= 0.941; cx += 0.04) {
     for (let cy = 0.1; cy <= 0.901; cy += 0.04) {
-      let r = Math.min(cx * aspect, (1 - cx) * aspect, cy, 1 - cy) / 0.6;
+      let r = Math.min(cx * aspect, (1 - cx) * aspect, cy, 1 - cy) / 0.4;
       for (const b of visible) {
         const dx = Math.max(b.left - cx, 0, cx - b.right) * aspect;
         const dy = Math.max(b.top - cy, 0, cy - b.bottom);
@@ -116,7 +116,7 @@ export function sectionChoreography(side: TextSide, mobile: boolean, bounds?: Re
           scale: 0.34 + (mobile ? 0.12 : 0.26) * k,
           readingSafety: 1 - 0.9 * k,
           dim: 0.35 * (1 - 0.9 * k),
-          radius: Math.min(pocket.radius, mobile ? 0.3 : 0.42) * k,
+          radius: Math.min(pocket.radius, mobile ? 0.3 : 0.42),
           pocket: { x: pocket.x, y: pocket.y },
         };
       }

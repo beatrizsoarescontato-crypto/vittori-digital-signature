@@ -484,9 +484,11 @@ function Monogram({ mobile }: { mobile: boolean }) {
       pocketScale = (chor.radius * eclPlane.height) / (0.5 * (3.4 + 1.4 * peakNow));
       pocketTarget = { x: chor.x * eclPlane.width - eclWorld.x, y: chor.y * eclPlane.height - eclWorld.y };
     }
-    vg.scale.setScalar(damp(vg.scale.x || base, Math.max(base * targetScale, pocketScale), 3, dt));
-    vg.position.x = damp(vg.position.x, pocketTarget ? pocketTarget.x : plane.width * targetX, 2.2, dt);
-    vg.position.y = damp(vg.position.y, (pocketTarget ? pocketTarget.y : plane.height * (chor.active ? chor.y : (y ?? 0) + (mobile ? 0.12 : 0))) + Math.sin(t * 0.5) * 0.06, 2.6, dt);
+    // The halo's soft outer glow (≈0.5 of the plane) fills the pocket; blend in with the peak.
+    const scaleTarget = pocketTarget ? base * targetScale + (pocketScale - base * targetScale) * peakNow : base * targetScale;
+    vg.scale.setScalar(damp(vg.scale.x || base, scaleTarget, 3, dt));
+    vg.position.x = damp(vg.position.x, pocketTarget ? pocketTarget.x : plane.width * targetX, pocketTarget ? 3.5 : 2.2, dt);
+    vg.position.y = damp(vg.position.y, (pocketTarget ? pocketTarget.y : plane.height * (chor.active ? chor.y : (y ?? 0) + (mobile ? 0.12 : 0))) + Math.sin(t * 0.5) * 0.06, pocketTarget ? 3.5 : 2.6, dt);
     vg.rotation.x = damp(vg.rotation.x, (rx ?? 0) + mouse.y * 0.18, 2.6, dt);
     vg.rotation.y = damp(vg.rotation.y, (ry ?? 0) + mouse.x * 0.32 + spin.current * 0.35, 2.4, dt);
 
