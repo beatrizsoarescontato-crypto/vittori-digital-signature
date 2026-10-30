@@ -25,7 +25,7 @@ export const Route = createFileRoute("/servicos/inteligencia/")({
 
 function SaibaMais({ to }: { to: string }) {
   return (
-    <Link to={to} className="label-mono mt-8 inline-flex min-h-11 items-center gap-3 text-dourado">
+    <Link to={to} className="t-label mt-8 inline-flex min-h-11 items-center gap-3 text-dourado">
       Saiba mais <span className="h-px w-8 bg-dourado" />
     </Link>
   );
@@ -81,7 +81,7 @@ function Page() {
           Serve para: clínica, imobiliária, loja, escola, restaurante e prestador de serviço.
         </p>
         <div className="reveal-item mt-10 border-l border-dourado pl-6">
-          <p className="label-mono mb-3 text-dourado">Faça a conta</p>
+          <p className="t-label mb-3 text-dourado">Faça a conta</p>
           <p className="text-sm leading-loose text-marfim/80">
             Quantas mensagens chegam fora do horário? Quantas esperam mais de uma hora? Cada uma é um cliente que
             pode estar falando com o concorrente. Uma pessoa a mais no atendimento custa muito mais por mês do que a
@@ -107,7 +107,7 @@ function Page() {
           para o seu negócio. Atualiza sozinho e mostra de onde vem o cliente, quanto ele custa, quem vende e onde
           está a margem.
         </p>
-        <p className="label-mono mb-2 mt-10 text-dourado">Todo sistema tem</p>
+        <p className="t-label mb-2 mt-10 text-dourado">Todo sistema tem</p>
         <Lista
           itens={[
             "Atualiza sozinho, direto da fonte",
@@ -116,7 +116,7 @@ function Page() {
             "Abre no navegador, sem instalar nada",
           ]}
         />
-        <p className="label-mono mb-2 mt-10 text-dourado">Exemplos</p>
+        <p className="t-label mb-2 mt-10 text-dourado">Exemplos</p>
         <Lista
           itens={[
             "Painel comercial de indústria",
@@ -147,8 +147,8 @@ function Page() {
         <SaibaMais to="/servicos/inteligencia/estudio-de-posts" />
       </Bloco>
 
-      <section className="bg-bordo py-28">
-        <div className="mx-auto max-w-[1440px] px-6 md:px-12">
+      <section data-stage-section="wide" className="internal-page reading-veil finale-glow py-28">
+        <div data-stage-zone="reading" className="mx-auto max-w-[1440px] px-6 md:px-12">
           <h2 className="title-2 max-w-3xl text-marfim">Quer ver com o jeito do seu negócio?</h2>
           <div className="mt-12">
             <Btn href={henriqueLink()} variant="light">

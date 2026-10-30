@@ -51,7 +51,7 @@ export function ConversaIlustrativa() {
   }, []);
 
   return (
-    <div ref={ref} className="overflow-hidden rounded-[1.25rem] border border-dourado/30 bg-preto/80 shadow-[0_30px_80px_-30px_color-mix(in_oklab,var(--preto)_90%,transparent)]">
+    <div data-stage-zone="demo" ref={ref} className="overflow-hidden rounded-[1.25rem] border border-dourado/30 bg-preto/80 shadow-[0_30px_80px_-30px_color-mix(in_oklab,var(--preto)_90%,transparent)]">
       <div className="flex items-center gap-3 border-b border-border/60 px-5 py-4">
         <span className="h-2 w-2 rounded-full bg-dourado" />
         <span className="t-label !text-marfim/85">WhatsApp da sua empresa</span>
@@ -60,7 +60,7 @@ export function ConversaIlustrativa() {
         {CONVERSA.slice(0, n).map((m, i) => (
           <div
             key={i}
-            className={`max-w-[85%] animate-in fade-in slide-in-from-bottom-2 px-4 py-3 text-sm leading-relaxed duration-500 ${
+            className={`max-w-[85%] animate-in fade-in slide-in-from-bottom-2 px-4 py-3 text-base leading-relaxed duration-500 ${
               m.de === "cliente" ? "self-end rounded-2xl rounded-br-sm bg-marrom text-marfim" : "self-start rounded-2xl rounded-bl-sm border border-dourado/30 bg-bordo-dark/40 text-marfim"
             }`}
           >
@@ -68,7 +68,7 @@ export function ConversaIlustrativa() {
               <span className="flex items-center gap-3">
                 <span className="text-dourado">▶</span>
                 <span className="h-px w-24 bg-marfim/70" />
-                <span className="caption">{m.texto}</span>
+                <span className="t-meta">{m.texto}</span>
               </span>
             ) : (
               m.texto
@@ -76,7 +76,7 @@ export function ConversaIlustrativa() {
           </div>
         ))}
       </div>
-      <p className="caption border-t border-border/60 px-5 py-3">Conversa ilustrativa</p>
+      <p className="t-meta border-t border-border/60 px-5 py-3">Conversa ilustrativa</p>
     </div>
   );
 }

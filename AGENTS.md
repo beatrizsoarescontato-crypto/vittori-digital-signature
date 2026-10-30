@@ -25,4 +25,4 @@
 - Sections opt into V choreography with `data-stage-section` (left|right|wide); `sectionChoreography` in `experienceRules` moves the V away from text and sections use `.reading-veil` instead of solid backgrounds. Why: readability through 3D choreography, never opaque boxes or hiding the V.
 - All CTAs go through `Btn` (`vbtn` primary/secondary, `vlink`) and icon controls use `vicon`; text sizes use the `t-label/t-title/t-body/t-meta` scale. Why: one consistent premium button and type system instead of per-component styles.
 
-- Contextual back links live in `src/lib/navContexto.ts` (pure rule, tested) and render once from `SiteShell`; hash scrolling waits for layout stability, never fixed delays, and skips browser back/forward. Why: every internal page returns to its origin section without breaking scroll restoration.
+- Contextual back destinations live in `src/lib/navContexto.ts` (pure rule, tested); a single discreet link renders inside PageHero/PaginaSimples/the portfolio opening, never SiteShell. Hash scrolling waits for layout stability and skips browser back/forward. Why: contextual return must not become a second header or break scroll restoration.

@@ -8,7 +8,7 @@ import { EntryGate } from "./EntryGate";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { ClientStage } from "@/components/ClientCanvas";
 import { DepthHud } from "./DepthHud";
-import { VoltarContexto, useNavegacaoContextual } from "./Navegacao";
+import { useNavegacaoContextual } from "./Navegacao";
 
 /** Moldura comum a todas as páginas públicas. */
 export function SiteShell({ children, fab = true }: { children: ReactNode; fab?: boolean }) {
@@ -46,7 +46,6 @@ export function SiteShell({ children, fab = true }: { children: ReactNode; fab?:
       <DepthHud />
       <Cursor />
        <main className="relative z-10">
-         <VoltarContexto />
          <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-20 overflow-hidden">
            <span className="signature-sparkle text-2xl">✦</span>
            <span className="signature-sparkle text-lg">✦</span>
