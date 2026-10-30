@@ -361,8 +361,6 @@ function Monogram({ mobile }: { mobile: boolean }) {
   const section = useRef<TextSide>("none");
   const protectedBounds = useRef<ReadingBounds[] | undefined>(undefined);
   const haloLevel = useRef(0);
-  const previousSection = useRef<TextSide>("none");
-  const sectionTransitionAt = useRef<number>(-100);
   useEffect(() => {
     let elements: HTMLElement[] = [];
     let zones: HTMLElement[] = [];
@@ -459,16 +457,6 @@ function Monogram({ mobile }: { mobile: boolean }) {
     spin.current = damp(spin.current, stageScroll.vel, 2.2, dt);
     stageScroll.vel = damp(stageScroll.vel, 0, 3, dt);
 
-    // Transição curta entre zonas reais: partículas dispersam e revelam o halo.
-    // Sem novos objetos WebGL e sem tocar no mergulho cinematográfico.
-    if (born.current >= 1 && previousSection.current !== section.current) {
-      previousSection.current = section.current;
-      sectionTransitionAt.current = t;
-    }
-    const timeSinceSection = t - sectionTransitionAt.current;
-    const sectionPulse = timeSinceSection >= 0 && timeSinceSection < 3
-      ? sm(0.0, 0.6, timeSinceSection) * (1 - sm(1.55, 2.9, timeSinceSection))
-      : 0;
     const [x, y, z, rx, ry, sc] = sample(p);
     const chor = sectionChoreography(section.current, mobile, stageScroll.dive >= 1 && born.current >= 1 ? protectedBounds.current : undefined);
     reading.current = damp(reading.current, chor.readingSafety, 2.2, dt);
@@ -485,11 +473,11 @@ function Monogram({ mobile }: { mobile: boolean }) {
 
     // Partículas: chegam espalhadas do mergulho e se montam; respiram nos Serviços.
     const breathe = sm(0.22, 0.34, p) * (1 - sm(0.5, 0.6, p)) * 0.12;
-    const dispersion = Math.max(sm(0.22, 0.34, p) * (1 - sm(0.5, 0.6, p)), sectionPulse, Math.min(1, Math.abs(spin.current) * 1.2));
+    const dispersion = Math.max(sm(0.22, 0.34, p) * (1 - sm(0.5, 0.6, p)), Math.min(1, Math.abs(spin.current) * 1.2));
     const choreography = eclipseState(appear, dispersion, reading.current);
     const u = (vPts.material as THREE.ShaderMaterial).uniforms;
     setUniform(u, "uTime", t);
-    setUniform(u, "uScatter", (1 - born.current) * 0.9 + breathe + dispersion * 0.72 + Math.abs(spin.current) * 0.1);
+    setUniform(u, "uScatter", (1 - born.current) * 0.9 + breathe + Math.abs(spin.current) * 0.1);
     setUniform(u, "uAlpha", choreography.particleAlpha * (1 - chor.dim * reading.current) * (mobile ? 0.8 : 1.25));
 
     // Eclipse: o disco escuro desliza até cobrir o centro, a coroa se acende por trás (contraluz).
