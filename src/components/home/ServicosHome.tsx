@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type PointerEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type PointerEvent, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import useEmblaCarousel from "embla-carousel-react";
 import { ArrowLeft, ArrowRight, Camera, ChartNoAxesCombined, Globe, Megaphone, MessagesSquare, PenTool, Sparkles, type LucideIcon } from "lucide-react";
@@ -151,7 +151,7 @@ export function ServicosHome() {
             <Button type="button" variant="ghost" className="vicon" disabled={!canNext} onClick={() => api?.scrollNext()} aria-label="Próximos serviços" title="Próximos serviços"><ArrowRight className="size-5" strokeWidth={1.5} /></Button>
           </div>
         </div>
-        <div ref={viewportRef} className="-mx-2 mt-7 overflow-hidden px-2 py-4" role="region" aria-label="Serviços da Vittori" tabIndex={0} onDragStart={(e) => e.preventDefault()} onKeyDown={(e) => { if (e.key === "ArrowRight") { e.preventDefault(); api?.scrollNext(); } if (e.key === "ArrowLeft") { e.preventDefault(); api?.scrollPrev(); } }}>
+        <div ref={viewportRef} className="-mx-2 mt-7 overflow-hidden px-2 py-4" role="region" aria-label="Serviços da Vittori" tabIndex={0} onDragStart={(e) => e.preventDefault()} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerEnd} onPointerCancel={onPointerEnd} onClickCapture={(e) => { if (suppressClick.current) { e.preventDefault(); e.stopPropagation(); suppressClick.current = false; } }} onKeyDown={(e) => { if (e.key === "ArrowRight") { e.preventDefault(); api?.scrollNext(); } if (e.key === "ArrowLeft") { e.preventDefault(); api?.scrollPrev(); } }}>
           <div className="flex touch-pan-y select-none gap-5 cursor-grab active:cursor-grabbing">
             {CARDS.map((c, i) => {
               const Icon = ICONES[c.key] ?? Sparkles;
