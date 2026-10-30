@@ -77,9 +77,13 @@ function reset(e: PointerEvent<HTMLElement>) {
 
 /** Native vertical page flow with a draggable, keyboard-accessible services carousel. */
 export function ServicosHome() {
-  const [viewportRef, api] = useEmblaCarousel({ align: "start", containScroll: "trimSnaps", dragFree: true });
+  // Touch stays with Embla; mouse/pen drag uses Pointer Events with capture (below),
+  // which does not depend on legacy mousedown/mousemove reaching the document.
+  const [viewportRef, api] = useEmblaCarousel({ align: "start", containScroll: "trimSnaps", dragFree: true, watchDrag: (_a, evt) => evt.type === "touchstart" });
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(true);
+  const drag = useRef<{ id: number; startX: number; lastX: number; samples: { x: number; t: number }[]; moved: boolean } | null>(null);
+  const suppressClick = useRef(false);
   const update = useCallback(() => {
     if (!api) return;
     setCanPrev(api.canScrollPrev());
@@ -91,6 +95,45 @@ export function ServicosHome() {
     api.on("select", update).on("scroll", update).on("reInit", update);
     return () => { api.off("select", update).off("scroll", update).off("reInit", update); };
   }, [api, update]);
+
+  const onPointerDown = (e: PointerEvent<HTMLDivElement>) => {
+    if (!api || e.pointerType === "touch" || e.button !== 0) return;
+    const eng = api.internalEngine();
+    eng.scrollBody.useFriction(0).useDuration(0);
+    eng.target.set(eng.location);
+    suppressClick.current = false;
+    drag.current = { id: e.pointerId, startX: e.clientX, lastX: e.clientX, samples: [{ x: e.clientX, t: e.timeStamp }], moved: false };
+  };
+  const onPointerMove = (e: PointerEvent<HTMLDivElement>) => {
+    const d = drag.current;
+    if (!d || !api || e.pointerId !== d.id) return;
+    if (!d.moved) {
+      if (Math.abs(e.clientX - d.startX) < 6) return;
+      d.moved = true;
+      e.currentTarget.setPointerCapture(e.pointerId);
+    }
+    const eng = api.internalEngine();
+    eng.scrollBody.useFriction(0.3).useDuration(0.75);
+    eng.target.add(e.clientX - d.lastX);
+    eng.animation.start();
+    d.lastX = e.clientX;
+    d.samples.push({ x: e.clientX, t: e.timeStamp });
+    if (d.samples.length > 6) d.samples.shift();
+    e.preventDefault();
+  };
+  const onPointerEnd = (e: PointerEvent<HTMLDivElement>) => {
+    const d = drag.current;
+    if (!d || e.pointerId !== d.id) return;
+    drag.current = null;
+    if (!d.moved || !api) return;
+    suppressClick.current = true;
+    const first = d.samples.find((s) => e.timeStamp - s.t < 120) ?? d.samples[d.samples.length - 1]!;
+    const dt = e.timeStamp - first.t;
+    const velocity = dt > 0 ? (e.clientX - first.x) / dt : 0;
+    const eng = api.internalEngine();
+    eng.scrollBody.useDuration(43).useFriction(0.68);
+    eng.scrollTo.distance(Math.abs(velocity) > 0.1 ? velocity * 500 : 0, false);
+  };
 
   return (
     <section data-stage-section="wide" id="servicos" className="relative section-seam py-14 md:py-20 reading-veil">
