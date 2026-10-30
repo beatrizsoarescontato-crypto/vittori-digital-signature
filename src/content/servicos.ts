@@ -1,7 +1,7 @@
 /** Textos das linhas de serviço. Fonte: documento da Vittori (seções 6.3 e 7). Não inventar. */
 
 export type Faq = { q: string; a: string };
-export type Bloco = { eyebrow?: string; titulo: string; texto?: string; lista?: string[]; para?: string };
+export type Bloco = { eyebrow?: string; titulo: string; texto?: string; lista?: string[]; para?: string; grupos?: { titulo: string; texto: string }[] };
 export type Card = { titulo: string; texto: string };
 export type Plano = { nome: string; detalhe?: string; resumo?: string; publicacoes?: number; reels?: number; duracaoReelSegundos?: number; quantidadeCaptacoes?: number; horasPorCaptacao?: number; directsPorDiaUtil?: number; captacoes?: string; diferenciais?: string[]; destaque?: boolean };
 
@@ -72,23 +72,32 @@ export const LINHAS: Linha[] = [
     curta: "Implementação técnica e gestão de Meta Ads e Google Ads, com estratégia e mensuração.",
     descricao: "Organizamos a estrutura necessária para anunciar e desenvolvemos campanhas com planejamento, mensuração e acompanhamento. Cada decisão parte dos objetivos e das necessidades reais do seu negócio.",
     blocos: [
-      { eyebrow: "Serviço pontual · Implementação de Tráfego", titulo: "A base técnica para começar a anunciar.", texto: "A implementação avulsa prepara contas, acessos e ferramentas de mensuração para a ativação de campanhas. É contratada uma única vez e não inclui gestão contínua de anúncios.", lista: [
-        "Organização ou configuração das contas de anúncios previstas no projeto",
-        "Permissões, domínio e revisão das configurações relevantes",
-        "Configuração de Pixel, tags e Analytics conforme a plataforma e a viabilidade técnica",
-        "Eventos de conversão aplicáveis ao projeto: formulário, contato, compra ou agendamento",
-        "Estrutura inicial de campanhas, públicos e parâmetros de rastreamento quando pertinentes",
-        "Testes técnicos de disparo de eventos e documentação das configurações realizadas",
+      { eyebrow: "Serviço pontual · Implementação de Tráfego", titulo: "Antes de investir em anúncios, prepare a estrutura.", texto: "Organizamos as contas, os acessos e as ferramentas técnicas necessárias para anunciar no Meta Ads e/ou Google Ads, conforme a necessidade do projeto. Uma entrega pontual para deixar a operação preparada, com configurações verificadas e documentação do trabalho realizado.", para: "Pagamento único. Não inclui gestão recorrente de campanhas.", grupos: [
+        { titulo: "Contas", texto: "Organização ou configuração das contas contratadas." },
+        { titulo: "Acessos", texto: "Permissões, vínculos e verificações pertinentes, incluindo domínio quando necessário." },
+        { titulo: "Mensuração", texto: "Meta Pixel, Google tag, Tag Manager, GA4 e ferramentas aplicáveis conforme o projeto." },
+        { titulo: "Rastreamento", texto: "Eventos relevantes, como contatos, formulários, compras e agendamentos, quando viáveis." },
+        { titulo: "Públicos", texto: "Estruturação inicial de públicos e remarketing quando pertinente." },
+        { titulo: "Campanhas", texto: "Preparação da estrutura inicial para ativação." },
+        { titulo: "Validação", texto: "Testes técnicos das configurações e dos eventos quando aplicáveis." },
+        { titulo: "Entrega", texto: "Resumo documentado das configurações e eventuais pendências." },
       ]},
-      { eyebrow: "Serviço recorrente · Gestão de Tráfego", titulo: "Campanhas acompanhadas do planejamento à otimização.", texto: "Planejamento, criação, testes, análise e otimização de campanhas em Meta Ads e/ou Google Ads. A implementação inicial necessária às campanhas contratadas já está incluída na gestão.", lista: [
-        "Gestão Direcionada: Meta Ads ou Google Ads",
-        "Gestão Integrada: Meta Ads e Google Ads coordenados",
-        "Estratégia e configuração de campanhas de acordo com o objetivo",
-        "Acompanhamento de indicadores e otimização recorrente",
-        "Relatório mensal e leitura dos resultados de cada canal contratado",
-        "Verba de mídia paga diretamente pelo cliente, separada dos honorários",
+      { eyebrow: "Serviço recorrente · Gestão de Tráfego Pago", titulo: "Campanhas com direção. Investimento com estratégia.", texto: "Planejamos, configuramos, acompanhamos e otimizamos campanhas no Meta Ads e/ou Google Ads, com objetivos definidos, análise de indicadores e ajustes recorrentes.", para: "Serviço recorrente. A implementação técnica inicial necessária ao escopo contratado já está incluída.", lista: [
+        "Diagnóstico e definição de objetivos",
+        "Planejamento estratégico",
+        "Implementação inicial necessária",
+        "Criação e gestão de campanhas",
+        "Testes de anúncios e públicos",
+        "Otimização recorrente",
+        "Análise de resultados",
+        "Relatório mensal",
       ]},
     ],
+    planos: [
+      { nome: "Gestão Direcionada", resumo: "Uma plataforma. Uma estratégia bem direcionada.", detalhe: "Gestão recorrente em Meta Ads ou Google Ads. Inclui as entregas comuns, com acompanhamento e análise da plataforma contratada." },
+      { nome: "Gestão Integrada", resumo: "Dois canais. Uma estratégia coordenada.", detalhe: "Gestão recorrente em Meta Ads e Google Ads, com planejamento coordenado e leitura integrada dos resultados. Inclui as entregas comuns, aplicadas às duas plataformas contratadas." },
+    ],
+    extra: { eyebrow: "Observação comercial", titulo: "Condições da contratação.", texto: "A implementação inicial necessária está incluída na Gestão contratada. A verba de mídia é paga diretamente pelo cliente às plataformas. Sites, produções audiovisuais e integrações extraordinárias possuem escopo e orçamento próprios." },
     comoFunciona: ["Diagnóstico do negócio e definição do objetivo.", "Configuração ou validação da estrutura de anúncios.", "Ativação e acompanhamento das campanhas contratadas.", "Análise de indicadores e otimizações conforme os dados."],
     faq: [
       { q: "Posso contratar somente a implementação?", a: "Sim. É um projeto pontual de organização e preparação técnica. Não inclui a gestão recorrente das campanhas." },
