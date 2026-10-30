@@ -545,6 +545,10 @@ html:not([data-phase="inside"]) .site-layer { opacity: 0; visibility: hidden; po
 .svc-copy { display: grid; grid-template-rows: 2.5rem 8rem 1.5rem 1fr 3.5rem; min-width: 0; }
 .svc-copy .t-title { font-size: 2rem; line-height: 1.15; }
 .svc-copy .vlink { align-self: end; }
+.demo-surface { background: linear-gradient(145deg, color-mix(in oklab, var(--bordo-dark) 32%, transparent), color-mix(in oklab, var(--preto) 65%, transparent)); }
+.plan-option { background: linear-gradient(180deg, color-mix(in oklab, var(--dourado) 4%, transparent), transparent 65%); }
+.float-ctl[data-blocked="true"] { opacity: 0; pointer-events: none; visibility: hidden; }
+.site-layer main > section > div, .site-layer footer > div { padding-left: max(5rem, env(safe-area-inset-left)); padding-right: max(5rem, env(safe-area-inset-right)); }
 .internal-page p, .internal-page li { overflow-wrap: break-word; }
 .internal-page .text-sm, .internal-page .text-xs { font-size: 1rem; line-height: 1.8; color: color-mix(in oklab, var(--marfim) 90%, transparent); }
 @media (min-width: 1440px) { :root { --step-display: 7rem; --step-h1: 5.5rem; --step-h2: 4rem; } }
@@ -553,4 +557,6 @@ html:not([data-phase="inside"]) .site-layer { opacity: 0; visibility: hidden; po
   .internal-title { font-size: 2.25rem; }
   .t-title { font-size: 2rem; }
   .svc-copy { grid-template-rows: 3rem 9rem 1.5rem 1fr 3.5rem; }
+  .site-layer main > section > div, .site-layer footer > div { padding-left: 1.5rem; padding-right: 1.5rem; }
+  .float-ctl { bottom: max(1rem, env(safe-area-inset-bottom)); }
 }

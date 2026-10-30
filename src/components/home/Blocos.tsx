@@ -120,35 +120,34 @@ export function ParaQuem() {
 
 export function OQueEsperar() {
   const marcos = [
-    ["Mês 1", "Diagnóstico, perfil arrumado, estrutura pronta e primeiro lote de conteúdo."],
-    ["Mês 2", "Constância no ar e primeiros dados reais."],
-    ["Mês 3", "Ajustes com base no que funcionou. É aqui que o resultado começa a ficar consistente."],
-    ["Meses 4 a 6", "Escala do que dá certo."],
+    ["Entendimento e diagnóstico", "Uma conversa para entender o seu negócio, o momento da marca e o que precisa ser construído."],
+    ["Estratégia e planejamento", "Direção, escopo e etapas definidos conforme o projeto."],
+    ["Produção e implementação", "As ideias ganham forma com criação, desenvolvimento e entregas alinhadas ao planejamento."],
+    ["Acompanhamento e evolução", "Leitura do que foi entregue e próximos passos de acordo com o serviço contratado."],
   ];
   return (
     <section data-stage-section="wide" className="relative section-seam py-28 md:py-40 reading-veil">
       <div className="mx-auto max-w-[1440px] px-6 md:px-12">
         <h2 data-lines className="title-2 max-w-3xl text-marfim">
-          <Line>O que acontece</Line>
+          <Line>Da primeira conversa</Line>
           <Line>
-            <em className="title-shimmer italic text-dourado">depois que você fecha.</em>
+            <em className="title-shimmer italic text-dourado">à entrega.</em>
           </Line>
         </h2>
         <div className="relative mt-20">
-          <ol data-reveal className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <ol data-reveal className="delivery-steps grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {marcos.map(([t, d], i) => (
-              <li key={t} className="reveal-item month-card" style={{ animationDelay: `${i * -2.5}s` }}>
-                <span aria-hidden className="month-card-glow" style={{ animationDelay: `${i * -2.5}s` }} />
-                <span className="relative t-label !text-sm">✦ {t}</span>
-                <p className="relative t-body mt-5">{d}</p>
-                <span aria-hidden className="relative mt-8 block font-serif text-6xl font-light text-dourado/25">0{i + 1}</span>
+              <li key={t} className="reveal-item relative border-t border-dourado/40 pt-8">
+                <span aria-hidden className="metodo-node absolute -top-2 left-0" />
+                <span className="t-label">0{i + 1}</span>
+                <h3 className="mt-4 min-h-20 font-serif text-3xl font-medium text-marfim">{t}</h3>
+                <p className="t-body mt-5">{d}</p>
               </li>
             ))}
           </ol>
         </div>
         <p className="measure t-body mt-16">
-          Trabalhamos sempre com <strong className="font-semibold text-marfim">um mês de antecedência.</strong> O conteúdo de dezembro fica pronto em novembro.
-          <strong className="font-semibold text-marfim">Nada é feito às pressas.</strong>
+          <strong className="font-semibold text-marfim">Escopo, prazos e entregas definidos para o seu projeto.</strong> Cada serviço tem seu próprio ritmo de produção e acompanhamento.
         </p>
       </div>
     </section>
@@ -182,7 +181,7 @@ const FAQ = [
   },
   {
     q: "Em quanto tempo vejo resultado?",
-    a: "O primeiro mês é de estrutura. Os primeiros sinais aparecem no segundo mês e o resultado fica consistente a partir do terceiro. Quem promete resultado em uma semana está vendendo sorte.",
+    a: "O prazo depende do serviço, do ponto de partida e do mercado. Definimos as etapas e acompanhamos os resultados conforme o escopo contratado, sem prometer um mês fixo para todos os projetos.",
   },
   {
     q: "Vocês garantem resultado?",
