@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { LINHAS, PRODUTOS_IA } from "@/content/servicos";
 
-const BASE = "https://vittoricreativehouse.com.br";
+const BASE = "https://vittori-digital-signature.lovable.app";
 
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
@@ -11,7 +11,6 @@ export const Route = createFileRoute("/sitemap.xml")({
           "/",
           "/portfolio",
           ...LINHAS.map((l) => `/servicos/${l.slug}`),
-          "/servicos/inteligencia",
           ...PRODUTOS_IA.map((p) => `/servicos/inteligencia/${p.slug}`),
           "/privacidade",
           "/cookies",

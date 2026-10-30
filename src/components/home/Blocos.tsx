@@ -111,7 +111,7 @@ export function ParaQuem() {
           ))}
         </div>
         <p className="mt-16 font-serif text-2xl italic text-marfim/90 md:text-3xl">
-          Preferimos poucos clientes bem atendidos a muitos frustrados.
+          Trabalhamos com escopo claro, direção criativa e acompanhamento.
         </p>
       </div>
     </section>
@@ -189,7 +189,7 @@ const FAQ = [
   },
   {
     q: "Por que vocês trabalham com um mês de antecedência?",
-    a: "Para nada sair às pressas. Em novembro publicamos o que foi produzido em outubro e já preparamos dezembro. Você aprova com calma e o conteúdo nunca para.",
+    a: "O planejamento antecipado ajuda a organizar pautas, captações e aprovações. O calendário é definido conforme cada projeto, sem prazos universais.",
   },
   { q: "Quem paga os anúncios?", a: "Você, direto na plataforma. A Vittori cuida da estratégia e da gestão." },
   { q: "Tem contrato?", a: "Sim, com escopo, prazos, entregas e responsabilidades dos dois lados por escrito." },
@@ -227,7 +227,7 @@ export function Perguntas() {
 
 export function ChamadaFinal() {
   return (
-    <section data-stage-section="left" id="contato" className="relative overflow-hidden section-seam py-32 md:py-48 reading-veil finale-glow">
+    <section data-stage-section="left" id="contato" className="relative overflow-hidden section-seam py-16 md:py-24 reading-veil finale-glow">
       <div className="mx-auto max-w-[1440px] px-6 md:px-12">
         <span className="font-serif text-3xl text-dourado">✦</span>
         <h2 data-lines className="title-1 mt-8 max-w-5xl text-marfim">
@@ -237,13 +237,10 @@ export function ChamadaFinal() {
           </Line>
         </h2>
         <p className="measure t-body mt-10 md:text-lg">
-          Uma conversa de <strong className="font-semibold text-marfim">até 40 minutos</strong> para entender o seu momento e mostrar por onde começar.
+          Vamos entender o momento da sua marca e encontrar o próximo passo.
         </p>
         <div className="mt-12 flex flex-col gap-4 sm:flex-row">
-          <Btn to="/comece">Agendar uma conversa</Btn>
-          <Btn href={whatsappLink()} variant="secondary">
-            Falar no WhatsApp
-          </Btn>
+          <Btn href={whatsappLink()}>Conversar com a Vittori</Btn>
         </div>
       </div>
     </section>

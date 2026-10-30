@@ -70,6 +70,7 @@ export function useNavegacaoContextual() {
       if (veioDeVolta || !ev.hrefChanged) return;
       const hash = ev.toLocation.hash;
       if (ev.toLocation.pathname === "/" && hash) rolarParaSecao(hash, !ev.pathChanged);
+      else if (ev.pathChanged) requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "instant" }));
     });
     return () => { window.removeEventListener("popstate", onPop); document.removeEventListener("click", onClick, true); off(); };
   }, [router]);

@@ -1,5 +1,6 @@
 import { Line } from "@/components/site/Lines";
 import { Btn } from "@/components/site/ui";
+import { whatsappLink } from "@/lib/contato";
 
 export function Abertura() {
   return (
@@ -10,7 +11,7 @@ export function Abertura() {
         <div className="max-w-3xl">
           <p data-reveal className="mb-6">
             <span className="reveal-item t-label inline-flex items-center gap-3">
-              <span>✦</span> Vittori Creative House · Brasília
+              <span>✦</span> Vittori Creative House
             </span>
           </p>
           <h1 data-lines className="title-1 text-marfim">
@@ -20,11 +21,10 @@ export function Abertura() {
           </h1>
           <div data-reveal className="mt-6 max-w-xl">
             <p className="reveal-item text-base leading-relaxed text-marfim/90 md:text-lg">
-              Social media, tráfego pago, audiovisual, sites e inteligência artificial para negócios
-              que querem ser escolhidos pela qualidade.
+              Estratégia, conteúdo, audiovisual, performance e tecnologia para marcas que querem comunicar seu valor com clareza, consistência e personalidade.
             </p>
             <div className="reveal-item mt-8 flex flex-col gap-4 sm:flex-row">
-              <Btn to="/comece">Quero uma conversa</Btn>
+              <Btn href={whatsappLink()}>Conversar sobre meu projeto</Btn>
               <Btn to="/" hash="servicos" variant="secondary">
                 Ver serviços
               </Btn>
@@ -40,31 +40,14 @@ export function Abertura() {
 }
 
 export function Resolve() {
-  const linhas = [
-    "Um Instagram que parece do tamanho do seu trabalho.",
-    "Campanhas orientadas a oportunidades reais de negócio.",
-    "Atendimento e números organizados para você decidir com clareza.",
-  ];
   return (
-    <section data-stage-section="wide" className="relative section-seam py-28 md:py-40 reading-veil">
-      <div className="mx-auto grid max-w-[1440px] gap-16 px-6 md:grid-cols-12 md:px-12">
-        <h2 data-lines className="title-2 text-marfim md:col-span-6">
-          <Line>Você é bom no que faz.</Line>
-          <Line>
-            <em className="italic text-dourado">Sua marca precisa</em>
-          </Line>
-          <Line>
-            <em className="italic text-dourado">mostrar isso.</em>
-          </Line>
+    <section data-stage-section="left" className="relative section-seam reading-veil py-16 md:py-24">
+      <div className="mx-auto grid max-w-[1440px] items-center gap-8 px-6 md:grid-cols-12 md:gap-12 md:px-12">
+        <h2 data-lines className="title-2 text-marfim md:col-span-7">
+          <Line>Você sabe o valor do seu trabalho.</Line>
+          <Line><em className="italic text-dourado">Sua marca precisa mostrar isso.</em></Line>
         </h2>
-        <ul data-reveal className="md:col-span-5 md:col-start-8">
-          {linhas.map((l, i) => (
-            <li key={l} className="reveal-item flex gap-6 border-t border-border/60 py-8">
-              <span className="t-label pt-1 font-serif !text-2xl !tracking-normal">0{i + 1}</span>
-              <span className="font-serif text-2xl font-light leading-snug text-marfim md:text-3xl">{l}</span>
-            </li>
-          ))}
-        </ul>
+        <p className="t-body max-w-prose md:col-span-5">Não basta estar nas redes. É preciso transmitir confiança, comunicar com clareza e construir uma presença que faça sentido para quem você quer alcançar.</p>
       </div>
     </section>
   );

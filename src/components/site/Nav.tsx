@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { whatsappLink } from "@/lib/contato";
+import { Btn } from "./ui";
 
 const LINKS = [
   { to: "/", hash: "servicos", label: "Serviços" },
@@ -61,9 +63,7 @@ export function Nav() {
             ))}
           </nav>
           <span className="hidden lg:inline-flex">
-            <Link to="/comece" className="vbtn vbtn--secondary !min-h-11 !px-6">
-              Agendar uma conversa
-            </Link>
+            <Btn href={whatsappLink()} variant="secondary" className="!min-h-11 !px-6">Conversar sobre meu projeto</Btn>
           </span>
           <button
             type="button"
@@ -94,13 +94,9 @@ export function Nav() {
             {l.label}
           </Link>
         ))}
-        <Link
-          to="/comece"
-          onClick={() => setOpen(false)}
-          className="vbtn vbtn--primary mt-10"
-        >
-          Agendar uma conversa
-        </Link>
+        <div className="mt-10" onClick={() => setOpen(false)}>
+          <Btn href={whatsappLink()}>Conversar sobre meu projeto</Btn>
+        </div>
       </div>
     </header>
   );

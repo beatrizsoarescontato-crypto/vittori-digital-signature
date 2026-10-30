@@ -1,0 +1,54 @@
+{
+  "source": "same-project-code-archive",
+  "capabilities": [
+    {
+      "capability": "code",
+      "source": "VITTORI_CODIGO_ATUALIZADO_30OUT2026.zip",
+      "outcome": "selective content/presentation merge; 46 tests, desktop/mobile navigation and rendering verified; unapproved internal pulse reverted after mobile title interference",
+      "status": "verified",
+      "next_action": null
+    },
+    {
+      "capability": "schema, records, auth identities, authorization",
+      "source": "source inspection and existing static public site",
+      "outcome": "not applicable; no data store or login detected",
+      "status": "not_applicable",
+      "next_action": null
+    },
+    {
+      "capability": "uploaded file bytes",
+      "source": "existing portfolio asset pointers",
+      "outcome": "existing media unchanged; BSB modal image loads on desktop/mobile; three home entries and seven portfolio entries verified",
+      "status": "verified",
+      "next_action": null
+    },
+    {
+      "capability": "external providers and secrets",
+      "source": "centralized WhatsApp contacts",
+      "outcome": "product CTAs retain Henrique; general CTAs retain Vittori; no private keys introduced",
+      "status": "verified",
+      "next_action": null
+    },
+    {
+      "capability": "public endpoints, callbacks, webhooks, schedules",
+      "source": "sitemap, robots, historical routes",
+      "outcome": "historical intelligence redirect and /comece 302 verified; sitemap contains 14 public URLs with no lastmod fallback",
+      "status": "verified",
+      "next_action": null
+    },
+    {
+      "capability": "cutover",
+      "source": "existing published site",
+      "outcome": "preview only; no publication requested",
+      "status": "pending",
+      "next_action": "owner reviews and publishes"
+    },
+    {
+      "capability": "verification",
+      "source": "uploaded guide",
+      "outcome": "46 tests, latest build OK, desktop/mobile page flows without JS errors; motion recordings complete; GPU aesthetics/performance not approved",
+      "status": "partially_verified",
+      "next_action": "owner confirms appearance and fluidity in interactive preview on real device"
+    }
+  ]
+}

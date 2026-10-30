@@ -53,7 +53,7 @@
   --radius: 0.125rem;
 
   --preto: oklch(0.145 0 0);
-  --bordo: oklch(0.377 0.148 20.5);
+  --bordo: oklch(0.383 0.148 23);
   --bordo-dark: oklch(0.256 0.11 21);
   --marrom: oklch(0.208 0.027 47);
   --marrom-quente: oklch(0.412 0.055 51);
@@ -435,8 +435,8 @@ html:not([data-phase="inside"]) .site-layer { opacity: 0; visibility: hidden; po
 /* ===== Etapa 4: sistema visual dos componentes ===== */
 :root {
   --gold-champagne: oklch(0.9 0.05 88);
-  --gold-old: oklch(0.74 0.09 80);
-  --gold-bronze: oklch(0.55 0.08 60);
+  --gold-old: oklch(0.79 0.088 80);
+  --gold-bronze: oklch(0.665 0.083 70);
   --glass-dark: color-mix(in oklab, var(--preto) 52%, transparent);
   --glass-bordo: color-mix(in oklab, var(--bordo-dark) 58%, transparent);
   --hair-gold: color-mix(in oklab, var(--dourado) 26%, transparent);
@@ -445,12 +445,12 @@ html:not([data-phase="inside"]) .site-layer { opacity: 0; visibility: hidden; po
 /* Dourado com acabamento: champanhe, ouro velho e bronze, reflexo lento. */
 .title-shimmer, h1 em.text-dourado, h2 em.text-dourado, .text-gold-rich {
   background-image:
-    linear-gradient(100deg, var(--gold-bronze) 0%, var(--gold-old) 22%, var(--gold-champagne) 42%, var(--gold-old) 58%, var(--gold-bronze) 82%, var(--gold-old) 100%);
+    linear-gradient(105deg, var(--gold-old) 0%, var(--gold-champagne) 19%, var(--gold-bronze) 38%, var(--gold-old) 56%, var(--gold-champagne) 75%, var(--gold-old) 100%);
   background-size: 220% 100%;
   background-position: 100% 50%;
   background-clip: text;
   color: transparent;
-  animation: gold-sweep 16s cubic-bezier(.45,0,.2,1) infinite;
+  animation: gold-sweep 18s cubic-bezier(.45,0,.2,1) infinite;
   text-shadow: none;
   padding-right: .06em;
 }
@@ -559,4 +559,25 @@ html:not([data-phase="inside"]) .site-layer { opacity: 0; visibility: hidden; po
   .svc-copy { grid-template-rows: 3rem 9rem 1.5rem 1fr 3.5rem; }
   .site-layer main > section > div, .site-layer footer > div { padding-left: 1.5rem; padding-right: 1.5rem; }
   .float-ctl { bottom: max(1rem, env(safe-area-inset-bottom)); }
+}
+
+/* VITTORI: hierarquia editorial compacta aprovada (30/10). */
+.section-heading { font-family: var(--font-serif); font-size: 3rem; font-weight: 400; line-height: 1.1; color: var(--marfim); }
+.section-heading::before { content: "✦"; color: var(--dourado-claro); display: inline-block; font-size: .37em; margin-right: .75em; vertical-align: middle; }
+.offer-card { background: linear-gradient(158deg, color-mix(in oklab, var(--bordo-dark) 31%, transparent), color-mix(in oklab, var(--preto) 52%, transparent)); border: 1px solid color-mix(in oklab, var(--dourado) 34%, transparent); }
+.offer-card--featured { border-color: color-mix(in oklab, var(--gold-champagne) 73%, transparent); box-shadow: inset 0 1px 0 color-mix(in oklab, var(--gold-champagne) 12%, transparent), 0 8px 42px -30px var(--dourado); }
+.service-name { color: var(--gold-champagne); font-size: 1.03rem; line-height: 1.45; font-weight: 700; }
+.svc-num { color: color-mix(in oklab, var(--gold-champagne) 88%, transparent); font-size: 4.5rem; line-height: 1; }
+.svc-card { grid-template-rows: 5rem 1fr; min-height: 31rem; }
+.svc-copy { display: flex; flex-direction: column; min-height: 0; gap: 0; }
+.svc-copy .t-title { font-size: 2rem; line-height: 1.13; margin-top: .9rem; min-height: 0; }
+.svc-copy .vlink { margin-top: auto; padding-top: 1.25rem; align-self: flex-start; }
+.internal-page .t-body, .internal-page .t-meta { font-size: 1rem; line-height: 1.7; }
+.vbtn--primary { background: linear-gradient(135deg, color-mix(in oklab, var(--bordo-dark) 88%, transparent), color-mix(in oklab, var(--bordo) 48%, transparent)); }
+.vbtn--primary:hover { background: linear-gradient(135deg, color-mix(in oklab, var(--bordo) 68%, transparent), color-mix(in oklab, var(--bordo-dark) 88%, transparent)); }
+@media (max-width:767px) {
+  .svc-card { min-height: 29rem; }
+  .svc-copy { grid-template-rows: none; }
+  .section-heading { font-size: 2.25rem; }
+  .internal-page { scroll-margin-top: 5rem; }
 }

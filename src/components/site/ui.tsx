@@ -65,7 +65,7 @@ export function SectionTitle({
 }
 
 export function Faq({ itens }: { itens: { q: string; a: string }[] }) {
-  const [aberto, setAberto] = useState<number | null>(0);
+  const [aberto, setAberto] = useState<number | null>(null);
   return (
     <ul className="border-b border-border/60">
       {itens.map((f, i) => (

@@ -1,4 +1,6 @@
 # Ajustes solicitados
+- [x] Integrado seletivamente o pacote de 30/10: escopos comerciais, home compacta, produtos sem simuladores públicos, WhatsApp direto, retornos e três trabalhos na home; 46 testes e fluxos computador/celular passaram, mídias e portal preservados.
+- [x] Pulso de dispersão e halo do pacote de 30/10 conferidos: captura com efeitos no celular mostrou interferência em títulos. Revertidos somente StageCanvas, experienceRules e seus testes à versão anterior protegida, conforme guia. Conteúdo novo mantido.
 - [x] Intervenção direcionada: A/B de partículas, Bloom, compileAsync e desenho de aquecimento; corrigidos smoothsteps invertidos e aquecida a variante do eclipse fora da tela. Compilações durante o primeiro mergulho: 4 antes, 0 depois nas comparações finais. Reflexos pontuais adicionados com intensidade independente; halo, fundo, câmera e Bloom preservados.
 - [x] Fluidez confirmada pela dona na prévia interativa; preservar as otimizações sem novos testes A/B.
 - [x] Rodada pontual: sequência sincronizada após prontidão, reflexos locais ajustados; dez testes passaram e gravações contínuas computador/celular confirmaram entrada sem erros JS. Câmera, V, eclipse, halo, Bloom, nebulosa e otimizações preservados.

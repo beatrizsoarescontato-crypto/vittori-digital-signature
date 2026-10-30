@@ -3,9 +3,10 @@ import { Link } from "@tanstack/react-router";
 import useEmblaCarousel from "embla-carousel-react";
 import { ArrowLeft, ArrowRight, Camera, ChartNoAxesCombined, Globe, Megaphone, MessagesSquare, PenTool, Sparkles, type LucideIcon } from "lucide-react";
 import { LINHAS, LINHA_INTELIGENCIA } from "@/content/servicos";
+import { Button } from "@/components/ui/button";
 import { Line } from "@/components/site/Lines";
 
-const CARDS = [...LINHAS.map((l) => ({ ...l, key: l.slug as string, href: `/servicos/${l.slug}` })), { ...LINHA_INTELIGENCIA, key: "inteligencia", href: "/servicos/inteligencia" }];
+const CARDS = [...LINHAS.map((l) => ({ ...l, key: l.slug as string, href: `/servicos/${l.slug}` })), { ...LINHA_INTELIGENCIA, key: "inteligencia", href: "/" }];
 const ICONES: Record<string, LucideIcon> = { presenca: MessagesSquare, performance: ChartNoAxesCombined, estudio: Camera, digital: Globe, identidade: PenTool, campanha: Megaphone, inteligencia: Sparkles };
 
 const S = "currentColor";
@@ -88,7 +89,7 @@ export function ServicosHome() {
   }, [api, update]);
 
   return (
-    <section data-stage-section="wide" id="servicos" className="relative section-seam py-24 md:py-32 reading-veil">
+    <section data-stage-section="wide" id="servicos" className="relative section-seam py-14 md:py-20 reading-veil">
       <div className="mx-auto w-full max-w-[1440px] px-6 md:px-12">
         <div className="flex items-end justify-between gap-5">
           <div>
@@ -99,11 +100,11 @@ export function ServicosHome() {
             </h2>
           </div>
           <div className="flex shrink-0 gap-3">
-            <button type="button" className="vicon" disabled={!canPrev} onClick={() => api?.scrollPrev()} aria-label="Serviços anteriores" title="Serviços anteriores"><ArrowLeft className="size-5" strokeWidth={1.5} /></button>
-            <button type="button" className="vicon" disabled={!canNext} onClick={() => api?.scrollNext()} aria-label="Próximos serviços" title="Próximos serviços"><ArrowRight className="size-5" strokeWidth={1.5} /></button>
+            <Button type="button" variant="ghost" className="vicon" disabled={!canPrev} onClick={() => api?.scrollPrev()} aria-label="Serviços anteriores" title="Serviços anteriores"><ArrowLeft className="size-5" strokeWidth={1.5} /></Button>
+            <Button type="button" variant="ghost" className="vicon" disabled={!canNext} onClick={() => api?.scrollNext()} aria-label="Próximos serviços" title="Próximos serviços"><ArrowRight className="size-5" strokeWidth={1.5} /></Button>
           </div>
         </div>
-        <div ref={viewportRef} className="-mx-2 mt-14 overflow-hidden px-2 py-4" role="region" aria-label="Serviços da Vittori" tabIndex={0} onKeyDown={(e) => { if (e.key === "ArrowRight") { e.preventDefault(); api?.scrollNext(); } if (e.key === "ArrowLeft") { e.preventDefault(); api?.scrollPrev(); } }}>
+        <div ref={viewportRef} className="-mx-2 mt-7 overflow-hidden px-2 py-4" role="region" aria-label="Serviços da Vittori" tabIndex={0} onKeyDown={(e) => { if (e.key === "ArrowRight") { e.preventDefault(); api?.scrollNext(); } if (e.key === "ArrowLeft") { e.preventDefault(); api?.scrollPrev(); } }}>
           <div className="flex touch-pan-y gap-5 cursor-grab active:cursor-grabbing">
             {CARDS.map((c, i) => {
               const Icon = ICONES[c.key] ?? Sparkles;
@@ -112,20 +113,21 @@ export function ServicosHome() {
                 <Link
                   key={c.key}
                   to={c.href}
+                  {...(ia ? { hash: "inteligencia" } : {})}
                   draggable={false}
                   onPointerMove={tilt}
                   onPointerLeave={reset}
                   data-service={c.key}
-                  className={`svc-card glow-edge group relative grid min-w-0 shrink-0 basis-[86%] overflow-hidden p-7 sm:basis-[62%] md:p-9 lg:basis-[calc((100%-2.5rem)/3)] ${ia ? "glass glass--bordo" : "glass"}`}
+                  className={`svc-card glow-edge group relative grid min-w-0 shrink-0 basis-[86%] overflow-hidden p-7 sm:basis-[62%] md:p-8 lg:basis-[calc((100%-2.5rem)/3)] ${ia ? "glass glass--bordo" : "glass"}`}
                 >
                   {ORNAMENTOS[c.key]}
-                  <div className="flex h-20 items-center justify-between gap-4">
+                  <div className="relative z-10 flex h-20 items-center justify-between gap-4">
                     <span className="svc-num text-7xl" aria-hidden="true">0{i + 1}</span>
                     <span className="flex size-14 shrink-0 items-center justify-center rounded-full border border-dourado/35">
                       <Icon className="size-6 text-dourado" strokeWidth={1.25} aria-hidden="true" />
                     </span>
                   </div>
-                  <div className="svc-copy pt-8">
+                  <div className="svc-copy pt-6">
                     <p className="service-name">{c.linha}</p>
                     <h3 className="t-title">{c.titulo}</h3>
                     <span aria-hidden className="mt-6 block h-px w-12 bg-dourado/50 transition-all duration-700 group-hover:w-24" />
