@@ -76,7 +76,7 @@ export function sectionChoreography(side: TextSide, mobile: boolean, bounds?: Re
     if (!placement) return { active: false, x: 0, y: 0, zOffset: 0, scale: 1, readingSafety: 0, dim: 0 };
     const { x, y, clear } = placement;
     const k = clear ? peak : 0;
-    return { active: true, x, y, zOffset: -9, scale: 0.34 + (mobile ? 0.12 : 0.26) * k, readingSafety: 1 - 0.7 * k, dim: 0.35 * (1 - 0.8 * k) };
+    return { active: true, x, y, zOffset: -9 + (mobile ? 3 : 5.5) * k, scale: 0.34 + (mobile ? 0.12 : 0.26) * k, readingSafety: 1 - 0.7 * k, dim: 0.35 * (1 - 0.8 * k) };
   }
   if (side === "none") return { active: false, x: 0, y: 0, zOffset: 0, scale: 1, readingSafety: 0, dim: 0 };
   if (mobile || side === "wide") return { active: true, x: mobile ? 0 : 0.36, y: mobile ? 0.36 : 0.3, zOffset: -9, scale: 0.42, readingSafety: 1, dim: 0.5 };
