@@ -20,7 +20,7 @@ export function PageHero({ eyebrow, titulo, texto, children }: { eyebrow: string
   );
 }
 
-export function Bloco({ eyebrow, titulo, children, tom = "preto", layout = "lista", id }: { eyebrow?: string; titulo: string; children: ReactNode; tom?: "preto" | "marrom" | "bordo"; layout?: "explicacao" | "lista" | "comparativo" | "faq" | "demo"; id?: string }) {
+export function Bloco({ eyebrow, titulo, children, tom = "preto", layout = "lista", id }: { eyebrow?: string | undefined; titulo: string; children: ReactNode; tom?: "preto" | "marrom" | "bordo"; layout?: "explicacao" | "lista" | "comparativo" | "faq" | "demo"; id?: string }) {
   const split = layout === "explicacao" || layout === "demo";
   return (
     <section id={id} data-stage-section="wide" className={`internal-page reading-veil relative section-seam py-12 md:py-16 ${tom === "bordo" ? "finale-glow" : ""}`}>
