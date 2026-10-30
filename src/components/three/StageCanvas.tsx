@@ -364,8 +364,8 @@ function Monogram({ mobile }: { mobile: boolean }) {
   const protectedBounds = useRef<ReadingBounds[] | undefined>(undefined);
   const haloLevel = useRef(0);
   const lastPocket = useRef<{ x: number; y: number } | null>(null);
-  const pocketCorr = useRef({ x: 0, y: 0 });
   const eclWorld = useMemo(() => new THREE.Vector3(), []);
+  const eclTmp = useMemo(() => new THREE.Vector3(), []);
   useEffect(() => {
     let elements: HTMLElement[] = [];
     let zones: HTMLElement[] = [];
@@ -476,22 +476,17 @@ function Monogram({ mobile }: { mobile: boolean }) {
     // At the peak the eclipse is sized to the measured empty pocket and its projected screen
     // position is fed back (group rotation/perspective shift it): luminous, never over text.
     let pocketScale = 0;
-    const em = eclMesh.current;
-    if (chor.radius > 0 && em) {
-      em.getWorldPosition(eclWorld);
-      const eclPlane = viewport.getCurrentViewport(camera, eclWorld);
+    let pocketTarget: { x: number; y: number } | null = null;
+    if (chor.radius > 0) {
+      // Exact placement of the eclipse centre (offset inside the rotated, scaled group).
+      eclWorld.set(0, 0.05, -0.6).multiplyScalar(vg.scale.x).applyEuler(vg.rotation);
+      const eclPlane = viewport.getCurrentViewport(camera, eclTmp.set(0, 0, vg.position.z + eclWorld.z));
       pocketScale = (chor.radius * eclPlane.height) / (0.5 * (3.4 + 1.4 * peakNow));
-      eclWorld.project(camera);
-      const gain = Math.min(1, dt * 3);
-      pocketCorr.current.x += (chor.x * 2 - eclWorld.x) * (plane.width / 2) * gain;
-      pocketCorr.current.y += (chor.y * 2 - eclWorld.y) * (plane.height / 2) * gain;
-    } else {
-      pocketCorr.current.x = damp(pocketCorr.current.x, 0, 2, dt);
-      pocketCorr.current.y = damp(pocketCorr.current.y, 0, 2, dt);
+      pocketTarget = { x: chor.x * eclPlane.width - eclWorld.x, y: chor.y * eclPlane.height - eclWorld.y };
     }
     vg.scale.setScalar(damp(vg.scale.x || base, Math.max(base * targetScale, pocketScale), 3, dt));
-    vg.position.x = damp(vg.position.x, plane.width * targetX + pocketCorr.current.x, 2.2, dt);
-    vg.position.y = damp(vg.position.y, plane.height * (chor.active ? chor.y : (y ?? 0) + (mobile ? 0.12 : 0)) + pocketCorr.current.y + Math.sin(t * 0.5) * 0.06, 2.6, dt);
+    vg.position.x = damp(vg.position.x, pocketTarget ? pocketTarget.x : plane.width * targetX, 2.2, dt);
+    vg.position.y = damp(vg.position.y, (pocketTarget ? pocketTarget.y : plane.height * (chor.active ? chor.y : (y ?? 0) + (mobile ? 0.12 : 0))) + Math.sin(t * 0.5) * 0.06, 2.6, dt);
     vg.rotation.x = damp(vg.rotation.x, (rx ?? 0) + mouse.y * 0.18, 2.6, dt);
     vg.rotation.y = damp(vg.rotation.y, (ry ?? 0) + mouse.x * 0.32 + spin.current * 0.35, 2.4, dt);
 
