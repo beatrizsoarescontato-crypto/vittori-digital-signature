@@ -195,10 +195,9 @@ export const LINHAS: Linha[] = [
       "Cuidado Mensal opcional (atualizações, backup e ajustes)",
     ],
     planos: [
-      { nome: "Landing Page" },
-      { nome: "Site Essencial", detalhe: "Até 5 páginas" },
-      { nome: "Site Institucional", detalhe: "Até 10 páginas, blog e SEO básico" },
-      { nome: "Sistemas e aplicativos", detalhe: "Desenvolvimento de soluções sob medida, mediante avaliação do projeto" },
+      { nome: "Landing Page", detalhe: "Uma página focada em apresentar sua oferta e conduzir o visitante a uma ação. Estrutura, conteúdo e integrações definidos conforme o objetivo do projeto." },
+      { nome: "Site Essencial", detalhe: "Um site profissional de até cinco páginas, com navegação clara, versão responsiva e estrutura de contato, para apresentar sua empresa com organização." },
+      { nome: "Site Institucional", detalhe: "Uma presença digital mais completa, com até dez páginas, possibilidade de blog conforme a proposta e estrutura inicial de SEO para organizar melhor as informações do negócio." },
     ],
     paraQuem:
       "Quem ainda depende só do Instagram, quem tem um site antigo que não traz contato e quem vai anunciar e precisa de uma página que converta.",
@@ -227,10 +226,10 @@ export const LINHAS: Linha[] = [
       titulo: "Opções",
       texto: "Do perfil organizado ao rebranding completo.",
       itens: [
-        { titulo: "Kit Perfil", texto: "Para quem já tem marca e quer o perfil organizado. Bio, orientação de foto, capas de destaques e templates de post e stories." },
-        { titulo: "Logo", texto: "Logo principal e variações, em PNG, PDF e vetor." },
-        { titulo: "Identidade Visual", texto: "Logo e variações, paleta de cores, tipografia, guia de marca e kit para redes sociais." },
-        { titulo: "Identidade Completa", texto: "O rebranding. Diagnóstico da marca atual, pesquisa de concorrência, dois conceitos, manual completo e papelaria digital." },
+        { titulo: "Kit Perfil", texto: "Para marcas que já possuem identidade e precisam organizar sua apresentação nas redes. Inclui orientação de biografia e imagem, links, capas de destaques e modelos visuais previstos no escopo." },
+        { titulo: "Logo", texto: "Criação da assinatura visual principal e suas variações, com arquivos finais adequados às aplicações contratadas. É uma solução de marca pontual, não uma identidade visual completa." },
+        { titulo: "Identidade Visual", texto: "Desenvolvimento de logo e variações, paleta de cores, tipografia, guia de uso e aplicações essenciais para manter a comunicação da marca consistente." },
+        { titulo: "Identidade Completa", texto: "Um projeto de marca mais aprofundado, com diagnóstico, pesquisa de referências e concorrência, desenvolvimento conceitual, manual de identidade e aplicações definidas na proposta." },
       ],
     },
     comoFunciona: [
