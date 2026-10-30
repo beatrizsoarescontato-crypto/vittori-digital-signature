@@ -1,3 +1,10 @@
+# Refinamento visual com preservação de textos (30/10)
+- [ ] Textos autorizados: Método Vittori (4 etapas novas), Vittori Performance (Implementação pontual + Gestão recorrente com Direcionada/Integrada), descritivos de Digital (3 opções) e de Identidade (4 modalidades). Nenhum outro texto alterado.
+- [ ] Estrutura: portfólio oculto da home e fora da navegação (rota e conteúdo preservados); FAQ geral fora da home; FAQs das seis páginas convencionais removidas da exibição; FAQs dos produtos de Inteligência preservadas; ordem dos serviços com Inteligência primeiro e Identidade por último.
+- [ ] Visual: títulos dourados com mais contraste, fundo cósmico mais bordô, hierarquia e espaços compactos, cards de Digital/Identidade com personalidade, Método mais elegante, rodapé compacto.
+- [ ] Funcional: arraste horizontal dos Serviços no computador, desfoque persistente ao rolar para cima, emenda escura entre hero e segunda seção, dispersão do V com halo sem prejudicar leitura.
+- [ ] Conferência: comparar textos antes/depois (só as quatro áreas), capturas computador/celular, testes; não marcar aparência como aprovada.
+
 # Ajustes solicitados
 - [x] Integrado seletivamente o pacote de 30/10: escopos comerciais, home compacta, produtos sem simuladores públicos, WhatsApp direto, retornos e três trabalhos na home; 46 testes e fluxos computador/celular passaram, mídias e portal preservados.
 - [x] Pulso de dispersão e halo do pacote de 30/10 conferidos: captura com efeitos no celular mostrou interferência em títulos. Revertidos somente StageCanvas, experienceRules e seus testes à versão anterior protegida, conforme guia. Conteúdo novo mantido.

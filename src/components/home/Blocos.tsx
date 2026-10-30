@@ -5,13 +5,13 @@ import { SHOW_BACKSTAGE_VIDEO, whatsappLink } from "@/lib/contato";
 
 export function Metodo() {
   const etapas = [
-    ["Diagnóstico", "Reunião de onboarding, leitura do perfil, do site e da concorrência."],
-    ["Plano", "Calendário, roteiros e metas do mês, aprovados por você."],
-    ["Produção", "Gravação, design, edição e campanhas no ar."],
-    ["Leitura", "Relatório, reunião e ajuste do próximo mês."],
+    ["Entendimento", "Conhecemos seu negócio, seus objetivos e o cenário em que sua marca está inserida. Antes de propor, entendemos o que precisa ser resolvido."],
+    ["Direção", "Definimos a estratégia, o escopo, as entregas e o caminho de execução. Cada projeto recebe um planejamento compatível com sua necessidade."],
+    ["Realização", "Transformamos a direção em trabalho concreto: criação, produção, desenvolvimento ou implementação, conforme o serviço contratado."],
+    ["Evolução", "Apresentamos as entregas, avaliamos os indicadores aplicáveis e definimos os próximos passos. Projetos pontuais e serviços contínuos têm acompanhamentos próprios."],
   ];
   return (
-    <section data-stage-section="wide" id="metodo" className="relative section-seam py-28 text-marfim md:py-40 reading-veil">
+    <section data-stage-section="wide" id="metodo" className="relative section-seam py-20 text-marfim md:py-28 reading-veil">
       <div className="mx-auto max-w-[1440px] px-6 md:px-12">
         <p className="t-label mb-6">Como trabalhamos</p>
         <h2 data-lines className="title-1">
@@ -19,7 +19,7 @@ export function Metodo() {
             Método <em className="italic text-dourado">Vittori.</em>
           </Line>
         </h2>
-        <div className="relative mt-20">
+        <div className="relative mt-14">
           {/* fio contínuo: horizontal no computador, vertical no celular */}
           <span aria-hidden className="absolute left-[7px] top-0 h-full w-px bg-marfim/15 md:left-0 md:top-[7px] md:h-px md:w-full" />
           <span aria-hidden data-draw className="absolute left-0 top-[7px] hidden h-px w-full origin-left bg-gradient-to-r from-dourado/80 via-dourado to-dourado/20 md:block" />
