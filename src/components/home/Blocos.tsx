@@ -23,26 +23,26 @@ export function Metodo() {
           {/* fio contínuo: horizontal no computador, vertical no celular */}
           <span aria-hidden className="absolute left-[7px] top-0 h-full w-px bg-marfim/15 md:left-0 md:top-[7px] md:h-px md:w-full" />
           <span aria-hidden data-draw className="absolute left-0 top-[7px] hidden h-px w-full origin-left bg-gradient-to-r from-dourado/80 via-dourado to-dourado/20 md:block" />
-          <ol className="relative grid gap-14 md:grid-cols-4 md:gap-10">
+          <ol className="relative grid gap-10 md:grid-cols-4 md:gap-8">
             {etapas.map(([t, d], i) => {
               const Icon = [Search, ClipboardList, Clapperboard, ChartNoAxesCombined][i] ?? Search;
               return (
-                <li key={t} className="group relative pl-10 md:pl-0 md:pt-14">
+                <li key={t} className="group relative pl-10 md:pl-0 md:pt-12">
                   <span aria-hidden className="metodo-node absolute left-0 top-1 md:top-0" />
-                  <div className="flex items-end gap-5">
-                    <span className="title-shimmer font-serif text-7xl font-light leading-none md:text-8xl">0{i + 1}</span>
-                    <span className="mb-2 flex size-11 items-center justify-center rounded-full border border-dourado/35"><Icon aria-hidden="true" className="size-5 text-dourado" strokeWidth={1.25} /></span>
+                  <div className="flex items-end gap-4">
+                    <span className="title-shimmer font-serif text-6xl font-light leading-none md:text-7xl">0{i + 1}</span>
+                    <span className="mb-1.5 flex size-10 items-center justify-center rounded-full border border-dourado/35"><Icon aria-hidden="true" className="size-[18px] text-dourado" strokeWidth={1.25} /></span>
                   </div>
-                  <p className="t-label mt-8">Etapa {i + 1}</p>
-                  <h3 className="mt-2 font-serif text-3xl font-medium md:text-[2.15rem]">{t}</h3>
-                  <p className="t-body mt-4 max-w-[30ch]">{d}</p>
+                  <p className="t-label mt-6">Etapa {i + 1}</p>
+                  <h3 className="mt-2 font-serif text-3xl font-medium">{t}</h3>
+                  <p className="t-body mt-3 max-w-[32ch]">{d}</p>
                 </li>
               );
             })}
           </ol>
         </div>
-        <p className="mt-20 font-serif text-2xl font-medium italic text-marfim md:text-3xl">
-          <strong className="font-semibold">Contrato, prazos e entregas escritos.</strong> Sem surpresa.
+        <p className="mt-14 font-serif text-2xl font-medium italic text-marfim md:text-3xl">
+          <strong className="font-semibold">Estratégia clara. Entregas definidas.</strong> Cada detalhe com direção.
         </p>
       </div>
     </section>
