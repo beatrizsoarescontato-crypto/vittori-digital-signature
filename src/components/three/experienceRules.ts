@@ -63,22 +63,69 @@ export function readingPlacement(bounds: ReadingBounds[], radius = 0.1) {
   return { x: (clear?.x ?? 1.14) - 0.5, y: 0.5 - (clear?.y ?? 0.28), clear: !!clear };
 }
 
+/**
+ * Largest genuinely empty area of the viewport for the dispersion peak.
+ * Distances are in viewport-height units (x is corrected by aspect = w/h); the halo may
+ * bleed up to 40% past the screen edge, never into a measured reading box.
+ * `prev` adds hysteresis so the eclipse does not hop between near-equal pockets.
+ */
+export function peakPocket(bounds: ReadingBounds[], aspect: number, prev?: { x: number; y: number } | null) {
+  const visible = bounds.filter(b => b.bottom > 0 && b.top < 1 && b.right > 0 && b.left < 1);
+  let best = { x: 0.5, y: 0.5, radius: 0 };
+  let bestScore = -1;
+  for (let cx = 0.06; cx <= 0.941; cx += 0.04) {
+    for (let cy = 0.1; cy <= 0.901; cy += 0.04) {
+      let r = Math.min(cx * aspect, (1 - cx) * aspect, cy, 1 - cy) / 0.6;
+      for (const b of visible) {
+        const dx = Math.max(b.left - cx, 0, cx - b.right) * aspect;
+        const dy = Math.max(b.top - cy, 0, cy - b.bottom);
+        r = Math.min(r, Math.hypot(dx, dy));
+        if (r <= 0) break;
+      }
+      const score = r + (prev && Math.hypot((cx - prev.x) * aspect, cy - prev.y) < 0.12 ? 0.025 : 0);
+      if (score > bestScore) { bestScore = score; best = { x: cx, y: cy, radius: r }; }
+    }
+  }
+  return best;
+}
+
 /** Where the interior V sits while a section is read. x is a viewport fraction. */
 /**
  * peak (0..1) is the dispersion moment: when a clear empty area exists, the dispersed V
  * grows into it and the halo is far less attenuated, so the eclipse is actually seen.
+ * With an aspect ratio, the peak uses the largest measured empty pocket (radius in
+ * viewport-height units) instead of the four fixed corners.
  */
-export function sectionChoreography(side: TextSide, mobile: boolean, bounds?: ReadingBounds[], peak = 0) {
+export function sectionChoreography(side: TextSide, mobile: boolean, bounds?: ReadingBounds[], peak = 0, aspect?: number, prev?: { x: number; y: number } | null) {
   if (bounds) {
     const radius = 0.1 + (mobile ? 0.03 : 0.06) * peak;
     let placement = readingPlacement(bounds, radius);
     if (placement && !placement.clear && peak > 0) placement = readingPlacement(bounds);
-    if (!placement) return { active: false, x: 0, y: 0, zOffset: 0, scale: 1, readingSafety: 0, dim: 0 };
+    if (!placement) return { active: false, x: 0, y: 0, zOffset: 0, scale: 1, readingSafety: 0, dim: 0, radius: 0, pocket: null };
+    if (aspect && peak > 0.02) {
+      const pocket = peakPocket(bounds, aspect, prev);
+      const minRadius = mobile ? 0.07 : 0.09;
+      if (pocket.radius >= minRadius) {
+        const k = peak;
+        const px = pocket.x - 0.5, py = 0.5 - pocket.y;
+        return {
+          active: true,
+          x: placement.x + (px - placement.x) * k,
+          y: placement.y + (py - placement.y) * k,
+          zOffset: -9 + (mobile ? 4 : 6) * k,
+          scale: 0.34 + (mobile ? 0.12 : 0.26) * k,
+          readingSafety: 1 - 0.9 * k,
+          dim: 0.35 * (1 - 0.9 * k),
+          radius: Math.min(pocket.radius, mobile ? 0.3 : 0.42) * k,
+          pocket: { x: pocket.x, y: pocket.y },
+        };
+      }
+    }
     const { x, y, clear } = placement;
     const k = clear ? peak : 0;
-    return { active: true, x, y, zOffset: -9 + (mobile ? 3 : 5.5) * k, scale: 0.34 + (mobile ? 0.12 : 0.26) * k, readingSafety: 1 - 0.7 * k, dim: 0.35 * (1 - 0.8 * k) };
+    return { active: true, x, y, zOffset: -9 + (mobile ? 3 : 5.5) * k, scale: 0.34 + (mobile ? 0.12 : 0.26) * k, readingSafety: 1 - 0.7 * k, dim: 0.35 * (1 - 0.8 * k), radius: 0, pocket: null };
   }
-  if (side === "none") return { active: false, x: 0, y: 0, zOffset: 0, scale: 1, readingSafety: 0, dim: 0 };
-  if (mobile || side === "wide") return { active: true, x: mobile ? 0 : 0.36, y: mobile ? 0.36 : 0.3, zOffset: -9, scale: 0.42, readingSafety: 1, dim: 0.5 };
-  return { active: true, x: side === "left" ? 0.3 : -0.3, y: 0, zOffset: -2.5, scale: 0.75, readingSafety: 0.6, dim: 0.2 };
+  if (side === "none") return { active: false, x: 0, y: 0, zOffset: 0, scale: 1, readingSafety: 0, dim: 0, radius: 0, pocket: null };
+  if (mobile || side === "wide") return { active: true, x: mobile ? 0 : 0.36, y: mobile ? 0.36 : 0.3, zOffset: -9, scale: 0.42, readingSafety: 1, dim: 0.5, radius: 0, pocket: null };
+  return { active: true, x: side === "left" ? 0.3 : -0.3, y: 0, zOffset: -2.5, scale: 0.75, readingSafety: 0.6, dim: 0.2, radius: 0, pocket: null };
 }
