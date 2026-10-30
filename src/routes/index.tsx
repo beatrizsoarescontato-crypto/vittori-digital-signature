@@ -6,10 +6,8 @@ import { InteligenciaDestaque } from "@/components/home/InteligenciaDestaque";
 import {
   ChamadaFinal,
   Metodo,
-  Perguntas,
 } from "@/components/home/Blocos";
 import { VITTORI_WHATS } from "@/lib/contato";
-import { PortfolioHome } from "@/components/home/Portfolio";
 
 const TITULO = "Vittori Creative House · Agência criativa em Brasília";
 const DESC =
@@ -55,9 +53,7 @@ function Index() {
       <Resolve />
       <ServicosHome />
       <InteligenciaDestaque />
-      <PortfolioHome />
       <Metodo />
-      <Perguntas />
       <ChamadaFinal />
     </SiteShell>
   );
