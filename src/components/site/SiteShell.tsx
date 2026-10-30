@@ -1,3 +1,4 @@
+// @refresh reset
 import { useEffect, useRef, type ReactNode } from "react";
 import { Nav } from "./Nav";
 import { Footer } from "./Footer";
@@ -5,14 +6,13 @@ import { Cursor } from "./Cursor";
 import { WhatsAppFab } from "./WhatsAppFab";
 import { SoundToggle } from "./SoundToggle";
 import { EntryGate } from "./EntryGate";
-import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { ScrollRevealController } from "./ScrollRevealController";
 import { ClientStage } from "@/components/ClientCanvas";
 import { DepthHud } from "./DepthHud";
 import { useNavegacaoContextual } from "./Navegacao";
 
 /** Moldura comum a todas as páginas públicas. */
 export function SiteShell({ children, fab = true }: { children: ReactNode; fab?: boolean }) {
-  useScrollReveal();
   useNavegacaoContextual();
   const layer = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -22,22 +22,34 @@ export function SiteShell({ children, fab = true }: { children: ReactNode; fab?:
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-phase"] });
     return () => observer.disconnect();
   }, []);
-  // Celular: ao rolar para baixo (lendo) os controles somem; reaparecem ao subir, no topo ou no fim da página.
+  // Detecta colisões reais; controles reservam espaço lateral no layout.
   useEffect(() => {
     const root = document.documentElement;
-    let last = window.scrollY;
-    const onScroll = () => {
-      const y = window.scrollY;
-      const nearEnd = y + window.innerHeight > document.documentElement.scrollHeight - 160;
-      if (y < 120 || nearEnd || y < last - 6) delete root.dataset["dockHidden"];
-      else if (y > last + 6) root.dataset["dockHidden"] = "";
-      last = y;
+    let frame = 0;
+    const check = () => {
+      frame = 0;
+      const controls = Array.from(document.querySelectorAll<HTMLElement>(".float-ctl"));
+      const content = Array.from(document.querySelectorAll<HTMLElement>("main :is(h1,h2,h3,p,li,a,button,input,video),footer :is(a,p)"));
+      for (const control of controls) {
+        const c = control.getBoundingClientRect();
+        const collision = content.some(el => {
+          const r = el.getBoundingClientRect();
+          return r.width > 0 && r.height > 0 && r.bottom > c.top - 8 && r.top < c.bottom + 8 && r.right > c.left - 8 && r.left < c.right + 8;
+        });
+        control.dataset["blocked"] = collision ? "true" : "false";
+      }
     };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => { window.removeEventListener("scroll", onScroll); delete root.dataset["dockHidden"]; };
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(check); };
+    const resize = new ResizeObserver(schedule);
+    if (layer.current) resize.observe(layer.current);
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    schedule();
+    return () => { resize.disconnect(); cancelAnimationFrame(frame); window.removeEventListener("scroll", schedule); window.removeEventListener("resize", schedule); delete root.dataset["dockHidden"]; };
   }, []);
   return (
     <div className="grain relative min-h-screen bg-preto">
+      <ScrollRevealController />
       <div aria-hidden="true" className="stage-fallback pointer-events-none fixed inset-0 z-0">
         <ClientStage />
       </div>
@@ -58,7 +70,7 @@ export function SiteShell({ children, fab = true }: { children: ReactNode; fab?:
       <SoundToggle />
       </div>
       <EntryGate />
-      <div aria-hidden className="grain-layer fixed z-[60]" />
+      <div aria-hidden className="grain-layer pointer-events-none fixed z-[60]" />
     </div>
   );
 }

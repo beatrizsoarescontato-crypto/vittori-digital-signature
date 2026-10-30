@@ -24,12 +24,15 @@
 - [ ] Som ouvido: depende de avaliação no aparelho da dona; fluidez da transição já confirmada por ela.
 - [x] Etapa 3: evolução visual aprovada pela dona (sem blocos opacos, V se afasta dos textos). Itens abaixo seguem em aberto.
 - [ ] Etapa 4 implementada (aguarda aprovação visual da dona): botões, dourado com acabamento, escala tipográfica em todas as seções, cards com personalidade por serviço, Método, Inteligência, páginas/planos, controles flutuantes funcionais no celular, textos da auditoria. Aguarda aprovação visual.
-- [x] Navegação contextual: voltar à seção de origem, trilha, links do cabeçalho com âncora, voltar/avançar do navegador.
+- [x] Navegação contextual: voltar à seção de origem por link discreto no conteúdo, sem breadcrumbs, links do cabeçalho com âncora, voltar/avançar do navegador.
 - [ ] Etapa 4.1 (antes da Etapa 5): legibilidade nas páginas internas, sobreposição do eclipse, padronização dos cards, apresentação dos planos, Vittori Inteligência, paleta de cores, botões e controles flutuantes.
-- [ ] Rodada autorizada 4.1: retorno discreto no conteúdo, proteção compartilhada das áreas reais de leitura/demonstração, hierarquia tipográfica e grade dos sete serviços; validar computador/celular e navegação.
-- [ ] Item 5 do novo anexo (planos): documento recebido termina em “É”; aguarda continuação das instruções antes de concluir sua apresentação definitiva.
+- [x] Lote A implementado: retorno integrado, medição das áreas de leitura/demonstração, escala legível, sete cards alinhados, controles com detecção de colisão e sem rótulos flutuantes sobre conteúdo. Navegação, histórico e rotas verificados em computador/celular.
+- [x] Lote B implementado: planos em seção própria (3 colunas desktop, 1 mobile), CTA por opção, variações editoriais compartilhadas, nomes reais de Inteligência, painéis integrados, bordô mais avermelhado e narrativa universal. FAQ de senhas e dois números preservados.
+- [x] Validação direcionada: 28 testes; entrada nova, menu mobile, seis serviços, nove outras páginas, abas Agenda e calculadora com 40 mensagens resultando em 180 conversas/18 vendas/R$9.000; sem erros JS, build OK. Capturas computador/celular revisadas. Corrigida revelação que não reinicializava ao trocar de página.
+- [ ] Aprovação final 4.1: avaliar leitura durante rolagem contínua e afastamento do eclipse na prévia da dona; captura local mostra composição protegida, mas não comprova ausência de sobreposição em todo instante/dispositivo. Não marcar a etapa inteira aprovada.
 - [x] Exportar arquivo com o código completo do site atual.
 - [ ] Etapa 5 (depois da 4.1): portfólio editorial e rodapé refinado.
+- [ ] Etapa 5: proporções variadas, nomes compactos, prévias por mídia, modal refinado e tratamento sem imagem real; preservar mídias e créditos, sem inventar a captura da Roberta.
 
 # Pendências para a rodada de refinamento (não corrigir antes)
 - [ ] Etapa 3: movimentos de câmera específicos por seção.

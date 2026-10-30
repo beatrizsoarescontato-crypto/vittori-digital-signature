@@ -4,6 +4,7 @@ import { Line } from "@/components/site/Lines";
 import { Check, Crown, Gem, Layers, Sparkles, Star } from "lucide-react";
 import { Btn, Faq } from "@/components/site/ui";
 import { VoltarContexto } from "@/components/site/Navegacao";
+import { whatsappLink } from "@/lib/contato";
 
 const PLANO_ICONES = [Star, Layers, Gem, Crown];
 
@@ -25,16 +26,17 @@ export function PageHero({ eyebrow, titulo, texto, children }: { eyebrow: string
   );
 }
 
-export function Bloco({ eyebrow, titulo, children, tom = "preto" }: { eyebrow?: string | undefined; titulo: string; children: ReactNode; tom?: "preto" | "marrom" | "bordo" }) {
+export function Bloco({ eyebrow, titulo, children, tom = "preto", layout = "lista", id }: { eyebrow?: string | undefined; titulo: string; children: ReactNode; tom?: "preto" | "marrom" | "bordo"; layout?: "explicacao" | "lista" | "comparativo" | "faq" | "demo"; id?: string }) {
   const bg = { preto: "", marrom: "", bordo: "finale-glow" }[tom];
+  const lateral = layout === "explicacao" || layout === "demo";
   return (
-    <section data-stage-section="wide" className={`internal-page relative section-seam reading-veil py-24 md:py-32 ${bg}`}>
-      <div className="mx-auto grid max-w-[1440px] gap-12 px-6 md:grid-cols-12 md:px-12">
-        <div data-stage-zone="reading" className="md:col-span-4">
+    <section id={id} data-stage-section="wide" className={`internal-page relative section-seam reading-veil py-20 md:py-24 ${bg}`}>
+      <div className={`mx-auto grid max-w-[1440px] gap-10 px-6 md:px-12 ${lateral ? "lg:grid-cols-12" : ""}`}>
+        <div data-stage-zone="reading" className={lateral ? "lg:col-span-4" : "max-w-4xl"}>
           {eyebrow && <p className="t-label mb-5">{eyebrow}</p>}
           <h2 className="font-serif text-4xl font-light leading-tight text-marfim md:text-5xl">{titulo}</h2>
         </div>
-        <div data-stage-zone="reading" data-reveal className="min-w-0 md:col-span-7 md:col-start-6">{children}</div>
+        <div data-stage-zone={layout === "demo" ? "demo" : "reading"} data-reveal className={`min-w-0 ${lateral ? "lg:col-span-7 lg:col-start-6" : layout === "faq" ? "max-w-4xl" : layout === "comparativo" ? "grid gap-8 md:grid-cols-2" : "max-w-5xl"}`}>{children}</div>
       </div>
     </section>
   );
@@ -92,7 +94,7 @@ export function ServicePage({ l }: { l: Linha }) {
       )}
 
       {l.blocos?.map((b, i) => (
-        <Bloco key={b.titulo + i} eyebrow={b.eyebrow} titulo={b.titulo} tom={i % 2 ? "preto" : "marrom"}>
+        <Bloco key={b.titulo + i} eyebrow={b.eyebrow} titulo={b.titulo} layout={b.lista ? "lista" : "explicacao"} tom={i % 2 ? "preto" : "marrom"}>
           {b.texto && <p className="reveal-item measure t-body mb-8">{b.texto}</p>}
           {b.lista && <Lista itens={b.lista} />}
           {b.para && (
@@ -129,21 +131,26 @@ export function ServicePage({ l }: { l: Linha }) {
       )}
 
       {l.planos && (
-        <Bloco titulo={l.slug === "digital" ? "Opções" : "Planos"}>
-          <ul className="grid gap-4 sm:grid-cols-2">
+        <section data-stage-section="wide" className="internal-page reading-veil section-seam py-20 md:py-24">
+          <div data-stage-zone="reading" className="mx-auto max-w-[1440px] px-6 md:px-12">
+          <h2 className="internal-title mb-12">{l.slug === "digital" ? "Opções" : "Planos"}</h2>
+          <ul data-reveal className={`grid items-stretch gap-6 ${l.planos.length === 3 ? "lg:grid-cols-3" : "lg:grid-cols-2"}`}>
             {l.planos.map((p, i) => {
               const Icon = PLANO_ICONES[i % PLANO_ICONES.length] ?? Sparkles;
               return (
-                <li key={p.nome} className={`reveal-item glass glow-edge flex min-w-0 flex-col gap-4 p-7 ${i === (l.planos?.length ?? 0) - 1 && (l.planos?.length ?? 0) > 1 ? "glass--bordo" : ""}`}>
+                <li key={p.nome} className="plan-option reveal-item flex min-w-0 flex-col items-start gap-5 border-t border-dourado/40 px-2 py-8">
                   <span className="flex size-12 items-center justify-center rounded-full border border-dourado/35"><Icon aria-hidden="true" className="size-5 text-dourado" strokeWidth={1.25} /></span>
-                  <span className="t-label">Opção 0{i + 1}</span>
-                  <span className="font-serif text-3xl font-medium text-marfim">{p.nome}</span>
-                  {p.detalhe && <span className="t-meta">{p.detalhe}</span>}
+                  <h3 className="font-serif text-3xl font-medium text-marfim">{p.nome}</h3>
+                  {p.detalhe && <p className="t-body">{p.detalhe}</p>}
+                  <div className="mt-auto pt-6">
+                    {l.slug === "digital" && p.nome === "Sistemas e apps" ? <Btn to="/servicos/inteligencia" variant="link">Ver Vittori Inteligência</Btn> : <Btn href={whatsappLink(`Olá! Vim pelo site da Vittori e quero conversar sobre ${l.linha}, opção ${p.nome}.`)} variant="link">Conversar sobre {p.nome}</Btn>}
+                  </div>
                 </li>
               );
             })}
           </ul>
-        </Bloco>
+          </div>
+        </section>
       )}
 
       {l.comoFunciona && (
@@ -175,7 +182,7 @@ export function ServicePage({ l }: { l: Linha }) {
       )}
 
       {l.faq.length > 0 && (
-        <Bloco titulo="Perguntas frequentes">
+        <Bloco titulo="Perguntas frequentes" layout="faq">
           <Faq itens={l.faq} />
         </Bloco>
       )}

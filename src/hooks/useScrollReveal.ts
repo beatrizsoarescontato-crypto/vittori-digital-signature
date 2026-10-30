@@ -7,7 +7,7 @@ import { useEffect } from "react";
  * - [data-parallax] desloca no scroll
  * - [data-counter] conta até o valor final
  */
-export function useScrollReveal() {
+export function useScrollReveal(pathname: string) {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
@@ -128,5 +128,5 @@ export function useScrollReveal() {
     })();
 
     return () => { cancelled = true; ctx?.revert(); };
-  }, []);
+  }, [pathname]);
 }

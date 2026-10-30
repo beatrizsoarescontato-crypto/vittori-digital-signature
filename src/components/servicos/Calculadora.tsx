@@ -31,15 +31,15 @@ export function Calculadora<K extends string>({
   const set = (id: K, n: number) => setV((s) => ({ ...s, [id]: Number.isFinite(n) ? n : 0 }));
 
   return (
-    <div className="calc-card relative overflow-hidden border border-dourado/40 bg-preto p-7 md:p-10">
+    <div data-stage-zone="demo" className="calc-card demo-surface relative overflow-hidden border border-border p-7 md:p-10">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <p className="label-mono text-dourado">{titulo}</p>
-        <span className="calc-badge label-mono inline-flex items-center gap-2 border border-dourado/50 px-3 py-2 text-marfim">
+        <p className="service-name">{titulo}</p>
+        <span className="t-label inline-flex items-center gap-2 px-0 py-2 text-marfim">
           <Calculator className="size-4 text-dourado" aria-hidden="true" />
           Simule com seus números
         </span>
       </div>
-      <p className="mt-4 text-sm text-marfim/75">
+      <p className="t-body mt-4">
         <strong className="font-semibold text-marfim">Arraste as barras ou digite os valores.</strong> O resultado muda na hora.
       </p>
       <div className="mt-8 grid gap-7">
@@ -48,7 +48,7 @@ export function Calculadora<K extends string>({
           return (
             <div key={c.id} className="flex flex-col gap-3">
               <div className="flex items-center justify-between gap-4">
-                <label htmlFor={`calc-${c.id}`} className="text-xs text-marfim/80">
+                <label htmlFor={`calc-${c.id}`} className="t-meta">
                   {c.label}
                 </label>
                 <input
@@ -83,8 +83,8 @@ export function Calculadora<K extends string>({
       >
         {resultado(v)}
       </div>
-      <p className="caption mt-6">Estimativa com os números que você informou. Nada é enviado nem salvo.</p>
-      {nota && <div className="mt-6 text-sm leading-loose text-marfim/75">{nota}</div>}
+      <p className="t-meta mt-6">Estimativa com os números que você informou. Nada é enviado nem salvo.</p>
+      {nota && <div className="t-body mt-6">{nota}</div>}
     </div>
   );
 }

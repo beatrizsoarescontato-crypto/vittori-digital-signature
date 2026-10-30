@@ -66,7 +66,7 @@ function Abas() {
           </button>
         ))}
       </div>
-      <div role="tabpanel" className="mt-6 border border-border/60 bg-preto p-8">
+      <div data-stage-zone="demo" role="tabpanel" className="demo-surface mt-6 border border-border/60 p-8">
         <p className="font-serif text-2xl font-light text-marfim">{(ABAS[a]?.[0] ?? "")}</p>
         <p className="mt-4 text-sm leading-loose text-marfim/75">{(ABAS[a]?.[1] ?? "")}</p>
         <p className="t-meta mt-8">Dados de demonstração</p>
@@ -150,8 +150,7 @@ function Page() {
         </div>
       </section>
 
-      <div id="como-funciona" />
-      <Bloco titulo="Como funciona" tom="marrom">
+      <Bloco id="como-funciona" titulo="Como funciona" tom="marrom">
         <Passos
           itens={[
             "O contato chega: a conversa entra pelo WhatsApp oficial, no mesmo número da sua empresa.",
@@ -165,7 +164,7 @@ function Page() {
         </div>
       </Bloco>
 
-      <Bloco titulo="Tudo numa tela só.">
+      <Bloco titulo="Tudo numa tela só." layout="demo">
         <Abas />
       </Bloco>
 
@@ -198,9 +197,9 @@ function Page() {
       <section data-stage-section="wide" className="internal-page reading-veil border-b border-border/50 py-24 md:py-32">
         <div data-stage-zone="reading" className="mx-auto max-w-[1440px] px-6 md:px-12">
           <p className="t-label mb-6 text-dourado">Para quem é</p>
-          <div data-reveal className="grid gap-px bg-border/60 sm:grid-cols-2 lg:grid-cols-3">
+          <div data-reveal className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {NICHOS.map(([n, q]) => (
-              <div key={n} className="reveal-item bg-preto p-7">
+              <div key={n} className="reveal-item border-t border-border p-7">
                 <h3 className="font-serif text-2xl text-marfim">{n}</h3>
                 <p className="mt-3 text-sm leading-relaxed text-marfim/65">{q}</p>
               </div>
@@ -212,7 +211,7 @@ function Page() {
         </div>
       </section>
 
-      <Bloco titulo="Perguntas frequentes" tom="marrom">
+      <Bloco titulo="Perguntas frequentes" layout="faq" tom="marrom">
         <Faq
           itens={[
             { q: "O cliente vai perceber que é robô?", a: "A conversa é natural e no tom da sua marca. Se alguém perguntar, ela diz que é assistente virtual e chama uma pessoa." },

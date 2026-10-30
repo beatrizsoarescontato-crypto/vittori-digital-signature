@@ -51,7 +51,7 @@ export function ConversaIlustrativa() {
   }, []);
 
   return (
-    <div data-stage-zone="demo" ref={ref} className="overflow-hidden rounded-[1.25rem] border border-dourado/30 bg-preto/80 shadow-[0_30px_80px_-30px_color-mix(in_oklab,var(--preto)_90%,transparent)]">
+    <div data-stage-zone="demo" ref={ref} className="demo-surface overflow-hidden rounded-lg border border-border">
       <div className="flex items-center gap-3 border-b border-border/60 px-5 py-4">
         <span className="h-2 w-2 rounded-full bg-dourado" />
         <span className="t-label !text-marfim/85">WhatsApp da sua empresa</span>
@@ -102,9 +102,8 @@ export function InteligenciaDestaque() {
                 <div className={demo ? "lg:col-span-6" : "lg:col-span-8"}>
                   <div className="flex items-center gap-4">
                     <span className="flex size-14 items-center justify-center rounded-full border border-dourado/40"><Icon aria-hidden="true" className="size-6 text-dourado" strokeWidth={1.25} /></span>
-                    <span className="t-label">Produto 0{i + 1}</span>
                   </div>
-                  <h3 className="mt-8 font-serif text-4xl font-medium leading-[1.05] text-marfim md:text-5xl">{p.nome}</h3>
+                  <h3 className="mt-6 font-serif text-4xl font-medium leading-[1.12] text-marfim md:text-5xl">{p.nome}</h3>
                   <p className="mt-5 font-serif text-2xl italic text-dourado-claro md:text-[1.7rem]">{p.titulo}</p>
                   <p className="t-body measure mt-6">{p.resumo}</p>
                   <Link to={p.to} className="vlink mt-8">Conhecer o produto <ArrowUpRight aria-hidden="true" className="size-4" /></Link>

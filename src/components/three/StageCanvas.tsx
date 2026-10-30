@@ -368,7 +368,7 @@ function Monogram({ mobile }: { mobile: boolean }) {
     const measure = () => {
       frame = 0;
       const w = window.innerWidth, h = window.innerHeight;
-      const bounds = zones.map(el => {
+      const bounds = zones.filter(el => el.getBoundingClientRect().height > 0).map(el => {
         const r = el.getBoundingClientRect();
         return { left: r.left / w, right: r.right / w, top: r.top / h, bottom: r.bottom / h };
       });
@@ -387,7 +387,7 @@ function Monogram({ mobile }: { mobile: boolean }) {
     const discover = () => {
       resize.disconnect();
       elements = Array.from(document.querySelectorAll<HTMLElement>("[data-stage-section]"));
-      zones = Array.from(document.querySelectorAll<HTMLElement>("[data-stage-zone]"));
+      zones = Array.from(document.querySelectorAll<HTMLElement>("[data-stage-zone], [data-stage-section] :is(h1,h2,h3,p,ul,ol):not([data-stage-zone])"));
       zones.forEach(el => resize.observe(el));
       schedule();
     };
@@ -541,12 +541,12 @@ void main(){
   float massA = exp(-length((uv - vec2(-0.28, 0.18)) * vec2(2.0, 3.2)) * 2.0);
   float massB = exp(-length((uv - vec2(0.30, -0.08)) * vec2(3.4, 1.8)) * 2.0);
   float massC = exp(-length((uv - vec2(0.08, 0.33)) * 4.0) * 2.0);
-  vec3 deep = vec3(0.013, 0.004, 0.010);
-  vec3 wine = vec3(0.14, 0.018, 0.050);
-  vec3 bordo = vec3(0.25, 0.035, 0.085);
+  vec3 deep = vec3(0.013, 0.003, 0.005);
+  vec3 wine = vec3(0.14, 0.012, 0.026);
+  vec3 bordo = vec3(0.25, 0.025, 0.045);
   float density = smoothstep(0.30, 0.78, f);
   vec3 col = deep + wine * density * massA + bordo * density * massB * 0.62;
-  col += vec3(0.085, 0.032, 0.045) * pow(f, 3.0) * massC;
+  col += vec3(0.085, 0.020, 0.027) * pow(f, 3.0) * massC;
   col *= 1.0 - smoothstep(0.28, 0.75, length(uv)) * 0.55;
   gl_FragColor = vec4(col, 1.0);
 }`;

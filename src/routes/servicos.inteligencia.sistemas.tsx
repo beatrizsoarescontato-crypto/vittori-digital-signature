@@ -70,14 +70,14 @@ function Page() {
       <section data-stage-section="wide" className="internal-page reading-veil border-b border-border/50 py-24 md:py-32">
         <div data-stage-zone="reading" className="mx-auto max-w-[1440px] px-6 md:px-12">
           <h2 className="title-2 text-marfim">O que você passa a enxergar</h2>
-          <div data-reveal className="mt-14 grid gap-px bg-marfim/10 sm:grid-cols-2 lg:grid-cols-4">
+          <div data-reveal className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {[
               "De onde vem cada cliente e quanto ele custa.",
               "Quem vende mais e em que etapa as vendas travam.",
               "Estoque, margem e produtos que dão lucro.",
               "Metas da equipe em tempo real.",
             ].map((c) => (
-              <p key={c} className="reveal-item bg-bordo-dark p-8 font-serif text-2xl font-light text-marfim">{c}</p>
+              <p key={c} className="reveal-item border-t border-border p-8 font-serif text-2xl font-light text-marfim">{c}</p>
             ))}
           </div>
         </div>
@@ -118,7 +118,7 @@ function Page() {
         />
       </Bloco>
 
-      <Bloco titulo="Perguntas frequentes" tom="marrom">
+      <Bloco titulo="Perguntas frequentes" layout="faq" tom="marrom">
         <Faq
           itens={[
             { q: "Preciso trocar o sistema que já uso?", a: "Não. A gente se conecta ao que você já tem." },
