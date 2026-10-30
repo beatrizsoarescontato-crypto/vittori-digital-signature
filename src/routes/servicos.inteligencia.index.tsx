@@ -43,7 +43,7 @@ function Page() {
       </PageHero>
 
       <Bloco eyebrow="Atendente de IA no WhatsApp" titulo="Nenhum cliente sem resposta." tom="marrom">
-        <p className="reveal-item measure mb-8 text-sm leading-loose text-marfim/80">
+        <p className="reveal-item measure mb-8 t-body">
           É uma atendente no WhatsApp da sua empresa que responde na hora, com a sua tabela e as suas regras,
           conversa como gente, descobre o que o cliente quer e passa para o vendedor já com o resumo. Quando o
           vendedor entra, ela sai.
@@ -77,12 +77,12 @@ function Page() {
             ]}
           />
         </div>
-        <p className="reveal-item mt-10 text-sm text-marfim/85">
+        <p className="reveal-item mt-10 t-body">
           Serve para: clínica, imobiliária, loja, escola, restaurante e prestador de serviço.
         </p>
         <div className="reveal-item mt-10 border-l border-dourado pl-6">
           <p className="t-label mb-3 text-dourado">Faça a conta</p>
-          <p className="text-sm leading-loose text-marfim/80">
+          <p className="t-body">
             Quantas mensagens chegam fora do horário? Quantas esperam mais de uma hora? Cada uma é um cliente que
             pode estar falando com o concorrente. Uma pessoa a mais no atendimento custa muito mais por mês do que a
             atendente, e não trabalha à noite nem no domingo.
@@ -102,7 +102,7 @@ function Page() {
       </Bloco>
 
       <Bloco eyebrow="Sistemas e Painéis" titulo="Os números da sua empresa num lugar só.">
-        <p className="reveal-item measure mb-8 text-sm leading-loose text-marfim/80">
+        <p className="reveal-item measure mb-8 t-body">
           A gente junta os dados que estão espalhados, no CRM, nos anúncios, na loja e no ERP, num sistema feito
           para o seu negócio. Atualiza sozinho e mostra de onde vem o cliente, quanto ele custa, quem vende e onde
           está a margem.
@@ -126,12 +126,12 @@ function Page() {
             "Ranking de equipe de agência de creators",
           ]}
         />
-        <p className="reveal-item mt-6 text-sm text-marfim/85">Também criamos sistemas e apps sob encomenda.</p>
+        <p className="reveal-item mt-6 t-body">Também criamos sistemas e apps sob encomenda.</p>
         <SaibaMais to="/servicos/inteligencia/sistemas" />
       </Bloco>
 
       <Bloco eyebrow="Estúdio de Posts Modelados" titulo="O que já funciona, com a cara da sua marca." tom="marrom">
-        <p className="reveal-item measure mb-8 text-sm leading-loose text-marfim/80">
+        <p className="reveal-item measure mb-8 t-body">
           A gente pega os posts que mais dão resultado no seu mercado, aqui e lá fora, e refaz com a sua marca. Sai
           reels, carrossel e estático prontos, com a automação de quem comenta e um placar do que funcionou.
         </p>

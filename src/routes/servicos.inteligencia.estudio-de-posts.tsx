@@ -106,7 +106,7 @@ function Page() {
         </ul>
       </Bloco>
 
-      <Bloco titulo="Perguntas frequentes">
+      <Bloco titulo="Perguntas frequentes" layout="faq">
         <Faq
           itens={[
             { q: "Vocês publicam?", a: "O Estúdio entrega as peças prontas. A publicação e a gestão do perfil fazem parte da Vittori Presença." },
