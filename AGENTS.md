@@ -22,6 +22,7 @@
 - Contextual returns live in tested `navContexto`; products return to the home intelligence section, with one link inside content. Hash scrolling waits for stable layout and skips history events. Historical intelligence/comece URLs redirect to the home section/official WhatsApp. Why: no duplicate pages or broken public URLs.
 - Route-driven reveals subscribe inside ScrollRevealController, not SiteShell; the shell resets on hot refresh. Why: changing nested hook signatures must not retain an incompatible mounted shell.
 - Structured plan limits in service content drive ServicePage and concrete regression tests. Why: commercial deliverables must not drift.
+- Intelligence contracting constraints and contextual demo links live in `src/content/inteligencia.ts`, rendered through product-only helpers. Why: keep both modalities consistent without changing conventional service pages.
 - The compact home sequence shows three portfolio previews; the catalogue remains complete. Why: reduce duplication without losing real media.
 
 - Subdirectories may have their own `AGENTS.md` (e.g. `src/components/three/`); read it before changing files there.
