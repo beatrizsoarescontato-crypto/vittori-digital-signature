@@ -30,6 +30,12 @@ export const smoothProgress = (a: number, b: number, x: number) => {
   return t * t * (3 - 2 * t);
 };
 
+/** Fast dispersion onset, slower settling: the eclipse survives a brief scroll gesture. */
+export function dispersionEnvelope(current: number, target: number, delta: number) {
+  const rate = target > current ? 8 : 0.9;
+  return current + (target - current) * (1 - Math.exp(-rate * Math.min(delta, 0.05)));
+}
+
 /** One post-warmup clock drives the monument and the HTML controls. */
 export function portalSequence(elapsed: number | null) {
   const t = elapsed ?? -1;

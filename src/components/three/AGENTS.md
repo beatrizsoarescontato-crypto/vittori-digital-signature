@@ -1,6 +1,7 @@
 # 3D scene rules
 
 - At the dispersion peak the eclipse is placed and sized from the largest measured empty pocket (`peakPocket`), with exact projection of its offset inside the rotated group. Why: the halo must be luminous without covering text, cards or footer.
+- The interior eclipse counter-rotates its particle group and shares a fast-attack/slow-release dispersion envelope. Why: turning the V or stopping a scroll gesture must not make the luminous plane vanish edge-on or before dispersion settles.
 - The 3D "VITTORI" uses a subset typeface JSON (`vittoriFont.json`, letters V I T O R only) generated from Cormorant Garamond SemiBold. Why: keeps the brand serif in 3D without shipping a full font file; regenerate it if the word changes.
 - Composition/eclipsing rules are pure functions in `experienceRules` with concrete regression tests; Box3 letter bounds and measured HTML safe zones determine portal layout. Why: resize must not collide the star with controls or accidentally dim the approved dispersion peak.
 - Dev-only `window.__vittori.report()` exposes bounded frame interval/draw-call samples and `.state()` exposes stage state; `[data-scene-ready]` follows shader preparation and warm frames. Why: distinguish sandbox CPU limits from real-device performance without claiming GPU timing.

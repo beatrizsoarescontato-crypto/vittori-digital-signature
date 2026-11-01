@@ -1,7 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { eclipseState, portalLayout, portalSequence, readingPlacement } from "./experienceRules";
+import { dispersionEnvelope, eclipseState, portalLayout, portalSequence, readingPlacement } from "./experienceRules";
 
 describe("approved experience rules", () => {
+  it("keeps dispersion present after a short scroll pulse in either direction", () => {
+    let level = 0;
+    for (let i = 0; i < 20; i++) level = dispersionEnvelope(level, 1, 0.05);
+    expect(level).toBeGreaterThan(0.99);
+    for (let i = 0; i < 10; i++) level = dispersionEnvelope(level, 0, 0.05);
+    expect(level).toBeGreaterThan(0.6);
+    expect(eclipseState(1, level, 0).halo).toBeGreaterThan(0.6);
+  });
   it("holds all portal elements until actual scene readiness", () => {
     expect(portalSequence(null)).toEqual({ word: 0, star: 0, step: 0 });
     expect(portalSequence(0)).toEqual({ word: 0, star: 0, step: 1 });

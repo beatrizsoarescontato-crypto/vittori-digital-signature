@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteShell } from "@/components/site/SiteShell";
-import { Bloco, Lista, Passos, PageHero } from "@/components/servicos/ServicePage";
+import { Bloco, Passos, PageHero } from "@/components/servicos/ServicePage";
 import { Btn, Faq } from "@/components/site/ui";
 import { whatsappLink } from "@/lib/contato";
 import { demonstracaoLink } from "@/content/inteligencia";
