@@ -3,7 +3,7 @@ import { Environment, Lightformer } from "@react-three/drei";
 import { Bloom, EffectComposer, Vignette } from "@react-three/postprocessing";
 import { Suspense, useEffect, useMemo, useRef } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { EXPERIENCE, dispersionEnvelope, eclipseState, portalLayout, portalSequence, sectionChoreography, type TextSide, type ReadingBounds } from "./experienceRules";
+import { EXPERIENCE, dispersionEnvelope, eclipseClear, eclipseState, portalLayout, portalSequence, sectionChoreography, type TextSide, type ReadingBounds } from "./experienceRules";
 import { SceneReadiness } from "./SceneReadiness";
 import * as THREE from "three";
 import { Font } from "three/examples/jsm/loaders/FontLoader.js";
@@ -70,11 +70,13 @@ attribute float aRand;
 uniform float uScatter;
 uniform float uTime;
 uniform float uSize;
+uniform float uCloudRadius;
 varying float vR;
 void main() {
   float s = uScatter * (1.0 + aRand * 0.6);
   vec3 p = position + aDir * s * (2.0 + aRand * 9.0);
   p += vec3(sin(uTime * 0.9 + aRand * 40.0), cos(uTime * 0.7 + aRand * 30.0), sin(uTime * 0.5 + aRand * 12.0)) * 0.01 * (1.0 + s * 10.0);
+  if (uCloudRadius > 0.0) p *= min(1.0, uCloudRadius / max(length(p), 0.001));
   vec4 mv = modelViewMatrix * vec4(p, 1.0);
   vR = aRand;
   gl_PointSize = uSize * (0.4 + aRand * 0.9) / max(0.2, -mv.z);
@@ -132,6 +134,7 @@ function samplePoints(meshes: THREE.Mesh[], total: number, forward: number, size
       uAlpha: { value: 0 },
       uTime: { value: 0 },
       uSize: { value: size },
+      uCloudRadius: { value: 0 },
       uColor: { value: new THREE.Color(color) },
     },
   });
@@ -501,10 +504,20 @@ function Monogram({ mobile }: { mobile: boolean }) {
     // Partículas: chegam espalhadas do mergulho e se montam; respiram nos Serviços.
     const breathe = sm(0.22, 0.34, p) * (1 - sm(0.5, 0.6, p)) * 0.18;
     const choreography = eclipseState(appear, dispersion, reading.current);
+    let readingClear = true;
+    if (protectedBounds.current && eclMesh.current) {
+      vg.updateMatrixWorld(true);
+      eclMesh.current.getWorldPosition(eclWorld);
+      const currentPlane = viewport.getCurrentViewport(camera, eclWorld);
+      const radius = vg.scale.x * (3.4 + 1.4 * peakNow) * 0.5 / currentPlane.height;
+      eclTmp.copy(eclWorld).project(camera);
+      readingClear = eclipseClear(protectedBounds.current, (eclTmp.x + 1) / 2, (1 - eclTmp.y) / 2, radius, viewport.aspect);
+    }
     const u = (vPts.material as THREE.ShaderMaterial).uniforms;
     setUniform(u, "uTime", t);
     setUniform(u, "uScatter", (1 - born.current) * 0.9 + breathe + 0.35 * sm(0.2, 0.9, dispersion) + Math.abs(spin.current) * 0.1);
-    setUniform(u, "uAlpha", choreography.particleAlpha * (1 - chor.dim * reading.current) * (mobile ? 0.8 : 1.25));
+    setUniform(u, "uCloudRadius", protectedBounds.current ? 1.5 : 0);
+    setUniform(u, "uAlpha", choreography.particleAlpha * (1 - chor.dim * reading.current) * (readingClear ? 1 : 0) * (mobile ? 0.8 : 1.25));
 
     // Eclipse: o disco escuro desliza até cobrir o centro, a coroa se acende por trás (contraluz).
     const eu = ecl.uniforms;
@@ -513,7 +526,7 @@ function Monogram({ mobile }: { mobile: boolean }) {
     const offset = eu["uOff"]?.value;
     if (offset instanceof THREE.Vector2) offset.set(0.42 * (1 - e) + Math.sin(t * 0.2) * 0.012, 0.12 * (1 - e) + Math.cos(t * 0.17) * 0.01);
     haloLevel.current = damp(haloLevel.current, choreography.halo, 3.5, dt);
-    setUniform(eu, "uAlpha", haloLevel.current);
+    setUniform(eu, "uAlpha", readingClear ? haloLevel.current : 0);
     setUniform(eu, "uPeak", choreography.peak);
     eclMesh.current?.scale.setScalar(3.4 + 1.4 * choreography.peak);
     setUniform(eu, "uSoftness", choreography.softness);

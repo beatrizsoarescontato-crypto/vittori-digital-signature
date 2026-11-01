@@ -59,6 +59,15 @@ export function eclipseState(formation: number, dispersion: number, readingSafet
 export type TextSide = "left" | "right" | "wide" | "none";
 export type ReadingBounds = { left: number; right: number; top: number; bottom: number };
 
+/** Guard the rendered position while its damped movement crosses protected content. */
+export function eclipseClear(bounds: ReadingBounds[], x: number, y: number, radius: number, aspect: number) {
+  return bounds.every(b => {
+    const dx = Math.max(b.left - x, 0, x - b.right) * aspect;
+    const dy = Math.max(b.top - y, 0, y - b.bottom);
+    return Math.hypot(dx, dy) >= radius;
+  });
+}
+
 /** Normalized DOM rectangles; padding/empty sections are not reading regions. */
 export function readingPlacement(bounds: ReadingBounds[], radius = 0.1) {
   const visible = bounds.filter(b => b.bottom > 0.08 && b.top < 0.95 && b.right > 0 && b.left < 1);
