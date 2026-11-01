@@ -1,3 +1,8 @@
+# Inteligência e halo (01/11)
+- [ ] Atualizar apenas os três produtos e cards da Inteligência conforme o documento, com modalidades e demonstrações via Henrique.
+- [ ] Corrigir sincronização/composição do halo sem alterar portal ou otimizações; conferir formação, dispersão e eclipse nos dois sentidos.
+- [ ] Testar navegação, contratos e leitura no computador/celular; aprovação visual final fica com a proprietária.
+
 # Intervenção nos 4 pendentes (30/10, 06h)
 - [x] Arraste dos serviços (rodada 3 itens): mouse/caneta agora por Pointer Events com captura; toque continua no Embla. Testado arraste rápido e lento em 1280 px e 502 px, setas, clique no card e toque no celular. Aguarda confirmação da usuária na prévia.
 - [ ] Halo com partículas: no pico da dispersão o eclipse vai para o maior espaço vazio medido (cards, textos e rodapé protegidos) e cresce até ele. Visível nas capturas de computador e celular. Aguarda avaliação visual e fluidez em aparelho real.

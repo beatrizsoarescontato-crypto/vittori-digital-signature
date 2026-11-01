@@ -1,5 +1,4 @@
-import { Link } from "@tanstack/react-router";
-import { Bot, LayoutTemplate, PanelsTopLeft, ArrowUpRight, Code2 } from "lucide-react";
+import { Bot, LayoutTemplate, PanelsTopLeft, Code2 } from "lucide-react";
 import { PRODUTOS_IA } from "@/content/servicos";
 import { henriqueLink, whatsappLink } from "@/lib/contato";
 import { Btn } from "@/components/site/ui";
@@ -18,11 +17,12 @@ export function InteligenciaDestaque() {
         {PRODUTOS_IA.map((p,i)=>{
           const Icon=ICONES[i]??Bot;
           return <article key={p.slug} className="glass glow-edge flex flex-col rounded-md p-6 md:p-7">
-            <Icon aria-hidden="true" className="size-8 text-dourado-claro" strokeWidth={1.35}/>
-            <h3 className="mt-5 font-serif text-3xl leading-tight text-marfim">{p.nome}</h3>
-            <p className="mt-2 font-serif text-xl italic text-dourado-claro">{p.titulo}</p>
-            <p className="t-meta mt-3 flex-1">{p.resumo}</p>
-            <Link to={p.to} className="vlink mt-5">Conhecer solução <ArrowUpRight aria-hidden="true" className="size-4"/></Link>
+            <Icon aria-hidden="true" className="size-6 text-dourado-claro" strokeWidth={1.35}/>
+            <h3 className="mt-4 font-serif text-3xl font-medium leading-tight text-marfim">{p.nome}</h3>
+            <span aria-hidden="true" className="my-4 block h-px w-10 bg-dourado/70"/>
+            <p className="font-serif text-xl italic text-dourado-claro">{p.titulo}</p>
+            <p className="t-meta mt-3 flex-1 font-sans">{p.resumo}</p>
+            <div className="mt-5"><Btn to={p.to} variant="link">Conhecer solução</Btn></div>
           </article>;
         })}
       </div>

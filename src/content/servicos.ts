@@ -297,7 +297,7 @@ export const PRODUTOS_IA = [
     nome: "Atendente de IA no WhatsApp",
     titulo: "Atendimento que organiza conversas e encaminha oportunidades.",
     resumo:
-      "Uma atendente de IA configurada com informações e regras da sua empresa, capaz de responder dúvidas, organizar contatos e encaminhar conversas à equipe quando necessário.",
+      "Uma atendente de IA com linguagem natural, memória contextual e funcionalidades configuradas para oferecer uma experiência de atendimento próxima, eficiente e adaptada ao seu negócio.",
   },
   {
     slug: "sistemas",
@@ -306,7 +306,7 @@ export const PRODUTOS_IA = [
     nome: "Sistemas e Painéis",
     titulo: "Sua operação organizada em um só lugar.",
     resumo:
-      "Um sistema integrado para centralizar conversas, organizar fichas de clientes, acompanhar o funil comercial, visualizar agendas e consultar os principais indicadores da operação em uma única interface.",
+      "Um sistema unificado de gestão e acompanhamento em tempo real, que reúne atendimentos, clientes, funil comercial, agenda, indicadores de tráfego pago e outras informações importantes da operação em uma única interface.",
   },
   {
     slug: "estudio-de-posts",
@@ -315,6 +315,6 @@ export const PRODUTOS_IA = [
     nome: "Estúdio de Posts Modelados",
     titulo: "Conteúdo modelado para a identidade da sua marca.",
     resumo:
-      "Criamos conteúdos a partir de referências, formatos e estruturas relevantes para seu mercado, adaptando linguagem, design e abordagem aos objetivos da sua marca.",
+      "Um sistema que analisa referências e gera conteúdos adaptados à identidade da sua marca, permitindo criar publicações sem contratação individual por peça.",
   },
 ];
