@@ -381,7 +381,7 @@ function Monogram({ mobile }: { mobile: boolean }) {
         const r = el.getBoundingClientRect();
         return { left: r.left / w, right: r.right / w, top: r.top / h, bottom: r.bottom / h };
       });
-      protectedBounds.current = document.querySelector(".internal-page") || bounds.some(b => b.bottom > 0.08 && b.top < 0.95) ? bounds : undefined;
+      protectedBounds.current = bounds;
       section.current = "none";
       for (const el of elements) {
         const r = el.getBoundingClientRect();
@@ -396,7 +396,7 @@ function Monogram({ mobile }: { mobile: boolean }) {
     const discover = () => {
       resize.disconnect();
       elements = Array.from(document.querySelectorAll<HTMLElement>("[data-stage-section]"));
-      zones = Array.from(document.querySelectorAll<HTMLElement>("[data-stage-zone], [data-stage-section] :is(h1,h2,h3,p,ul,ol,.glass):not([data-stage-zone]), footer :is(p,nav)"));
+      zones = Array.from(document.querySelectorAll<HTMLElement>("[data-stage-zone], main :is(h1,h2,h3,p,ul,ol,.glass):not([data-stage-zone]), footer :is(p,nav)"));
       zones.forEach(el => resize.observe(el));
       schedule();
     };
