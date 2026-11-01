@@ -30,6 +30,12 @@ export const smoothProgress = (a: number, b: number, x: number) => {
   return t * t * (3 - 2 * t);
 };
 
+/** Fast dispersion onset, slower settling: the eclipse survives a brief scroll gesture. */
+export function dispersionEnvelope(current: number, target: number, delta: number) {
+  const rate = target > current ? 8 : 0.9;
+  return current + (target - current) * (1 - Math.exp(-rate * Math.min(delta, 0.05)));
+}
+
 /** One post-warmup clock drives the monument and the HTML controls. */
 export function portalSequence(elapsed: number | null) {
   const t = elapsed ?? -1;
@@ -52,6 +58,15 @@ export function eclipseState(formation: number, dispersion: number, readingSafet
 }
 export type TextSide = "left" | "right" | "wide" | "none";
 export type ReadingBounds = { left: number; right: number; top: number; bottom: number };
+
+/** Guard the rendered position while its damped movement crosses protected content. */
+export function eclipseClear(bounds: ReadingBounds[], x: number, y: number, radius: number, aspect: number) {
+  return bounds.every(b => {
+    const dx = Math.max(b.left - x, 0, x - b.right) * aspect;
+    const dy = Math.max(b.top - y, 0, y - b.bottom);
+    return Math.hypot(dx, dy) >= radius;
+  });
+}
 
 /** Normalized DOM rectangles; padding/empty sections are not reading regions. */
 export function readingPlacement(bounds: ReadingBounds[], radius = 0.1) {

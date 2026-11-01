@@ -1,3 +1,8 @@
+# Inteligência e halo (01/11)
+- [x] Atualizados apenas os três produtos e cards da Inteligência conforme o documento, com modalidades e demonstrações via Henrique; desenvolvimento sob medida preservado.
+- [ ] Halo: corrigida orientação da superfície e envelope compartilhado de dispersão; guarda de posição renderizada protege leitura durante deslocamentos. Capturas mostram eclipse luminoso no computador, mas sequência completa, celular e legibilidade final ainda não confirmados. Não considerar resolvido.
+- [x] Produtos: navegação dos três cards, retorno, duas modalidades, demonstração contextual de Henrique e FAQ do Estúdio verificados no computador/celular; 65 testes passaram. Aparência final aguarda proprietária.
+
 # Intervenção nos 4 pendentes (30/10, 06h)
 - [x] Arraste dos serviços (rodada 3 itens): mouse/caneta agora por Pointer Events com captura; toque continua no Embla. Testado arraste rápido e lento em 1280 px e 502 px, setas, clique no card e toque no celular. Aguarda confirmação da usuária na prévia.
 - [ ] Halo com partículas: no pico da dispersão o eclipse vai para o maior espaço vazio medido (cards, textos e rodapé protegidos) e cresce até ele. Visível nas capturas de computador e celular. Aguarda avaliação visual e fluidez em aparelho real.

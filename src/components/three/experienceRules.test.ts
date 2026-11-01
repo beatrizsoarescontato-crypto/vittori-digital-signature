@@ -1,7 +1,20 @@
 import { describe, expect, it } from "vitest";
-import { eclipseState, portalLayout, portalSequence, readingPlacement } from "./experienceRules";
+import { dispersionEnvelope, eclipseClear, eclipseState, portalLayout, portalSequence, readingPlacement } from "./experienceRules";
 
 describe("approved experience rules", () => {
+  it("protects reading while the actual eclipse crosses a card en route to its pocket", () => {
+    const card = [{ left: 0.4, right: 0.9, top: 0.3, bottom: 0.8 }];
+    expect(eclipseClear(card, 0.65, 0.5, 0.12, 16 / 9)).toBe(false);
+    expect(eclipseClear(card, 0.15, 0.15, 0.12, 16 / 9)).toBe(true);
+  });
+  it("keeps dispersion present after a short scroll pulse in either direction", () => {
+    let level = 0;
+    for (let i = 0; i < 20; i++) level = dispersionEnvelope(level, 1, 0.05);
+    expect(level).toBeGreaterThan(0.99);
+    for (let i = 0; i < 10; i++) level = dispersionEnvelope(level, 0, 0.05);
+    expect(level).toBeGreaterThan(0.6);
+    expect(eclipseState(1, level, 0).halo).toBeGreaterThan(0.6);
+  });
   it("holds all portal elements until actual scene readiness", () => {
     expect(portalSequence(null)).toEqual({ word: 0, star: 0, step: 0 });
     expect(portalSequence(0)).toEqual({ word: 0, star: 0, step: 1 });
