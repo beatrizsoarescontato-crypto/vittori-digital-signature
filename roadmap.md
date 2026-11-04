@@ -1,6 +1,7 @@
 # Inteligência e halo (01/11)
 - [x] Atualizados apenas os três produtos e cards da Inteligência conforme o documento, com modalidades e demonstrações via Henrique; desenvolvimento sob medida preservado.
-- [ ] Halo: corrigida orientação da superfície e envelope compartilhado de dispersão; guarda de posição renderizada protege leitura durante deslocamentos. Capturas mostram eclipse luminoso no computador, mas sequência completa, celular e legibilidade final ainda não confirmados. Não considerar resolvido.
+- [x] Halo (04/11): em vez de sumir perto de textos, o eclipse encolhe para caber no espaço livre medido e só se apaga sem espaço. Capturas no computador (1280 px) mostram halo luminoso com partículas em áreas vazias em três pontos da rolagem, sem cobrir textos ou cards.
+- [ ] Halo no celular (502 px): os textos ocupam quase toda a tela, então o halo aparece apenas como brilho na borda. Aguarda avaliação da proprietária e teste em aparelho real.
 - [x] Produtos: navegação dos três cards, retorno, duas modalidades, demonstração contextual de Henrique e FAQ do Estúdio verificados no computador/celular; 65 testes passaram. Aparência final aguarda proprietária.
 
 # Intervenção nos 4 pendentes (30/10, 06h)
