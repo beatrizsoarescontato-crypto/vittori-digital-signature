@@ -3,7 +3,7 @@ import { Environment, Lightformer } from "@react-three/drei";
 import { Bloom, EffectComposer, Vignette } from "@react-three/postprocessing";
 import { Suspense, useEffect, useMemo, useRef } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { EXPERIENCE, dispersionEnvelope, eclipseClear, eclipseState, portalLayout, portalSequence, sectionChoreography, type TextSide, type ReadingBounds } from "./experienceRules";
+import { EXPERIENCE, dispersionEnvelope, eclipseClearance, haloFit, eclipseState, portalLayout, portalSequence, sectionChoreography, type TextSide, type ReadingBounds } from "./experienceRules";
 import { SceneReadiness } from "./SceneReadiness";
 import * as THREE from "three";
 import { Font } from "three/examples/jsm/loaders/FontLoader.js";
@@ -366,6 +366,7 @@ function Monogram({ mobile }: { mobile: boolean }) {
   const section = useRef<TextSide>("none");
   const protectedBounds = useRef<ReadingBounds[] | undefined>(undefined);
   const haloLevel = useRef(0);
+  const haloFitLevel = useRef(1);
   const dispersionLevel = useRef(0);
   const lastPocket = useRef<{ x: number; y: number } | null>(null);
   const eclWorld = useMemo(() => new THREE.Vector3(), []);
@@ -504,20 +505,20 @@ function Monogram({ mobile }: { mobile: boolean }) {
     // Partículas: chegam espalhadas do mergulho e se montam; respiram nos Serviços.
     const breathe = sm(0.22, 0.34, p) * (1 - sm(0.5, 0.6, p)) * 0.18;
     const choreography = eclipseState(appear, dispersion, reading.current);
-    let readingClear = true;
+    let fit = { scale: 1, alpha: 1 };
     if (protectedBounds.current && eclMesh.current) {
       vg.updateMatrixWorld(true);
       eclMesh.current.getWorldPosition(eclWorld);
       const currentPlane = viewport.getCurrentViewport(camera, eclWorld);
       const radius = vg.scale.x * (3.4 + 1.4 * peakNow) * 0.5 / currentPlane.height;
       eclTmp.copy(eclWorld).project(camera);
-      readingClear = eclipseClear(protectedBounds.current, (eclTmp.x + 1) / 2, (1 - eclTmp.y) / 2, radius, viewport.aspect);
+      fit = haloFit(eclipseClearance(protectedBounds.current, (eclTmp.x + 1) / 2, (1 - eclTmp.y) / 2, viewport.aspect), radius);
     }
     const u = (vPts.material as THREE.ShaderMaterial).uniforms;
     setUniform(u, "uTime", t);
     setUniform(u, "uScatter", (1 - born.current) * 0.9 + breathe + 0.35 * sm(0.2, 0.9, dispersion) + Math.abs(spin.current) * 0.1);
     setUniform(u, "uCloudRadius", protectedBounds.current ? 1.5 : 0);
-    setUniform(u, "uAlpha", choreography.particleAlpha * (1 - chor.dim * reading.current) * (readingClear ? 1 : 0) * (mobile ? 0.8 : 1.25));
+    setUniform(u, "uAlpha", choreography.particleAlpha * (1 - chor.dim * reading.current) * fit.alpha * (mobile ? 0.8 : 1.25));
 
     // Eclipse: o disco escuro desliza até cobrir o centro, a coroa se acende por trás (contraluz).
     const eu = ecl.uniforms;
@@ -526,9 +527,10 @@ function Monogram({ mobile }: { mobile: boolean }) {
     const offset = eu["uOff"]?.value;
     if (offset instanceof THREE.Vector2) offset.set(0.42 * (1 - e) + Math.sin(t * 0.2) * 0.012, 0.12 * (1 - e) + Math.cos(t * 0.17) * 0.01);
     haloLevel.current = damp(haloLevel.current, choreography.halo, 3.5, dt);
-    setUniform(eu, "uAlpha", readingClear ? haloLevel.current : 0);
+    haloFitLevel.current = damp(haloFitLevel.current, fit.scale, 6, dt);
+    setUniform(eu, "uAlpha", haloLevel.current * fit.alpha);
     setUniform(eu, "uPeak", choreography.peak);
-    eclMesh.current?.scale.setScalar(3.4 + 1.4 * choreography.peak);
+    eclMesh.current?.scale.setScalar((3.4 + 1.4 * choreography.peak) * Math.min(fit.scale, haloFitLevel.current));
     setUniform(eu, "uSoftness", choreography.softness);
 
     stars.current.forEach((m, i) => {

@@ -144,3 +144,22 @@ export function sectionChoreography(side: TextSide, mobile: boolean, bounds?: Re
   if (mobile || side === "wide") return { active: true, x: mobile ? 0 : 0.36, y: mobile ? 0.36 : 0.3, zOffset: -9, scale: 0.42, readingSafety: 1, dim: 0.5, radius: 0, pocket: null };
   return { active: true, x: side === "left" ? 0.3 : -0.3, y: 0, zOffset: -2.5, scale: 0.75, readingSafety: 0.6, dim: 0.2, radius: 0, pocket: null };
 }
+
+/** Distance (viewport-height units) from a screen point to the nearest protected box. */
+export function eclipseClearance(bounds: ReadingBounds[], x: number, y: number, aspect: number) {
+  let d = Infinity;
+  for (const b of bounds) {
+    if (b.bottom < 0 || b.top > 1 || b.right < 0 || b.left > 1) continue;
+    const dx = Math.max(b.left - x, 0, x - b.right) * aspect;
+    const dy = Math.max(b.top - y, 0, y - b.bottom);
+    d = Math.min(d, Math.hypot(dx, dy));
+  }
+  return d;
+}
+
+/** Shrink the halo to the free space instead of hiding it; fade only when almost no room. */
+export function haloFit(clearance: number, radius: number) {
+  if (radius <= 0 || clearance >= radius) return { scale: 1, alpha: 1 };
+  const scale = Math.max(0, clearance / radius);
+  return { scale, alpha: smoothProgress(0.18, 0.4, scale) };
+}

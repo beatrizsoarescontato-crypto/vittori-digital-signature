@@ -101,3 +101,11 @@ describe("eclipse peak uses the largest measured empty space", () => {
     expect(r.readingSafety).toBe(1);
   });
 });
+
+import { haloFit, eclipseClearance } from "./experienceRules";
+describe("halo fits free space", () => {
+  it("keeps full halo when clear", () => expect(haloFit(0.5, 0.3)).toEqual({ scale: 1, alpha: 1 }));
+  it("shrinks instead of hiding near text", () => { const f = haloFit(0.15, 0.3); expect(f.scale).toBe(0.5); expect(f.alpha).toBe(1); });
+  it("hides when no room", () => expect(haloFit(0.03, 0.3).alpha).toBe(0));
+  it("measures distance to a box", () => expect(eclipseClearance([{ left: 0, right: 0.4, top: 0, bottom: 1 }], 0.6, 0.5, 1)).toBeCloseTo(0.2));
+});
