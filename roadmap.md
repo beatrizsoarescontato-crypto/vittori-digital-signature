@@ -1,3 +1,12 @@
+# Correções da cena 3D (05/11, rodada V/halo)
+- [x] V não some mais na hero: a proteção de leitura só atua com seção ativa (`side === "none"` retorna inativo antes de qualquer lógica de limites); teste de regressão adicionado.
+- [x] Eclipse separado do V: grupo próprio (`eclGroup`), com escala/posição independentes; o espaço vazio medido dimensiona só o eclipse, nunca o V.
+- [x] Halo mais difuso: disco menor e de borda suave, coroa larga dourada no pico da dispersão (referência EclipseGlow), sem efeito de bola escura.
+- [x] Janela de dispersão alargada (p 0,18–0,66) para o efeito ser perceptível descendo e subindo.
+- [x] Entrada sem âncora abre sempre em "Criamos presença" (rolagem zerada ao fim do mergulho).
+- [x] Validação: 71 testes, build OK, capturas computador/celular mostram V formado na hero, dispersão com poeira, eclipse amplo e luminoso em espaço livre e recuo suave sobre os textos; sem erros JS novos (aviso pré-existente de hidratação no SVG dos cards de Serviços permanece, fora do escopo).
+- [ ] Aprovação visual da dona nesta rodada e fluidez em aparelho real (o sandbox renderiza por software).
+
 # Inteligência e halo (01/11)
 - [x] Atualizados apenas os três produtos e cards da Inteligência conforme o documento, com modalidades e demonstrações via Henrique; desenvolvimento sob medida preservado.
 - [x] Halo (04/11): em vez de sumir perto de textos, o eclipse encolhe para caber no espaço livre medido e só se apaga sem espaço. Capturas no computador (1280 px) mostram halo luminoso com partículas em áreas vazias em três pontos da rolagem, sem cobrir textos ou cards.
