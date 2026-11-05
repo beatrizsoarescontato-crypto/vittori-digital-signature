@@ -109,3 +109,12 @@ describe("halo fits free space", () => {
   it("hides when no room", () => expect(haloFit(0.03, 0.3).alpha).toBe(0));
   it("measures distance to a box", () => expect(eclipseClearance([{ left: 0, right: 0.4, top: 0, bottom: 1 }], 0.6, 0.5, 1)).toBeCloseTo(0.2));
 });
+
+describe("mobile eclipse without free pocket", () => {
+  it("keeps a cinematic radius at the right edge instead of a small ball", () => {
+    const r = sc("wide", true, [{ left: 0.04, right: 0.96, top: 0, bottom: 1 }], 1, 390 / 844);
+    expect(r.radius).toBe(0.24);
+    expect(r.x).toBeCloseTo(0.46);
+    expect(eclipseState(1, 1, r.readingSafety).halo).toBeGreaterThan(0.5);
+  });
+});
