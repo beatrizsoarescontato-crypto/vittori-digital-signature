@@ -331,26 +331,25 @@ uniform vec2 uOff;
 uniform float uPeak;
 uniform float uSoftness;
 void main() {
-  vec2 p = vUv - 0.5;
+  // Luminous, transparent crown adapted from the approved EclipseGlow (corona + veil + outer).
+  // No opaque core and no hard rim: the centre is only a faint translucent shadow.
+  vec2 p = (vUv - 0.5) * 2.0;
   float r = length(p);
-  vec2 q = p - uOff;
-  float rq = length(q);
-  float disc = 0.2;
-  float core = 1.0 - smoothstep(disc - 0.02, disc + 0.012, rq);
-  float rim = exp(-pow((rq - disc) * mix(30.0, 10.0, uSoftness), 2.0));
-  float ang = atan(q.y, q.x);
-  float rays = 0.55 + 0.45 * sin(ang * 9.0 + uTime * 0.25) * sin(ang * 4.0 - uTime * 0.18);
-  float corona = exp(-max(0.0, rq - disc) * 6.0) * (1.0 - core) * rays;
-  float halo = exp(-r * mix(4.2, 3.0, uPeak)) * (0.35 + 0.45 * uPeak);
-  vec3 gold = vec3(0.95, 0.76, 0.42);
-  float arc = mix(0.18 + 0.82 * pow(0.5 + 0.5 * cos(ang - 0.6), 2.0), 1.0, uPeak);
-  float glow = 0.7 + 0.8 * uPeak;
-  // Wide diffuse crown (approved EclipseGlow reference): soft ring, grows with the dispersion peak.
-  float crown = exp(-pow((rq - 0.36) * 6.5, 2.0)) * 0.7 * uPeak * (1.0 - core);
-  vec3 col = gold * (rim * (1.2 + 0.6 * uPeak) * arc + corona * glow + halo + crown * 1.3);
-  float a = max(core * 0.85, clamp(rim * 1.2 * arc + corona * (0.85 + 0.5 * uPeak) + halo + crown, 0.0, 1.0));
-  vec3 dark = vec3(0.05, 0.01, 0.02);
-  gl_FragColor = vec4(mix(col, dark, core), a * uAlpha * (1.0 - smoothstep(0.36, 0.5, r)));
+  float rq = length(p - uOff * 2.0);
+  float ang = atan(p.y, p.x);
+  float rays = 0.85 + 0.15 * sin(ang * 7.0 + uTime * 0.2) * sin(ang * 3.0 - uTime * 0.13);
+  float width = mix(10.0, 6.5, uPeak);
+  float corona = exp(-pow((rq - 0.43) * width, 2.0)) * (0.55 + 0.45 * uPeak) * rays;
+  float veil = exp(-r * r * 5.0) * (0.10 + 0.08 * uPeak);
+  float outer = exp(-pow((r - 0.65) * 5.0, 2.0)) * (0.08 + 0.10 * uPeak);
+  float shade = (1.0 - smoothstep(0.18, 0.40, rq)) * 0.22;
+  vec3 gold = vec3(0.84, 0.58, 0.27);
+  vec3 col = mix(gold * 1.35, vec3(1.0, 0.86, 0.6), corona * 0.5);
+  float glow = corona + veil + outer;
+  float edge = 1.0 - smoothstep(0.82, 1.0, r);
+  float a = clamp(glow + shade * (1.0 - glow), 0.0, 1.0) * edge * uAlpha;
+  vec3 c = mix(vec3(0.05, 0.01, 0.02), col, clamp(glow / max(glow + shade, 1e-3), 0.0, 1.0));
+  gl_FragColor = vec4(c, a);
 }`;
 
 function Monogram({ mobile }: { mobile: boolean }) {
@@ -369,6 +368,8 @@ function Monogram({ mobile }: { mobile: boolean }) {
   const haloFitLevel = useRef(1);
   const dispersionLevel = useRef(0);
   const lastPocket = useRef<{ x: number; y: number } | null>(null);
+  // Eclipse target is locked per section so it never hops between near-equal pockets.
+  const eclTarget = useRef<{ section: TextSide; x: number; y: number; radius: number } | null>(null);
   const eclWorld = useMemo(() => new THREE.Vector3(), []);
   const eclTmp = useMemo(() => new THREE.Vector3(), []);
   useEffect(() => {
@@ -498,14 +499,21 @@ function Monogram({ mobile }: { mobile: boolean }) {
       const eclPlane = viewport.getCurrentViewport(camera, eclTmp.set(0, 0, eg.position.z));
       const baseEcl = vg.scale.x * (3.4 + 1.4 * peakNow);
       if (chor.radius > 0) {
-        const pocketSize = (chor.radius * eclPlane.height) / 0.5;
-        eg.scale.setScalar(damp(eg.scale.x || baseEcl, baseEcl + (pocketSize - baseEcl) * peakNow, 3, dt));
-        eg.position.x = damp(eg.position.x, chor.x * eclPlane.width, 3.5, dt);
-        eg.position.y = damp(eg.position.y, chor.y * eclPlane.height, 3.5, dt);
+        const lock = eclTarget.current;
+        const stillClear = lock && lock.section === section.current && protectedBounds.current
+          ? eclipseClearance(protectedBounds.current, lock.x + 0.5, 0.5 - lock.y, viewport.aspect) >= lock.radius * 0.6
+          : false;
+        if (!stillClear || chor.radius > (lock?.radius ?? 0) * 1.5) eclTarget.current = { section: section.current, x: chor.x, y: chor.y, radius: chor.radius };
+        const tgt = eclTarget.current ?? { x: chor.x, y: chor.y, radius: chor.radius };
+        const pocketSize = (tgt.radius * eclPlane.height) / 0.5;
+        eg.scale.setScalar(damp(eg.scale.x || baseEcl, baseEcl + (pocketSize - baseEcl) * peakNow, 1.6, dt));
+        eg.position.x = damp(eg.position.x, tgt.x * eclPlane.width, 1.4, dt);
+        eg.position.y = damp(eg.position.y, tgt.y * eclPlane.height, 1.4, dt);
       } else {
-        eg.scale.setScalar(damp(eg.scale.x || baseEcl, baseEcl, 3, dt));
-        eg.position.x = damp(eg.position.x, vg.position.x, 3, dt);
-        eg.position.y = damp(eg.position.y, vg.position.y + 0.05 * vg.scale.x, 3, dt);
+        if (section.current === "none") eclTarget.current = null;
+        eg.scale.setScalar(damp(eg.scale.x || baseEcl, baseEcl, 1.6, dt));
+        eg.position.x = damp(eg.position.x, vg.position.x, 1.6, dt);
+        eg.position.y = damp(eg.position.y, vg.position.y + 0.05 * vg.scale.x, 1.6, dt);
       }
     }
 
