@@ -135,6 +135,22 @@ export function sectionChoreography(side: TextSide, mobile: boolean, bounds?: Re
           pocket: { x: pocket.x, y: pocket.y },
         };
       }
+      if (mobile) {
+        // Narrow screens rarely have a free pocket: the crown rises from the right edge,
+        // keeping a cinematic size and softened light instead of shrinking to a ball.
+        const k = peak, py = 0.5 - pocket.y;
+        return {
+          active: true,
+          x: placement.x + (0.46 - placement.x) * k,
+          y: placement.y + (py - placement.y) * k,
+          zOffset: -9 + 4 * k,
+          scale: 0.34 + 0.12 * k,
+          readingSafety: 1 - 0.55 * k,
+          dim: 0.35 * (1 - 0.6 * k),
+          radius: 0.24,
+          pocket: { x: pocket.x, y: pocket.y },
+        };
+      }
     }
     const { x, y, clear } = placement;
     const k = clear ? peak : 0;
