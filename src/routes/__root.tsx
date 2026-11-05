@@ -110,7 +110,7 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="pt-BR" data-phase="portal" suppressHydrationWarning>
       <head>
         <HeadContent />
-        <script dangerouslySetInnerHTML={{ __html: `try{if(window.matchMedia('(prefers-reduced-motion: reduce)').matches||sessionStorage.getItem('vittori-entrada'))document.documentElement.dataset.phase='inside'}catch(e){}` }} />
+        <script dangerouslySetInnerHTML={{ __html: `try{if(window.matchMedia('(prefers-reduced-motion: reduce)').matches||sessionStorage.getItem('vittori-entrada')||/[?&](utm_[a-z]+|fbclid|gclid)=/i.test(location.search))document.documentElement.dataset.phase='inside'}catch(e){}` }} />
         <noscript><style>{`.site-layer{opacity:1!important;visibility:visible!important;pointer-events:auto!important}`}</style></noscript>
       </head>
       <body>
