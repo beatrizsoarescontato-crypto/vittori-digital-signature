@@ -328,7 +328,45 @@ void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(
  * partículas (miolo denso + partículas que saem do anel + filamentos de coroa + poeira).
  * No ápice da dispersão ele vira a linha luminosa nítida e inclinada (uCore = 1).
  */
-const HALO = { def: 85, bri: 1.1, pts: 14000, tilt: 0, size: 1, apex: 1, read: 0.5 } as const;
+const HALO = { def: 85, bri: 1.1, pts: 14000, tilt: 0, size: 1, apex: 1, read: 0.5, boost: 1.8 } as const;
+// boost compensa o Bloom do site (limiar 1.05, intensidade 0.32), bem mais fraco que o da prévia.
+
+/**
+ * Coreografia aprovada na prévia, medida em TELAS de rolagem (t = scroll / altura da tela),
+ * não em fração da página: o ápice cai sempre em "Você sabe o valor", qualquer que seja
+ * o tamanho da página. x/y em fração da tela, z em profundidade, s = escala do V.
+ */
+type Stage = { x: number; y: number; z: number; s: number; disp: number; glow: number; tilt: number; tilt1: number; spread: number; haloS: number; read: number };
+const STAGES: (Stage & { t: number })[] = [
+  { t: 0.0, x: 0.22, y: 0.02, z: 0, s: 1.0, disp: 0, glow: 0.4, tilt: 0.02, tilt1: 0.3, spread: 0, haloS: 1.0, read: 0 },
+  { t: 0.3, x: 0.22, y: 0.04, z: -0.2, s: 1.0, disp: 0.15, glow: 0.55, tilt: 0.05, tilt1: 0.45, spread: 0.05, haloS: 1.05, read: 0 },
+  { t: 0.75, x: 0.2, y: 0.06, z: -0.6, s: 1.05, disp: 1, glow: 1.0, tilt: 0.16, tilt1: 1, spread: 1, haloS: 1.55, read: 0 },
+  { t: 1.25, x: 0.26, y: 0.14, z: -2.5, s: 1.0, disp: 0.75, glow: 0.75, tilt: 0.12, tilt1: 0.9, spread: 0.8, haloS: 1.4, read: 0.35 },
+  { t: 2.0, x: 0.32, y: 0.22, z: -6, s: 0.9, disp: 0.35, glow: 0.45, tilt: 0.08, tilt1: 0.7, spread: 0.45, haloS: 1.2, read: 1 },
+];
+/* Fim da página: o V se refaz ao lado do convite final (aprovado na gravação de 05/11). */
+const STAGE_END: Stage = { x: 0.28, y: 0.02, z: -1.5, s: 0.85, disp: 0, glow: 0.55, tilt: 0.02, tilt1: 0.3, spread: 0, haloS: 1.05, read: 0.3 };
+const STAGE_KEYS = ["x", "y", "z", "s", "disp", "glow", "tilt", "tilt1", "spread", "haloS", "read"] as const;
+
+function sampleStage(screens: number, remaining: number): Stage {
+  const last = STAGES[STAGES.length - 1] as Stage & { t: number };
+  let a = STAGES[0] as Stage & { t: number };
+  let b = last;
+  for (let i = 0; i < STAGES.length - 1; i++) {
+    const s0 = STAGES[i], s1 = STAGES[i + 1];
+    if (s0 && s1 && screens >= s0.t && screens <= s1.t) { a = s0; b = s1; break; }
+  }
+  if (screens > last.t) { a = last; b = last; }
+  const raw = Math.min(1, Math.max(0, (screens - a.t) / (b.t - a.t || 1)));
+  const e = raw < 0.5 ? 4 * raw ** 3 : 1 - (-2 * raw + 2) ** 3 / 2;
+  const end = 1 - sm(0.3, 1.6, remaining);
+  const out = {} as Stage;
+  for (const k of STAGE_KEYS) {
+    const mid = a[k] + (b[k] - a[k]) * e;
+    out[k] = mid + (STAGE_END[k] - mid) * end;
+  }
+  return out;
+}
 
 /* Resplendor por baixo das partículas; no ápice desenha a linha nítida (uCore). */
 const ringFrag = /* glsl */ `
@@ -440,6 +478,8 @@ function Monogram({ mobile }: { mobile: boolean }) {
   const section = useRef<TextSide>("none");
   const protectedBounds = useRef<ReadingBounds[] | undefined>(undefined);
   const haloFitLevel = useRef(1);
+  const stage = useRef<Stage>({ ...(STAGES[0] as Stage) });
+  const stagePlane = useMemo(() => new THREE.Vector3(), []);
   const dispersionLevel = useRef(0);
   const eclWorld = useMemo(() => new THREE.Vector3(), []);
   const eclTmp = useMemo(() => new THREE.Vector3(), []);
@@ -550,27 +590,27 @@ function Monogram({ mobile }: { mobile: boolean }) {
     spin.current = damp(spin.current, stageScroll.vel, 2.2, dt);
     stageScroll.vel = damp(stageScroll.vel, 0, 3, dt);
 
-    const [x, y, z, rx, ry, sc] = sample(p);
-    const dispersionTarget = Math.max(sm(0.18, 0.32, p) * (1 - sm(0.52, 0.66, p)), Math.min(1, Math.abs(spin.current) * 1.2));
-    dispersionLevel.current = dispersionEnvelope(dispersionLevel.current, dispersionTarget, dt);
-    const dispersion = dispersionLevel.current;
+    // Approved choreography (preview of 05/11): everything is a pure function of the scroll,
+    // measured in screens, so going down and back up retraces the same path without jumps.
+    const vh = window.innerHeight || 1;
+    const maxScroll = Math.max(1, document.documentElement.scrollHeight - vh);
+    const screens = (p * maxScroll) / vh;
+    const target = sampleStage(screens, ((1 - p) * maxScroll) / vh);
+    const S = stage.current;
+    for (const k of STAGE_KEYS) S[k] = damp(S[k], target[k], k === "disp" || k === "spread" ? 3.2 : 3.6, dt);
+    const dispersion = S.disp;
     const peakNow = sm(0.2, 0.9, dispersion);
-    // Deterministic composition: placement depends only on scroll progress and the
-    // section type, never on measured free space (that search made the V and the
-    // eclipse hop between pockets). Measured text boxes only modulate light (haloFit).
-    const chor = sectionChoreography(section.current, mobile);
-    reading.current = damp(reading.current, chor.readingSafety, 2.2, dt);
-    const targetX = chor.active ? chor.x : mobile ? KEYS_MOBILE_X : x ?? 0;
-    const targetScale = (sc ?? 1) * (chor.active ? chor.scale : 1);
+    const readEff = S.read * (1 - peakNow) * HALO.read;
     const base = Math.min(viewport.height * (mobile ? 0.22 : 0.27), viewport.width * (mobile ? 0.34 : 0.2));
-    vg.position.z = damp(vg.position.z, (z ?? 0) - Math.abs(spin.current) * 0.8 + (chor.active ? chor.zOffset : 0), 2.2, dt);
-    const plane = protectedBounds.current && chor.active ? viewport.getCurrentViewport(camera, vg.position) : viewport;
-    // The V keeps its own trajectory and scale; the pocket never shrinks or moves it.
-    vg.scale.setScalar(damp(vg.scale.x || base, base * targetScale, 3, dt));
-    vg.position.x = damp(vg.position.x, plane.width * targetX, 2.2, dt);
-    vg.position.y = damp(vg.position.y, plane.height * (chor.active ? chor.y : (y ?? 0) + (mobile ? 0.12 : 0)) + Math.sin(t * 0.5) * 0.06, 2.6, dt);
-    vg.rotation.x = damp(vg.rotation.x, (rx ?? 0) + mouse.y * 0.18, 2.6, dt);
-    vg.rotation.y = damp(vg.rotation.y, (ry ?? 0) + mouse.x * 0.32 + spin.current * 0.35, 2.4, dt);
+    const plane = viewport.getCurrentViewport(camera, stagePlane.set(0, 0, S.z));
+    const sx = mobile ? 0 : S.x;
+    const sy = mobile ? S.y + 0.16 : S.y;
+    vg.position.set(plane.width * sx, plane.height * sy + Math.sin(t * 0.5) * 0.06, S.z - Math.abs(spin.current) * 0.5);
+    vg.scale.setScalar(base * S.s);
+    // The V faces the viewer so it sits inside the eclipse; it turns only with the mouse,
+    // scroll speed and while it disperses.
+    vg.rotation.x = damp(vg.rotation.x, mouse.y * 0.14, 2.6, dt);
+    vg.rotation.y = damp(vg.rotation.y, mouse.x * 0.26 + spin.current * 0.35 + dispersion * 0.45, 2.4, dt);
 
     // Eclipse: deep behind the V and centred on it on screen (the perspective shift of the
     // deeper plane is compensated by kP), so the V sits exactly in the middle of the ring.
@@ -580,29 +620,23 @@ function Monogram({ mobile }: { mobile: boolean }) {
     swirl.current += spin.current * dt * 0.8;
     if (eg) {
       eg.visible = vg.visible;
-      const zH = vg.position.z - 1.6 * vg.scale.x;
+      const zH = vg.position.z - 1.6 * base;
       const camZ = camera.position.z;
       const kP = (camZ - zH) / Math.max(0.5, camZ - vg.position.z);
       eg.position.set(vg.position.x * kP, vg.position.y * kP, zH);
-      eg.scale.setScalar(Math.max(0.0001, vg.scale.x * 1.2 * HALO.size * (1 + 0.55 * peakNow) * kP));
+      eg.scale.setScalar(Math.max(0.0001, base * 1.35 * HALO.size * S.haloS * kP));
     }
     const tg = tiltGroup.current;
     if (tg) {
       const mix = (a: number, b: number) => a + (b - a) * apexMix;
-      tg.rotation.x = mix(-(0.02 + 0.14 * peakNow) * HALO.tilt + mouse.y * 0.05 - spin.current * 0.12, -(0.3 + 0.7 * peakNow) * 1.05 + mouse.y * 0.12);
-      tg.rotation.y = mix(mouse.x * 0.07 + spin.current * 0.1, 0.18 + mouse.x * 0.2 + p * 3);
-      tg.rotation.z = mix(t * 0.02 + p * 2.2, t * 0.03 + p * 2.9) + swirl.current * 0.2;
+      tg.rotation.x = mix(-S.tilt * HALO.tilt + mouse.y * 0.05 - spin.current * 0.12, -S.tilt1 * 1.05 + mouse.y * 0.12);
+      tg.rotation.y = mix(mouse.x * 0.07 + spin.current * 0.1, 0.18 + mouse.x * 0.2 + screens * 0.35);
+      tg.rotation.z = mix(t * 0.02 + screens * 0.45, t * 0.03 + screens * 0.6) + swirl.current * 0.2;
     }
     if (vMask.current) {
       vMask.current.scale.setScalar(Math.max(0.0001, 1 - sm(0.08, 0.4, dispersion)));
       vMask.current.visible = born.current > 0.5 && dispersion < 0.4;
     }
-
-    // Partículas: chegam espalhadas do mergulho e se montam; respiram nos Serviços.
-    const breathe = sm(0.18, 0.32, p) * (1 - sm(0.52, 0.66, p)) * 0.18;
-    // The dispersion peak is the approved climax: reading protection releases half of
-    // its dimming there, and fully returns as the peak fades into the next sections.
-    const choreography = eclipseState(appear, dispersion, reading.current * (1 - 0.5 * peakNow));
     let fit = { scale: 1 };
     if (protectedBounds.current && eg) {
       eclWorld.copy(eg.position);
@@ -613,25 +647,26 @@ function Monogram({ mobile }: { mobile: boolean }) {
     }
     const u = (vPts.material as THREE.ShaderMaterial).uniforms;
     setUniform(u, "uTime", t);
-    setUniform(u, "uScatter", (1 - born.current) * 0.9 + breathe + 0.35 * sm(0.2, 0.9, dispersion) + Math.abs(spin.current) * 0.1);
-    setUniform(u, "uAlpha", choreography.particleAlpha * (1 - chor.dim * reading.current) * (mobile ? 0.8 : 1.25));
+    setUniform(u, "uScatter", (1 - born.current) * 0.9 + 0.42 * HALO.apex * dispersion + Math.abs(spin.current) * 0.1);
+    setUniform(u, "uAlpha", appear * born.current * (1 - 0.3 * dispersion) * (1 - 0.45 * S.read * HALO.read) * (mobile ? 0.8 : 1.25));
 
     // Halo light: discreet backlight in formation, full at the dispersion peak, receding while
     // reading. Near text it only dims (haloFit); it never moves or shrinks to dodge it.
     haloFitLevel.current = damp(haloFitLevel.current, 0.55 + 0.45 * fit.scale, 2, dt);
-    const readEff = reading.current * (1 - choreography.peak) * HALO.read;
     const light = born.current * appear * haloFitLevel.current;
     const ru = ring.uniforms;
     setUniform(ru, "uTime", t);
     setUniform(ru, "uRead", readEff);
-    setUniform(ru, "uPeak", choreography.peak);
-    setUniform(ru, "uCore", apexMix);
-    setUniform(ru, "uGlow", light * HALO.bri * (0.4 + 0.6 * choreography.peak) * (1 - 0.55 * readEff));
+    setUniform(ru, "uPeak", dispersion);
+    // A faint crisp line under the particles gives the site's weaker Bloom something to catch.
+    setUniform(ru, "uCore", Math.max(apexMix, 0.3));
+    setUniform(ru, "uGlow", light * HALO.bri * HALO.boost * S.glow * (1 - 0.55 * S.read * HALO.read));
     const hu = (halo.material as THREE.ShaderMaterial).uniforms;
     setUniform(hu, "uTime", t);
-    setUniform(hu, "uSpread", dispersion * HALO.apex);
+    setUniform(hu, "uSpread", S.spread * Math.max(0.2, HALO.apex));
     setUniform(hu, "uSwirl", swirl.current);
-    setUniform(hu, "uAlpha", light * (0.55 + 0.45 * dispersion) * (1 - 0.5 * readEff) * (mobile ? 0.8 : 1));
+    setUniform(hu, "uRingBright", HALO.bri * HALO.boost);
+    setUniform(hu, "uAlpha", light * (0.55 + 0.45 * dispersion) * (1 - 0.5 * S.read * HALO.read) * (mobile ? 0.8 : 1));
 
     stars.current.forEach((m, i) => {
       if (!m) return;
