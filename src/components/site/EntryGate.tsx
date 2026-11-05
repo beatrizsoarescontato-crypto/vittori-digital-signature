@@ -23,14 +23,24 @@ export function EntryGate() {
     const reduz = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let stored = false;
     try { stored = Boolean(sessionStorage.getItem(KEY)); } catch { /* Storage may be blocked. */ }
-    if (stored || reduz) {
+    // Visitors from paid ads (UTM, Meta or Google click ids) land straight on the hero.
+    const anuncio = /[?&](utm_[a-z]+|fbclid|gclid)=/i.test(window.location.search);
+    if (stored || reduz || anuncio) {
       skipPortal();
       document.documentElement.dataset["phase"] = "inside";
       return;
     }
     document.documentElement.dataset["phase"] = "portal";
     document.documentElement.style.overflow = "hidden";
+    // Fresh entry without anchor opens on the hero. While the portal is up, any late
+    // restorer (router scroll restoration, browser, layout shifts) is pinned back to
+    // the top, and the top is reapplied right before the site is revealed.
+    // Anchors and back/forward navigation keep their normal behavior.
+    const nav = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
+    const abrirNoTopo = !window.location.hash && nav?.type !== "back_forward";
+    const prender = () => { if (abrirNoTopo && window.scrollY !== 0) window.scrollTo(0, 0); };
     window.scrollTo(0, 0);
+    window.addEventListener("scroll", prender, { passive: true });
     setVisivel(true);
     const progress = () => {
       setSequence(stageScroll.portalStep);
@@ -44,6 +54,8 @@ export function EntryGate() {
     if (document.querySelector("[data-scene-ready]")) ready();
     const off = onPhase(() => {
       if (stageScroll.phase === "inside") {
+        window.removeEventListener("scroll", prender);
+        prender();
         document.documentElement.dataset["phase"] = "inside";
         document.documentElement.style.overflow = "";
         setVisivel(false);
@@ -53,6 +65,7 @@ export function EntryGate() {
       window.removeEventListener("vittori-scene-ready", ready);
       window.removeEventListener("vittori-portal-progress", progress);
       window.removeEventListener("vittori-scene-unavailable", unavailable);
+      window.removeEventListener("scroll", prender);
       off();
       document.documentElement.style.overflow = "";
     };
