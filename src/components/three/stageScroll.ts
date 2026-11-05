@@ -49,7 +49,11 @@ export function startDive(duration = 3.4) {
     onUpdate: () => {
       if (stageScroll.dive >= 0.999 && stageScroll.phase === "portal") setPhase("inside");
     },
-    onComplete: () => setPhase("inside"),
+    onComplete: () => {
+      // Fresh entry without anchor always opens on the hero ("Criamos presença").
+      if (!window.location.hash) window.scrollTo(0, 0);
+      setPhase("inside");
+    },
   });
 }
 

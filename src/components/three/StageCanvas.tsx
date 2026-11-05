@@ -356,6 +356,7 @@ void main() {
 function Monogram({ mobile }: { mobile: boolean }) {
   const { viewport, gl, camera } = useThree();
   const vGroup = useRef<THREE.Group>(null);
+  const eclGroup = useRef<THREE.Group>(null);
   const stars = useRef<(THREE.Mesh | null)[]>([]);
   const eclMesh = useRef<THREE.Mesh>(null);
   const spin = useRef(0);
@@ -467,11 +468,13 @@ function Monogram({ mobile }: { mobile: boolean }) {
     stageScroll.vel = damp(stageScroll.vel, 0, 3, dt);
 
     const [x, y, z, rx, ry, sc] = sample(p);
-    const dispersionTarget = Math.max(sm(0.22, 0.34, p) * (1 - sm(0.5, 0.6, p)), Math.min(1, Math.abs(spin.current) * 1.2));
+    const dispersionTarget = Math.max(sm(0.18, 0.32, p) * (1 - sm(0.52, 0.66, p)), Math.min(1, Math.abs(spin.current) * 1.2));
     dispersionLevel.current = dispersionEnvelope(dispersionLevel.current, dispersionTarget, dt);
     const dispersion = dispersionLevel.current;
     const peakNow = sm(0.2, 0.9, dispersion);
-    const chor = sectionChoreography(section.current, mobile, stageScroll.dive >= 1 && born.current >= 1 ? protectedBounds.current : undefined, peakNow, viewport.aspect, lastPocket.current);
+    // Reading bounds only apply while a section is active; on the hero and in
+    // transitions the V keeps its own composed position and scale.
+    const chor = sectionChoreography(section.current, mobile, section.current !== "none" && stageScroll.dive >= 1 && born.current >= 1 ? protectedBounds.current : undefined, peakNow, viewport.aspect, lastPocket.current);
     lastPocket.current = chor.pocket;
     reading.current = damp(reading.current, chor.readingSafety, 2.2, dt);
     const targetX = chor.active ? chor.x : mobile ? KEYS_MOBILE_X : x ?? 0;
@@ -479,37 +482,42 @@ function Monogram({ mobile }: { mobile: boolean }) {
     const base = Math.min(viewport.height * (mobile ? 0.22 : 0.27), viewport.width * (mobile ? 0.34 : 0.2));
     vg.position.z = damp(vg.position.z, (z ?? 0) - Math.abs(spin.current) * 0.8 + (chor.active ? chor.zOffset : 0), 2.2, dt);
     const plane = protectedBounds.current && chor.active ? viewport.getCurrentViewport(camera, vg.position) : viewport;
-    // At the peak the eclipse is sized to the measured empty pocket and its projected screen
-    // position is fed back (group rotation/perspective shift it): luminous, never over text.
-    let pocketScale = 0;
-    let pocketTarget: { x: number; y: number } | null = null;
-    if (chor.radius > 0) {
-      // Exact placement of the eclipse centre (offset inside the rotated, scaled group).
-      eclWorld.set(0, 0.05, -0.6).multiplyScalar(vg.scale.x).applyEuler(vg.rotation);
-      const eclPlane = viewport.getCurrentViewport(camera, eclTmp.set(0, 0, vg.position.z + eclWorld.z));
-      pocketScale = (chor.radius * eclPlane.height) / (0.5 * (3.4 + 1.4 * peakNow));
-      pocketTarget = { x: chor.x * eclPlane.width - eclWorld.x, y: chor.y * eclPlane.height - eclWorld.y };
-    }
-    // The halo's soft outer glow (≈0.5 of the plane) fills the pocket; blend in with the peak.
-    const scaleTarget = pocketTarget ? base * targetScale + (pocketScale - base * targetScale) * peakNow : base * targetScale;
-    vg.scale.setScalar(damp(vg.scale.x || base, scaleTarget, 3, dt));
-    vg.position.x = damp(vg.position.x, pocketTarget ? pocketTarget.x : plane.width * targetX, pocketTarget ? 3.5 : 2.2, dt);
-    vg.position.y = damp(vg.position.y, (pocketTarget ? pocketTarget.y : plane.height * (chor.active ? chor.y : (y ?? 0) + (mobile ? 0.12 : 0))) + Math.sin(t * 0.5) * 0.06, pocketTarget ? 3.5 : 2.6, dt);
+    // The V keeps its own trajectory and scale; the pocket never shrinks or moves it.
+    vg.scale.setScalar(damp(vg.scale.x || base, base * targetScale, 3, dt));
+    vg.position.x = damp(vg.position.x, plane.width * targetX, 2.2, dt);
+    vg.position.y = damp(vg.position.y, plane.height * (chor.active ? chor.y : (y ?? 0) + (mobile ? 0.12 : 0)) + Math.sin(t * 0.5) * 0.06, 2.6, dt);
     vg.rotation.x = damp(vg.rotation.x, (rx ?? 0) + mouse.y * 0.18, 2.6, dt);
     vg.rotation.y = damp(vg.rotation.y, (ry ?? 0) + mouse.x * 0.32 + spin.current * 0.35, 2.4, dt);
-    // The particle V keeps its original rotation. The eclipse is a luminous screen-facing
-    // plane, not a thin disc that vanishes when the containing V turns edge-on.
-    if (eclMesh.current) eclMesh.current.quaternion.copy(vg.quaternion).invert();
+
+    // Eclipse: independent screen-facing plane. It follows the V during formation and
+    // grows into the measured empty pocket at the dispersion peak — never over text.
+    const eg = eclGroup.current;
+    if (eg) {
+      eg.visible = vg.visible;
+      eg.position.z = vg.position.z - 0.6 * vg.scale.x;
+      const eclPlane = viewport.getCurrentViewport(camera, eclTmp.set(0, 0, eg.position.z));
+      const baseEcl = vg.scale.x * (3.4 + 1.4 * peakNow);
+      if (chor.radius > 0) {
+        const pocketSize = (chor.radius * eclPlane.height) / 0.5;
+        eg.scale.setScalar(damp(eg.scale.x || baseEcl, baseEcl + (pocketSize - baseEcl) * peakNow, 3, dt));
+        eg.position.x = damp(eg.position.x, chor.x * eclPlane.width, 3.5, dt);
+        eg.position.y = damp(eg.position.y, chor.y * eclPlane.height, 3.5, dt);
+      } else {
+        eg.scale.setScalar(damp(eg.scale.x || baseEcl, baseEcl, 3, dt));
+        eg.position.x = damp(eg.position.x, vg.position.x, 3, dt);
+        eg.position.y = damp(eg.position.y, vg.position.y + 0.05 * vg.scale.x, 3, dt);
+      }
+    }
 
     // Partículas: chegam espalhadas do mergulho e se montam; respiram nos Serviços.
-    const breathe = sm(0.22, 0.34, p) * (1 - sm(0.5, 0.6, p)) * 0.18;
+    const breathe = sm(0.18, 0.32, p) * (1 - sm(0.52, 0.66, p)) * 0.18;
     const choreography = eclipseState(appear, dispersion, reading.current);
     let fit = { scale: 1 };
-    if (protectedBounds.current && eclMesh.current) {
-      vg.updateMatrixWorld(true);
+    if (protectedBounds.current && eclMesh.current && eg) {
+      eg.updateMatrixWorld(true);
       eclMesh.current.getWorldPosition(eclWorld);
       const currentPlane = viewport.getCurrentViewport(camera, eclWorld);
-      const radius = vg.scale.x * (3.4 + 1.4 * peakNow) * 0.5 / currentPlane.height;
+      const radius = eg.scale.x * 0.5 / currentPlane.height;
       eclTmp.copy(eclWorld).project(camera);
       fit = haloFit(eclipseClearance(protectedBounds.current, (eclTmp.x + 1) / 2, (1 - eclTmp.y) / 2, viewport.aspect), radius);
     }
@@ -529,7 +537,6 @@ function Monogram({ mobile }: { mobile: boolean }) {
     haloFitLevel.current = damp(haloFitLevel.current, 0.55 + 0.45 * fit.scale, 2, dt);
     setUniform(eu, "uAlpha", haloLevel.current * haloFitLevel.current);
     setUniform(eu, "uPeak", choreography.peak);
-    eclMesh.current?.scale.setScalar(3.4 + 1.4 * choreography.peak);
     setUniform(eu, "uSoftness", choreography.softness);
 
     stars.current.forEach((m, i) => {
@@ -543,10 +550,13 @@ function Monogram({ mobile }: { mobile: boolean }) {
   });
 
   return (
-    <group ref={vGroup} visible={false}>
-      <mesh ref={eclMesh} position={[0, 0.05, -0.6]} material={ecl} scale={3.4}>
-        <planeGeometry args={[1, 1]} />
-      </mesh>
+    <>
+      <group ref={eclGroup} visible={false}>
+        <mesh ref={eclMesh} material={ecl}>
+          <planeGeometry args={[1, 1]} />
+        </mesh>
+      </group>
+      <group ref={vGroup} visible={false}>
       <primitive object={vPts} />
       {[0.2, 0.13, 0.09].map((sc, i) => (
         <mesh
@@ -559,7 +569,8 @@ function Monogram({ mobile }: { mobile: boolean }) {
           scale={sc}
         />
       ))}
-    </group>
+      </group>
+    </>
   );
 }
 
