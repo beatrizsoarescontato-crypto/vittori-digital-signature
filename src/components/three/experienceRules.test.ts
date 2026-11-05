@@ -71,6 +71,12 @@ describe("sectionChoreography", () => {
   it("pushes the V deep and dim behind wide text", () => { const r = sc("wide", false); expect(r.zOffset).toBe(-9); expect(r.readingSafety).toBe(1); });
   it("never centers the V close behind text on mobile", () => expect(sc("left", true).zOffset).toBe(-9));
   it("leaves the V free between sections", () => expect(sc("none", false).active).toBe(false));
+  it("never repositions the V on the hero just because text boxes exist", () => {
+    const r = sc("none", false, [{ left: 0.05, right: 0.6, top: 0.2, bottom: 0.9 }], 1, 16 / 9);
+    expect(r.active).toBe(false);
+    expect(r.scale).toBe(1);
+    expect(r.readingSafety).toBe(0);
+  });
 });
 describe("dispersion peak in clear space", () => {
   const leftText = [{ left: 0, right: 0.6, top: 0, bottom: 1 }];
