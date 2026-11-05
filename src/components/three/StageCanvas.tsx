@@ -323,53 +323,124 @@ totalEmissiveRadiance += vec3(0.95, 0.83, 0.57) * (glintDot + glintRay * 0.18) *
 const eclVert = /* glsl */ `
 varying vec2 vUv;
 void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
-const eclFrag = /* glsl */ `
+/**
+ * Halo aprovado na prévia de 05/11: eclipse de frente, atrás do V, com o anel feito de
+ * partículas (miolo denso + partículas que saem do anel + filamentos de coroa + poeira).
+ * No ápice da dispersão ele vira a linha luminosa nítida e inclinada (uCore = 1).
+ */
+const HALO = { def: 85, bri: 1.1, pts: 14000, tilt: 0, size: 1, apex: 1, read: 0.5 } as const;
+
+/* Resplendor por baixo das partículas; no ápice desenha a linha nítida (uCore). */
+const ringFrag = /* glsl */ `
 varying vec2 vUv;
 uniform float uTime;
-uniform float uAlpha;
-uniform vec2 uOff;
+uniform float uK;
+uniform float uGlow;
+uniform float uRead;
 uniform float uPeak;
-uniform float uSoftness;
+uniform float uCore;
 void main() {
-  // Luminous, transparent crown adapted from the approved EclipseGlow (corona + veil + outer).
-  // No opaque core and no hard rim: the centre is only a faint translucent shadow.
-  vec2 p = (vUv - 0.5) * 2.0;
+  vec2 p = (vUv - 0.5) * 3.0;
   float r = length(p);
-  float rq = length(p - uOff * 2.0);
   float ang = atan(p.y, p.x);
-  float rays = 0.85 + 0.15 * sin(ang * 7.0 + uTime * 0.2) * sin(ang * 3.0 - uTime * 0.13);
-  float width = mix(10.0, 6.5, uPeak);
-  float corona = exp(-pow((rq - 0.43) * width, 2.0)) * (0.55 + 0.45 * uPeak) * rays;
-  float veil = exp(-r * r * 5.0) * (0.10 + 0.08 * uPeak);
-  float outer = exp(-pow((r - 0.65) * 5.0, 2.0)) * (0.08 + 0.10 * uPeak);
-  float shade = (1.0 - smoothstep(0.18, 0.40, rq)) * 0.22;
-  vec3 gold = vec3(0.84, 0.58, 0.27);
-  vec3 col = mix(gold * 1.35, vec3(1.0, 0.86, 0.6), corona * 0.5);
-  float glow = corona + veil + outer;
-  float edge = 1.0 - smoothstep(0.82, 1.0, r);
-  float a = clamp(glow + shade * (1.0 - glow), 0.0, 1.0) * edge * uAlpha;
-  vec3 c = mix(vec3(0.05, 0.01, 0.02), col, clamp(glow / max(glow + shade, 1e-3), 0.0, 1.0));
-  gl_FragColor = vec4(c, a);
+  float k = mix(uK, uK * 0.3, uRead);
+  float core = exp(-pow((r - 1.0) * k, 2.0)) * uCore;
+  float near = mix(exp(-pow((r - 1.0) * k * 0.16, 2.0)) * 0.22, exp(-pow((r - 1.0) * k * 0.22, 2.0)) * 0.30, uCore);
+  float far = exp(-pow((r - 1.0) * 2.6, 2.0)) * (0.06 + 0.10 * uPeak);
+  float inner = exp(-r * r * 3.0) * 0.035 * uPeak;
+  float sweep = 0.55 + 0.45 * pow(0.5 + 0.5 * cos(ang - uTime * 0.35), 3.0);
+  float shimmer = 0.92 + 0.08 * sin(ang * 23.0 + uTime * 1.7);
+  vec3 gold = vec3(0.96, 0.74, 0.36);
+  vec3 champagne = vec3(1.0, 0.93, 0.78);
+  vec3 rose = vec3(0.95, 0.52, 0.48);
+  vec3 tint = mix(gold, rose, 0.22 * (0.5 + 0.5 * sin(ang + 1.3)));
+  vec3 col = mix(tint, champagne, core * 0.7) * (core * 2.6 * sweep * shimmer + near * sweep) + gold * (far + inner);
+  float edge = 1.0 - smoothstep(1.32, 1.5, r);
+  gl_FragColor = vec4(col * uGlow * edge, 1.0);
 }`;
+
+const haloVert = /* glsl */ `
+attribute float aAng; attribute float aOff; attribute float aZ; attribute float aRand;
+attribute float aLift; attribute float aBand; attribute float aG;
+uniform float uTime; uniform float uSpread; uniform float uSize; uniform float uSwirl; uniform float uBand;
+varying float vR; varying float vFade; varying float vBand; varying float vLife;
+void main() {
+  bool isRing = aBand > 0.5; bool isEmit = aBand > 1.5;
+  float dir = isRing ? 1.0 : (aOff > 0.0 ? 1.0 : -0.6);
+  float a = aAng + uTime * (0.04 + aRand * 0.08) * dir + uSwirl * (0.6 + aRand);
+  float life = fract(uTime * (0.05 + aRand * 0.07) + aRand * 13.0);
+  vLife = isEmit ? life : 0.0;
+  float core = aG * uBand * (abs(aG) < 1.0 ? 1.0 : 1.6);
+  float baseOff = isRing ? core + (isEmit ? pow(life, 1.4) * (0.35 + aRand * 0.4) * (aG > -0.4 ? 1.0 : -0.35) : 0.0) : aOff;
+  float off = baseOff * (1.0 + uSpread * (aBand > 0.5 ? 6.0 + aRand * 10.0 : 2.2 + aRand * 3.0));
+  float r = 1.0 + off;
+  vec3 p = vec3(cos(a) * r, sin(a) * r, aZ * (1.0 + uSpread * 2.5));
+  p.z += aLift * uSpread * 1.6;
+  p += vec3(sin(uTime * 0.6 + aRand * 40.0), cos(uTime * 0.5 + aRand * 20.0), 0.0) * (isRing ? 0.003 : 0.012) * (1.0 + uSpread * 6.0);
+  vec4 mv = modelViewMatrix * vec4(p, 1.0);
+  vR = aRand; vBand = aBand; vFade = exp(-abs(off) * 1.4);
+  float sz = isEmit ? (0.25 + aRand * 0.45) : isRing ? (0.30 + aRand * 0.35) : (0.25 + aRand * aRand * 1.1);
+  gl_PointSize = uSize * sz / max(0.2, -mv.z);
+  gl_Position = projectionMatrix * mv;
+}`;
+const haloFrag = /* glsl */ `
+uniform float uAlpha; uniform float uTime; uniform float uRingBright;
+varying float vR; varying float vFade; varying float vBand; varying float vLife;
+void main() {
+  float d = length(gl_PointCoord - 0.5);
+  float a = 1.0 - smoothstep(0.0, 0.5, d);
+  float tw = 0.55 + 0.45 * sin(uTime * (1.2 + vR * 3.5) + vR * 70.0);
+  vec3 gold = mix(vec3(0.95, 0.72, 0.38), vec3(1.0, 0.92, 0.75), vR);
+  vec3 col = vBand > 0.5 ? mix(vec3(1.0, 0.86, 0.58), vec3(1.0, 0.96, 0.86), vR) * 2.2 * uRingBright : gold * 1.4;
+  float alpha = vBand > 0.5 ? a * uAlpha * (0.75 + 0.25 * tw) : a * a * uAlpha * tw * (0.35 + 0.65 * vFade);
+  if (vBand > 1.5) alpha *= pow(1.0 - vLife, 1.6) * 0.9;
+  gl_FragColor = vec4(col, alpha);
+}`;
+
+function haloPoints(count: number, px: number) {
+  const n = Math.max(0, Math.round(count));
+  const ang = new Float32Array(n), off = new Float32Array(n), z = new Float32Array(n), rnd = new Float32Array(n);
+  const lift = new Float32Array(n), band = new Float32Array(n), gs = new Float32Array(n);
+  const gauss = () => { let u = 0, v = 0; while (!u) u = Math.random(); while (!v) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+  const rays = Array.from({ length: 22 }, (_, i) => (i / 22) * Math.PI * 2 + Math.sin(i * 12.9898) * 0.12);
+  for (let i = 0; i < n; i++) {
+    rnd[i] = Math.random();
+    lift[i] = -Math.random() * Math.random(); // a poeira só escapa para trás, nunca à frente do V
+    if (i < n * 0.45) { band[i] = 1; ang[i] = Math.random() * Math.PI * 2; gs[i] = gauss(); z[i] = gauss() * 0.012; }
+    else if (i < n * 0.65) { band[i] = 2; ang[i] = Math.random() * Math.PI * 2; gs[i] = gauss() * 0.8; z[i] = -Math.abs(gauss()) * 0.03; }
+    else if (i < n * 0.8) { ang[i] = (rays[Math.floor(Math.random() * rays.length)] ?? 0) + gauss() * 0.025; off[i] = 0.03 - Math.log(Math.random()) * 0.16; z[i] = gauss() * 0.03; }
+    else { ang[i] = Math.random() * Math.PI * 2; const g = gauss(); off[i] = g * (g > 0 ? 0.13 : 0.05) + (Math.random() < 0.2 ? Math.random() * 0.5 : 0); z[i] = gauss() * 0.05; }
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute("position", new THREE.BufferAttribute(new Float32Array(n * 3), 3));
+  ([["aAng", ang], ["aOff", off], ["aZ", z], ["aRand", rnd], ["aLift", lift], ["aBand", band], ["aG", gs]] as const)
+    .forEach(([name, data]) => g.setAttribute(name, new THREE.BufferAttribute(data, 1)));
+  const mat = new THREE.ShaderMaterial({
+    vertexShader: haloVert, fragmentShader: haloFrag, transparent: true, depthWrite: false, fog: false, blending: THREE.AdditiveBlending,
+    uniforms: { uTime: { value: 0 }, uSpread: { value: 0 }, uAlpha: { value: 0 }, uSize: { value: 26 * px }, uSwirl: { value: 0 }, uBand: { value: 1.1 / HALO.def }, uRingBright: { value: HALO.bri } },
+  });
+  const pts = new THREE.Points(g, mat);
+  pts.frustumCulled = false;
+  pts.renderOrder = 1;
+  return pts;
+}
 
 function Monogram({ mobile }: { mobile: boolean }) {
   const { viewport, gl, camera } = useThree();
   const vGroup = useRef<THREE.Group>(null);
   const eclGroup = useRef<THREE.Group>(null);
   const stars = useRef<(THREE.Mesh | null)[]>([]);
-  const eclMesh = useRef<THREE.Mesh>(null);
+  const tiltGroup = useRef<THREE.Group>(null);
+  const vMask = useRef<THREE.Mesh>(null);
+  const swirl = useRef(0);
   const spin = useRef(0);
   const born = useRef(0);
   const formationStart = useRef<number | null>(null);
   const reading = useRef(0);
   const section = useRef<TextSide>("none");
   const protectedBounds = useRef<ReadingBounds[] | undefined>(undefined);
-  const haloLevel = useRef(0);
   const haloFitLevel = useRef(1);
   const dispersionLevel = useRef(0);
-  const lastPocket = useRef<{ x: number; y: number } | null>(null);
-  // Eclipse target is locked per section so it never hops between near-equal pockets.
-  const eclTarget = useRef<{ section: TextSide; x: number; y: number; radius: number } | null>(null);
   const eclWorld = useMemo(() => new THREE.Vector3(), []);
   const eclTmp = useMemo(() => new THREE.Vector3(), []);
   useEffect(() => {
@@ -416,20 +487,31 @@ function Monogram({ mobile }: { mobile: boolean }) {
     m.updateMatrix();
     const points = samplePoints([m], mobile ? 2600 : 6000, 0, 40 * gl.getPixelRatio(), "#F3D79A");
     geo.dispose();
+    // The V particles are drawn last and never depth-tested, so the eclipse mask cannot hide them.
+    (points.material as THREE.ShaderMaterial).depthTest = false;
+    points.renderOrder = 3;
     return points;
   }, [mobile, gl]);
-  const ecl = useMemo(
+  // Eclipse mask: the V silhouette writes depth only, so the ring behind it is hidden by the V.
+  const maskGeo = useMemo(() => new THREE.ExtrudeGeometry(createVShape(), { depth: 0.3, bevelEnabled: false }).center(), []);
+  const maskMat = useMemo(() => new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: true }), []);
+  const ring = useMemo(
     () =>
       new THREE.ShaderMaterial({
         vertexShader: eclVert,
-        fragmentShader: eclFrag,
+        fragmentShader: ringFrag,
         transparent: true,
         depthWrite: false,
         fog: false,
-        uniforms: { uTime: { value: 0 }, uAlpha: { value: 0 }, uOff: { value: new THREE.Vector2(0.4, 0.1) }, uPeak: { value: 0 }, uSoftness: { value: 1 } },
+        side: THREE.DoubleSide,
+        blending: THREE.AdditiveBlending,
+        uniforms: { uTime: { value: 0 }, uK: { value: HALO.def }, uGlow: { value: 0 }, uRead: { value: 0 }, uPeak: { value: 0 }, uCore: { value: 0 } },
       }),
     [],
   );
+  const halo = useMemo(() => haloPoints(HALO.pts * (mobile ? 0.45 : 1), gl.getPixelRatio()), [mobile, gl]);
+  useEffect(() => () => { halo.geometry.dispose(); (halo.material as THREE.Material).dispose(); }, [halo]);
+  useEffect(() => () => { maskGeo.dispose(); maskMat.dispose(); ring.dispose(); }, [maskGeo, maskMat, ring]);
   const starMat = useMemo(
     () =>
       new THREE.MeshStandardMaterial({
@@ -473,10 +555,10 @@ function Monogram({ mobile }: { mobile: boolean }) {
     dispersionLevel.current = dispersionEnvelope(dispersionLevel.current, dispersionTarget, dt);
     const dispersion = dispersionLevel.current;
     const peakNow = sm(0.2, 0.9, dispersion);
-    // Reading bounds only apply while a section is active; on the hero and in
-    // transitions the V keeps its own composed position and scale.
-    const chor = sectionChoreography(section.current, mobile, section.current !== "none" && stageScroll.dive >= 1 && born.current >= 1 ? protectedBounds.current : undefined, peakNow, viewport.aspect, lastPocket.current);
-    lastPocket.current = chor.pocket;
+    // Deterministic composition: placement depends only on scroll progress and the
+    // section type, never on measured free space (that search made the V and the
+    // eclipse hop between pockets). Measured text boxes only modulate light (haloFit).
+    const chor = sectionChoreography(section.current, mobile);
     reading.current = damp(reading.current, chor.readingSafety, 2.2, dt);
     const targetX = chor.active ? chor.x : mobile ? KEYS_MOBILE_X : x ?? 0;
     const targetScale = (sc ?? 1) * (chor.active ? chor.scale : 1);
@@ -490,42 +572,42 @@ function Monogram({ mobile }: { mobile: boolean }) {
     vg.rotation.x = damp(vg.rotation.x, (rx ?? 0) + mouse.y * 0.18, 2.6, dt);
     vg.rotation.y = damp(vg.rotation.y, (ry ?? 0) + mouse.x * 0.32 + spin.current * 0.35, 2.4, dt);
 
-    // Eclipse: independent screen-facing plane. It follows the V during formation and
-    // grows into the measured empty pocket at the dispersion peak — never over text.
+    // Eclipse: deep behind the V and centred on it on screen (the perspective shift of the
+    // deeper plane is compensated by kP), so the V sits exactly in the middle of the ring.
+    // apexMix 0 = frontal ring of particles; 1 = the approved bright tilted ring at the peak.
     const eg = eclGroup.current;
+    const apexMix = sm(0.45, 0.92, dispersion);
+    swirl.current += spin.current * dt * 0.8;
     if (eg) {
       eg.visible = vg.visible;
-      eg.position.z = vg.position.z - 0.6 * vg.scale.x;
-      const eclPlane = viewport.getCurrentViewport(camera, eclTmp.set(0, 0, eg.position.z));
-      const baseEcl = vg.scale.x * (3.4 + 1.4 * peakNow);
-      if (chor.radius > 0) {
-        const lock = eclTarget.current;
-        const stillClear = lock && lock.section === section.current && protectedBounds.current
-          ? eclipseClearance(protectedBounds.current, lock.x + 0.5, 0.5 - lock.y, viewport.aspect) >= lock.radius * 0.6
-          : false;
-        if (!stillClear || chor.radius > (lock?.radius ?? 0) * 1.5) eclTarget.current = { section: section.current, x: chor.x, y: chor.y, radius: chor.radius };
-        const tgt = eclTarget.current ?? { x: chor.x, y: chor.y, radius: chor.radius };
-        const pocketSize = (tgt.radius * eclPlane.height) / 0.5;
-        eg.scale.setScalar(damp(eg.scale.x || baseEcl, baseEcl + (pocketSize - baseEcl) * peakNow, 1.6, dt));
-        eg.position.x = damp(eg.position.x, tgt.x * eclPlane.width, 1.4, dt);
-        eg.position.y = damp(eg.position.y, tgt.y * eclPlane.height, 1.4, dt);
-      } else {
-        if (section.current === "none") eclTarget.current = null;
-        eg.scale.setScalar(damp(eg.scale.x || baseEcl, baseEcl, 1.6, dt));
-        eg.position.x = damp(eg.position.x, vg.position.x, 1.6, dt);
-        eg.position.y = damp(eg.position.y, vg.position.y + 0.05 * vg.scale.x, 1.6, dt);
-      }
+      const zH = vg.position.z - 1.6 * vg.scale.x;
+      const camZ = camera.position.z;
+      const kP = (camZ - zH) / Math.max(0.5, camZ - vg.position.z);
+      eg.position.set(vg.position.x * kP, vg.position.y * kP, zH);
+      eg.scale.setScalar(Math.max(0.0001, vg.scale.x * 1.2 * HALO.size * (1 + 0.55 * peakNow) * kP));
+    }
+    const tg = tiltGroup.current;
+    if (tg) {
+      const mix = (a: number, b: number) => a + (b - a) * apexMix;
+      tg.rotation.x = mix(-(0.02 + 0.14 * peakNow) * HALO.tilt + mouse.y * 0.05 - spin.current * 0.12, -(0.3 + 0.7 * peakNow) * 1.05 + mouse.y * 0.12);
+      tg.rotation.y = mix(mouse.x * 0.07 + spin.current * 0.1, 0.18 + mouse.x * 0.2 + p * 3);
+      tg.rotation.z = mix(t * 0.02 + p * 2.2, t * 0.03 + p * 2.9) + swirl.current * 0.2;
+    }
+    if (vMask.current) {
+      vMask.current.scale.setScalar(Math.max(0.0001, 1 - sm(0.08, 0.4, dispersion)));
+      vMask.current.visible = born.current > 0.5 && dispersion < 0.4;
     }
 
     // Partículas: chegam espalhadas do mergulho e se montam; respiram nos Serviços.
     const breathe = sm(0.18, 0.32, p) * (1 - sm(0.52, 0.66, p)) * 0.18;
-    const choreography = eclipseState(appear, dispersion, reading.current);
+    // The dispersion peak is the approved climax: reading protection releases half of
+    // its dimming there, and fully returns as the peak fades into the next sections.
+    const choreography = eclipseState(appear, dispersion, reading.current * (1 - 0.5 * peakNow));
     let fit = { scale: 1 };
-    if (protectedBounds.current && eclMesh.current && eg) {
-      eg.updateMatrixWorld(true);
-      eclMesh.current.getWorldPosition(eclWorld);
+    if (protectedBounds.current && eg) {
+      eclWorld.copy(eg.position);
       const currentPlane = viewport.getCurrentViewport(camera, eclWorld);
-      const radius = eg.scale.x * 0.5 / currentPlane.height;
+      const radius = eg.scale.x / currentPlane.height;
       eclTmp.copy(eclWorld).project(camera);
       fit = haloFit(eclipseClearance(protectedBounds.current, (eclTmp.x + 1) / 2, (1 - eclTmp.y) / 2, viewport.aspect), radius);
     }
@@ -534,18 +616,22 @@ function Monogram({ mobile }: { mobile: boolean }) {
     setUniform(u, "uScatter", (1 - born.current) * 0.9 + breathe + 0.35 * sm(0.2, 0.9, dispersion) + Math.abs(spin.current) * 0.1);
     setUniform(u, "uAlpha", choreography.particleAlpha * (1 - chor.dim * reading.current) * (mobile ? 0.8 : 1.25));
 
-    // Eclipse: o disco escuro desliza até cobrir o centro, a coroa se acende por trás (contraluz).
-    const eu = ecl.uniforms;
-    setUniform(eu, "uTime", t);
-    const e = born.current;
-    const offset = eu["uOff"]?.value;
-    if (offset instanceof THREE.Vector2) offset.set(0.42 * (1 - e) + Math.sin(t * 0.2) * 0.012, 0.12 * (1 - e) + Math.cos(t * 0.17) * 0.01);
-    haloLevel.current = damp(haloLevel.current, choreography.halo, 3.5, dt);
-    // Near reading content the eclipse recedes gently in light only; it never shrinks or switches off.
+    // Halo light: discreet backlight in formation, full at the dispersion peak, receding while
+    // reading. Near text it only dims (haloFit); it never moves or shrinks to dodge it.
     haloFitLevel.current = damp(haloFitLevel.current, 0.55 + 0.45 * fit.scale, 2, dt);
-    setUniform(eu, "uAlpha", haloLevel.current * haloFitLevel.current);
-    setUniform(eu, "uPeak", choreography.peak);
-    setUniform(eu, "uSoftness", choreography.softness);
+    const readEff = reading.current * (1 - choreography.peak) * HALO.read;
+    const light = born.current * appear * haloFitLevel.current;
+    const ru = ring.uniforms;
+    setUniform(ru, "uTime", t);
+    setUniform(ru, "uRead", readEff);
+    setUniform(ru, "uPeak", choreography.peak);
+    setUniform(ru, "uCore", apexMix);
+    setUniform(ru, "uGlow", light * HALO.bri * (0.4 + 0.6 * choreography.peak) * (1 - 0.55 * readEff));
+    const hu = (halo.material as THREE.ShaderMaterial).uniforms;
+    setUniform(hu, "uTime", t);
+    setUniform(hu, "uSpread", dispersion * HALO.apex);
+    setUniform(hu, "uSwirl", swirl.current);
+    setUniform(hu, "uAlpha", light * (0.55 + 0.45 * dispersion) * (1 - 0.5 * readEff) * (mobile ? 0.8 : 1));
 
     stars.current.forEach((m, i) => {
       if (!m) return;
@@ -560,11 +646,15 @@ function Monogram({ mobile }: { mobile: boolean }) {
   return (
     <>
       <group ref={eclGroup} visible={false}>
-        <mesh ref={eclMesh} material={ecl}>
-          <planeGeometry args={[1, 1]} />
-        </mesh>
+        <group ref={tiltGroup}>
+          <mesh material={ring} scale={3} renderOrder={1}>
+            <planeGeometry args={[1, 1]} />
+          </mesh>
+          <primitive object={halo} />
+        </group>
       </group>
       <group ref={vGroup} visible={false}>
+      <mesh ref={vMask} geometry={maskGeo} material={maskMat} renderOrder={0} />
       <primitive object={vPts} />
       {[0.2, 0.13, 0.09].map((sc, i) => (
         <mesh
