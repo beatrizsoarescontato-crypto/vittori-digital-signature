@@ -112,6 +112,9 @@ export function peakPocket(bounds: ReadingBounds[], aspect: number, prev?: { x: 
  * viewport-height units) instead of the four fixed corners.
  */
 export function sectionChoreography(side: TextSide, mobile: boolean, bounds?: ReadingBounds[], peak = 0, aspect?: number, prev?: { x: number; y: number } | null) {
+  // No active section (hero, transitions): the V keeps its own composition; reading
+  // protection must never reposition it just because text boxes exist on screen.
+  if (side === "none") return { active: false, x: 0, y: 0, zOffset: 0, scale: 1, readingSafety: 0, dim: 0, radius: 0, pocket: null };
   if (bounds) {
     const radius = 0.1 + (mobile ? 0.03 : 0.06) * peak;
     let placement = readingPlacement(bounds, radius);
@@ -156,7 +159,6 @@ export function sectionChoreography(side: TextSide, mobile: boolean, bounds?: Re
     const k = clear ? peak : 0;
     return { active: true, x, y, zOffset: -9 + (mobile ? 3 : 5.5) * k, scale: 0.34 + (mobile ? 0.12 : 0.26) * k, readingSafety: 1 - 0.7 * k, dim: 0.35 * (1 - 0.8 * k), radius: 0, pocket: null };
   }
-  if (side === "none") return { active: false, x: 0, y: 0, zOffset: 0, scale: 1, readingSafety: 0, dim: 0, radius: 0, pocket: null };
   if (mobile || side === "wide") return { active: true, x: mobile ? 0 : 0.36, y: mobile ? 0.36 : 0.3, zOffset: -9, scale: 0.42, readingSafety: 1, dim: 0.5, radius: 0, pocket: null };
   return { active: true, x: side === "left" ? 0.3 : -0.3, y: 0, zOffset: -2.5, scale: 0.75, readingSafety: 0.6, dim: 0.2, radius: 0, pocket: null };
 }
