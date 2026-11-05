@@ -335,20 +335,20 @@ void main() {
   float r = length(p);
   vec2 q = p - uOff;
   float rq = length(q);
-  float disc = 0.22;
-  float core = 1.0 - smoothstep(disc - 0.004, disc + 0.004, rq);
-  float rim = exp(-pow((rq - disc) * mix(38.0, 14.0, uSoftness), 2.0));
+  float disc = 0.2;
+  float core = 1.0 - smoothstep(disc - 0.02, disc + 0.012, rq);
+  float rim = exp(-pow((rq - disc) * mix(30.0, 10.0, uSoftness), 2.0));
   float ang = atan(q.y, q.x);
   float rays = 0.55 + 0.45 * sin(ang * 9.0 + uTime * 0.25) * sin(ang * 4.0 - uTime * 0.18);
-  float corona = exp(-max(0.0, rq - disc) * 9.0) * (1.0 - core) * rays;
+  float corona = exp(-max(0.0, rq - disc) * 6.0) * (1.0 - core) * rays;
   float halo = exp(-r * mix(4.2, 3.0, uPeak)) * (0.35 + 0.45 * uPeak);
   vec3 gold = vec3(0.95, 0.76, 0.42);
   float arc = mix(0.18 + 0.82 * pow(0.5 + 0.5 * cos(ang - 0.6), 2.0), 1.0, uPeak);
   float glow = 0.7 + 0.8 * uPeak;
-  // Wide diffuse crown (approved EclipseGlow reference): grows with the dispersion peak.
-  float crown = exp(-pow((rq - 0.3) * 10.0, 2.0)) * 0.7 * uPeak * (1.0 - core);
+  // Wide diffuse crown (approved EclipseGlow reference): soft ring, grows with the dispersion peak.
+  float crown = exp(-pow((rq - 0.36) * 6.5, 2.0)) * 0.7 * uPeak * (1.0 - core);
   vec3 col = gold * (rim * (1.2 + 0.6 * uPeak) * arc + corona * glow + halo + crown * 1.3);
-  float a = max(core * 0.92, clamp(rim * 1.2 * arc + corona * (0.85 + 0.5 * uPeak) + halo + crown, 0.0, 1.0));
+  float a = max(core * 0.85, clamp(rim * 1.2 * arc + corona * (0.85 + 0.5 * uPeak) + halo + crown, 0.0, 1.0));
   vec3 dark = vec3(0.05, 0.01, 0.02);
   gl_FragColor = vec4(mix(col, dark, core), a * uAlpha * (1.0 - smoothstep(0.36, 0.5, r)));
 }`;
