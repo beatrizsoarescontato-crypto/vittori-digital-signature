@@ -14,7 +14,7 @@
 type Listener = (on: boolean) => void;
 
 const SRC = "/vittori-trilha.mp3";
-const VOLUME = 0.55; // fundo para leitura: presente, sem competir com o texto
+const VOLUME = 0.3; // fundo para leitura: presente, sem competir com o texto
 const FADE_IN = 2.5; // segundos ao ligar
 const FADE_OUT = 0.8; // segundos ao desligar
 const LOOP_FADE = 6; // segundos de mistura entre o fim e o começo da faixa
