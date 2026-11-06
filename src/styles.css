@@ -394,6 +394,17 @@ html:not([data-phase="inside"]) .site-layer { opacity: 0; visibility: hidden; po
 }
 
 /* Universo de fundo: aparece já no primeiro paint e quando o 3D está desligado. */
+/* Mobile menu: a translucent veil over the living scene instead of a flat black sheet,
+   so the infinite background (nebula, dust, stars) keeps showing through. */
+.menu-sheet {
+  background:
+    radial-gradient(ellipse at 78% 18%, color-mix(in oklab, var(--bordo-dark) 55%, transparent) 0%, transparent 62%),
+    radial-gradient(ellipse at 10% 95%, color-mix(in oklab, var(--bordo) 18%, transparent) 0%, transparent 55%),
+    color-mix(in oklab, var(--preto) 70%, transparent);
+  -webkit-backdrop-filter: blur(16px) saturate(1.15);
+  backdrop-filter: blur(16px) saturate(1.15);
+}
+.menu-sheet a { border-color: color-mix(in oklab, var(--dourado) 16%, transparent); }
 /* Portal loading star: visible from the first paint until the 3D portal begins. */
 .portal-loader { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; opacity: 0; transition: opacity .8s ease; }
 html[data-phase="portal"]:not([data-portal-step]) .portal-loader,
@@ -490,7 +501,7 @@ html[data-phase="portal"][data-portal-step="0"] .portal-loader { opacity: 1; }
 .t-label { font-size: .875rem; letter-spacing: 0; text-transform: uppercase; font-weight: 600; color: var(--dourado); }
 .t-title { font-family: var(--font-serif); font-size: 2.25rem; line-height: 1.12; font-weight: 500; color: var(--marfim); }
 .t-body { font-size: 1rem; line-height: 1.8; font-weight: 400; color: color-mix(in oklab, var(--marfim) 90%, transparent); }
-.t-meta { font-size: 1rem; line-height: 1.7; font-weight: 400; color: color-mix(in oklab, var(--marfim) 78%, transparent); }
+.t-meta { font-size: 1rem; line-height: 1.7; font-weight: 400; color: color-mix(in oklab, var(--marfim) 88%, transparent); }
 
 /* Botões */
 .vbtn {
