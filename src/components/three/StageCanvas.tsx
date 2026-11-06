@@ -478,6 +478,9 @@ function Monogram({ mobile }: { mobile: boolean }) {
   const section = useRef<TextSide>("none");
   const protectedBounds = useRef<ReadingBounds[] | undefined>(undefined);
   const haloFitLevel = useRef(1);
+  // The V + eclipse choreography belongs to the home page only. On internal pages they fade
+  // out and stop drawing, leaving just the infinite background (nebula + dust).
+  const homeLevel = useRef(typeof window !== "undefined" && window.location.pathname !== "/" ? 0 : 1);
   const stage = useRef<Stage>({ ...(STAGES[0] as Stage) });
   const stagePlane = useMemo(() => new THREE.Vector3(), []);
   const dispersionLevel = useRef(0);
@@ -584,9 +587,13 @@ function Monogram({ mobile }: { mobile: boolean }) {
     const p = stageScroll.p;
     const vg = vGroup.current;
     if (!vg) return;
-    const appear = sm(0.5, 1, stageScroll.dive);
+    homeLevel.current = damp(homeLevel.current, window.location.pathname === "/" ? 1 : 0, 2.5, dt);
+    const appear = sm(0.5, 1, stageScroll.dive) * homeLevel.current;
     vg.visible = appear > 0.001;
-    if (!vg.visible) return;
+    if (!vg.visible) {
+      if (eclGroup.current) eclGroup.current.visible = false;
+      return;
+    }
     if (stageScroll.dive > 0.65 && formationStart.current === null) formationStart.current = t;
     born.current = formationStart.current === null ? 0 : sm(0, 2.1, t - formationStart.current);
     spin.current = damp(spin.current, stageScroll.vel, 2.2, dt);
@@ -718,22 +725,59 @@ uniform float uTravel;
 float h(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float n(vec2 p){ vec2 i=floor(p), f=fract(p); f=f*f*(3.0-2.0*f);
   return mix(mix(h(i),h(i+vec2(1,0)),f.x), mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x), f.y); }
-float fbm(vec2 p){ float v=0.0, a=0.5; for(int i=0;i<5;i++){ v+=a*n(p); p*=2.03; a*=0.5; } return v; }
+float fbm(vec2 p){ float v=0.0, a=0.5; for(int i=0;i<5;i++){ v+=a*n(p); p=p*2.03+vec2(1.7,9.2); a*=0.5; } return v; }
+float fbm4(vec2 p){ float v=0.0, a=0.5; for(int i=0;i<4;i++){ v+=a*n(p); p=p*2.11+vec2(5.1,2.3); a*=0.5; } return v; }
+// Ridged noise: thin dark dust lanes that give the clouds real structure.
+float ridge(vec2 p){ float v=0.0, a=0.5; for(int i=0;i<4;i++){ float r=1.0-abs(n(p)*2.0-1.0); v+=a*r*r; p=p*2.07+vec2(3.3,7.7); a*=0.5; } return v; }
+// Soft elliptical mass of gas; its centre drifts as the visitor scrolls, so every
+// section of the page sees a different sky (the "infinite" background keeps changing).
+float mass(vec2 uv, vec2 c, vec2 s){ return exp(-length((uv - c) * s) * 2.0); }
 void main(){
   vec2 uv = vUv - 0.5;
-  vec2 q = uv * 3.2 + vec2(uTime * 0.004, uTravel * 0.025);
+  float tr = uTravel;
+  // Far layer: large slow clouds (moves little with scroll).
+  vec2 q = uv * 2.6 + vec2(uTime * 0.003, tr * 0.018);
   vec2 warp = vec2(fbm(q + vec2(1.7, 8.2)), fbm(q + vec2(8.3, 2.8)));
-  float f = fbm(q + 1.8 * warp);
-  float massA = exp(-length((uv - vec2(-0.28, 0.18)) * vec2(2.0, 3.2)) * 2.0);
-  float massB = exp(-length((uv - vec2(0.30, -0.08)) * vec2(3.4, 1.8)) * 2.0);
-  float massC = exp(-length((uv - vec2(0.08, 0.33)) * 4.0) * 2.0);
-  vec3 deep = vec3(0.013, 0.003, 0.005);
-  vec3 wine = vec3(0.14, 0.012, 0.026);
-  vec3 bordo = vec3(0.25, 0.025, 0.045);
-  float density = smoothstep(0.30, 0.78, f);
-  vec3 col = deep + wine * density * massA + bordo * density * massB * 0.62;
-  col += vec3(0.085, 0.020, 0.027) * pow(f, 3.0) * massC;
-  col *= 1.0 - smoothstep(0.28, 0.75, length(uv)) * 0.55;
+  float far = fbm(q + 1.9 * warp);
+  // Near layer: finer wisps, moves faster with scroll (parallax = depth).
+  vec2 q2 = uv * 5.2 + vec2(-uTime * 0.006, tr * 0.06) + warp * 0.6;
+  float near = fbm4(q2);
+  float lanes = ridge(uv * 4.4 + vec2(tr * 0.04, -tr * 0.012) + warp * 0.9);
+
+  vec2 cA = vec2(-0.30 + 0.10 * sin(tr * 0.35), 0.20 + 0.08 * cos(tr * 0.27));
+  vec2 cB = vec2(0.30 + 0.06 * cos(tr * 0.31), -0.06 + 0.12 * sin(tr * 0.22));
+  vec2 cC = vec2(0.20 + 0.07 * sin(tr * 0.19 + 1.3), 0.08 - 0.07 * sin(tr * 0.29)); // light source, behind the V
+  float mA = mass(uv, cA, vec2(1.8, 3.0));
+  float mB = mass(uv, cB, vec2(2.6, 1.7));
+  float mC = mass(uv, cC, vec2(3.2, 3.6));
+
+  vec3 deep = vec3(0.012, 0.003, 0.005);
+  vec3 wine = vec3(0.15, 0.013, 0.028);
+  vec3 bordo = vec3(0.27, 0.03, 0.05);
+  vec3 rose = vec3(0.30, 0.07, 0.09);
+  vec3 ember = vec3(0.34, 0.17, 0.07); // faint warm gold in the densest cores
+
+  float dFar = smoothstep(0.42, 0.86, far);            // clouds with real voids between them
+  float dNear = smoothstep(0.48, 0.88, near);
+  float dust = smoothstep(0.72, 0.98, lanes) * 0.75;   // thin dark filaments
+  vec3 col = deep;
+  col += wine * dFar * (0.22 + 1.25 * mA);
+  col += bordo * dFar * mB * 1.05;
+  col += rose * dNear * dFar * (0.65 * mB + 0.4 * mA);
+  // Luminous core: a warm gold-rose glow where the densest gas meets the right-hand mass.
+  float core = smoothstep(0.52, 0.92, far) * smoothstep(0.35, 0.9, near) * mC;
+  col += ember * core * 0.9;
+  // The gas facing the light source glows: lit cloud edges plus a soft inner light.
+  vec2 dl = uv - cC;
+  float lightFall = exp(-dot(dl * vec2(2.6, 3.4), dl * vec2(2.6, 3.4)));
+  float rim = dFar * (1.0 - dFar) * 4.0;
+  col += mix(rose, ember, 0.22) * (rim * 0.24 + dFar * 0.10) * lightFall;
+  col += ember * 0.045 * lightFall * lightFall;
+  col *= 1.0 - dust * (0.35 + 0.65 * dFar);
+  // Reading side (left) stays deeper; light gathers to the right, behind the V.
+  float side = smoothstep(-0.55, 0.35, uv.x);
+  col *= 0.62 + 0.38 * side;
+  col *= 1.0 - smoothstep(0.30, 0.78, length(uv * vec2(1.0, 1.25))) * 0.55;
   gl_FragColor = vec4(col, 1.0);
 }`;
 
