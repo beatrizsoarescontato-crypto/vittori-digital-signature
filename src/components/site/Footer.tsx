@@ -3,7 +3,7 @@ import { EMAIL, INSTAGRAM, VITTORI_WHATS_LABEL, whatsappLink } from "@/lib/conta
 
 export function Footer() {
   return (
-    <footer className="footer-fade relative z-10 py-7 md:py-6">
+    <footer className="footer-fade relative z-10 pt-7 pb-24 md:pt-6 md:pb-20">
       <div className="mx-auto grid max-w-[1440px] items-start gap-6 px-6 md:grid-cols-12 md:gap-8 md:px-12">
         <div className="md:col-span-3">
           <p className="font-serif text-2xl font-light leading-none text-marfim">

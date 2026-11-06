@@ -78,7 +78,7 @@ export function Nav() {
       </div>
 
       <div
-        className={`fixed inset-0 z-40 flex flex-col justify-center gap-2 bg-preto px-8 transition-all duration-500 lg:hidden ${
+        className={`menu-sheet fixed inset-0 z-40 flex flex-col justify-center gap-2 px-8 transition-all duration-500 lg:hidden ${
           open ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
         }`}
       >
@@ -88,7 +88,7 @@ export function Nav() {
             to={l.to}
             {...("hash" in l ? { hash: l.hash } : {})}
             onClick={() => setOpen(false)}
-            className="border-b border-border/40 py-4 font-serif text-4xl font-light text-marfim"
+            className="border-b border-border/40 py-4 font-serif text-4xl font-normal text-marfim"
           >
             {l.label}
           </Link>
