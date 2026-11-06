@@ -43,11 +43,13 @@ export function EntryGate() {
     window.addEventListener("scroll", prender, { passive: true });
     setVisivel(true);
     const progress = () => {
+      // Lets CSS hide the loading star (SiteShell) as soon as the 3D portal starts.
+      document.documentElement.dataset["portalStep"] = String(stageScroll.portalStep);
       setSequence(stageScroll.portalStep);
       if (stageScroll.portalStep >= 5) setPronto(true);
     };
     const ready = () => progress();
-    const unavailable = () => { setSimplificado(true); setSequence(5); setPronto(true); };
+    const unavailable = () => { document.documentElement.dataset["portalStep"] = "5"; setSimplificado(true); setSequence(5); setPronto(true); };
     window.addEventListener("vittori-scene-ready", ready);
     window.addEventListener("vittori-portal-progress", progress);
     window.addEventListener("vittori-scene-unavailable", unavailable);

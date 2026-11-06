@@ -50,6 +50,8 @@ export function SiteShell({ children, fab = true }: { children: ReactNode; fab?:
     <div className="grain relative min-h-screen bg-preto">
       <ScrollRevealController />
       <div aria-hidden="true" className="stage-fallback pointer-events-none fixed inset-0 z-0">
+        {/* Shown from the very first paint while the 3D portal loads; fades out when it starts. */}
+        <div className="portal-loader"><span className="portal-loader-star">✦</span><span className="portal-loader-line"><i /></span></div>
         <ClientStage />
       </div>
        <div ref={layer} className="site-layer">
