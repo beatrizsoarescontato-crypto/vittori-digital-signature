@@ -39,7 +39,15 @@ let crossing = false;
 function build(): Graph | null {
   const AC = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
   if (!AC) return null;
-  const c = new AC();
+  // "playback" asks the browser for larger audio buffers. On phones, the 3D scene can keep
+  // the main thread busy while scrolling; with the default low-latency buffers the music
+  // then crackles or distorts. A background soundtrack doesn't need low latency.
+  let c: AudioContext;
+  try {
+    c = new AC({ latencyHint: "playback" });
+  } catch {
+    c = new AC();
+  }
   const master = c.createGain();
   master.gain.value = 0;
   master.connect(c.destination);
