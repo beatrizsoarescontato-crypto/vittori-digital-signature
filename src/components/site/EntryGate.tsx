@@ -25,7 +25,9 @@ export function EntryGate() {
     try { stored = Boolean(sessionStorage.getItem(KEY)); } catch { /* Storage may be blocked. */ }
     // Visitors from paid ads (UTM, Meta or Google click ids) land straight on the hero.
     const anuncio = /[?&](utm_[a-z]+|fbclid|gclid)=/i.test(window.location.search);
-    if (stored || reduz || anuncio) {
+    // The cinematic portal belongs to the home page; internal pages open straight on content.
+    const interna = window.location.pathname !== "/";
+    if (stored || reduz || anuncio || interna) {
       skipPortal();
       document.documentElement.dataset["phase"] = "inside";
       return;
