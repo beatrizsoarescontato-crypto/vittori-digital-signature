@@ -542,6 +542,8 @@ function Monogram({ mobile }: { mobile: boolean }) {
         fragmentShader: ringFrag,
         transparent: true,
         depthWrite: false,
+        // The soft glow is never hidden by the eclipse mask (that hiding drew a dark V "shadow").
+        depthTest: false,
         fog: false,
         side: THREE.DoubleSide,
         blending: THREE.AdditiveBlending,
@@ -633,10 +635,9 @@ function Monogram({ mobile }: { mobile: boolean }) {
       tg.rotation.y = mix(mouse.x * 0.07 + spin.current * 0.1, 0.18 + mouse.x * 0.2 + screens * 0.35);
       tg.rotation.z = mix(t * 0.02 + screens * 0.45, t * 0.03 + screens * 0.6) + swirl.current * 0.2;
     }
-    if (vMask.current) {
-      vMask.current.scale.setScalar(Math.max(0.0001, 1 - sm(0.08, 0.4, dispersion)));
-      vMask.current.visible = born.current > 0.5 && dispersion < 0.4;
-    }
+    // The mask only hides ring particles behind a fully formed V; it never shows while the
+    // V is still assembling or dispersing, so no V-shaped silhouette appears.
+    if (vMask.current) vMask.current.visible = born.current > 0.98 && dispersion < 0.1;
     let fit = { scale: 1 };
     if (protectedBounds.current && eg) {
       eclWorld.copy(eg.position);
@@ -938,6 +939,7 @@ function DustLayer({ count, size, speed, color, spread }: { count: number; size:
       fragmentShader: dustFrag,
       transparent: true,
       depthWrite: false,
+      depthTest: false,
       blending: THREE.AdditiveBlending,
       uniforms: {
         uTravel: { value: 0 },
