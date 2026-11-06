@@ -1,6 +1,11 @@
 import { Component, lazy, Suspense, useEffect, useState, type ReactNode } from "react";
 
-const StageCanvas = lazy(() => import("./three/StageCanvas"));
+// Start downloading the 3D scene as soon as this module runs in the browser, in parallel
+// with hydration, instead of only after the first render. The import is cached, so lazy()
+// below reuses the same request.
+const loadStage = () => import("./three/StageCanvas");
+if (typeof window !== "undefined" && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) void loadStage().catch(() => undefined);
+const StageCanvas = lazy(loadStage);
 
 class SceneBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
   override state = { failed: false };
