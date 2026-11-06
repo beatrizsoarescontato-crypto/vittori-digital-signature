@@ -340,8 +340,10 @@ type Stage = { x: number; y: number; z: number; s: number; disp: number; glow: n
 const STAGES: (Stage & { t: number })[] = [
   { t: 0.0, x: 0.22, y: 0.02, z: 0, s: 1.0, disp: 0, glow: 0.4, tilt: 0.02, tilt1: 0.3, spread: 0, haloS: 1.0, read: 0 },
   { t: 0.3, x: 0.22, y: 0.04, z: -0.2, s: 1.0, disp: 0.15, glow: 0.55, tilt: 0.05, tilt1: 0.45, spread: 0.05, haloS: 1.05, read: 0 },
-  { t: 0.75, x: 0.2, y: 0.06, z: -0.6, s: 1.05, disp: 1, glow: 1.0, tilt: 0.16, tilt1: 1, spread: 1, haloS: 1.55, read: 0 },
-  { t: 1.25, x: 0.26, y: 0.14, z: -2.5, s: 1.0, disp: 0.75, glow: 0.75, tilt: 0.12, tilt1: 0.9, spread: 0.8, haloS: 1.4, read: 0.35 },
+  // Peak rises into the upper right so the tilted ring passes above the paragraph of
+  // "Você sabe o valor" instead of crossing it.
+  { t: 0.75, x: 0.2, y: 0.24, z: -0.6, s: 1.05, disp: 1, glow: 1.0, tilt: 0.16, tilt1: 1, spread: 1, haloS: 1.38, read: 0 },
+  { t: 1.25, x: 0.26, y: 0.24, z: -2.5, s: 1.0, disp: 0.75, glow: 0.75, tilt: 0.12, tilt1: 0.9, spread: 0.8, haloS: 1.4, read: 0.35 },
   { t: 2.0, x: 0.32, y: 0.22, z: -6, s: 0.9, disp: 0.35, glow: 0.45, tilt: 0.08, tilt1: 0.7, spread: 0.45, haloS: 1.2, read: 1 },
 ];
 /* Fim da página: o V se refaz ao lado do convite final (aprovado na gravação de 05/11). */
@@ -463,6 +465,30 @@ function haloPoints(count: number, px: number) {
   return pts;
 }
 
+const STAR_SIZES = [0.2, 0.13, 0.09] as const;
+
+/** Shared between the V/eclipse and the bloom driver: how present the halo is (0..1). */
+const glowState = { halo: 0 };
+
+/**
+ * The approved preview used a stronger, lower-threshold bloom than the site (0.7 / 0.62
+ * against 0.32 / 1.05). Raising it globally would change the approved portal, so the
+ * bloom moves to the preview values only while the V and eclipse are on screen.
+ */
+type BloomLike = { intensity: number; luminanceMaterial: { threshold: number } };
+function BloomDriver({ target }: { target: { current: BloomLike | null } }) {
+  const level = useRef(0);
+  useFrame((_, delta) => {
+    const e = target.current;
+    if (!e) return;
+    level.current = damp(level.current, glowState.halo, 3, Math.min(delta, 0.05));
+    const g = level.current;
+    e.intensity = EXPERIENCE.bloomStrength + (0.7 - EXPERIENCE.bloomStrength) * g;
+    e.luminanceMaterial.threshold = 1.05 + (0.62 - 1.05) * g;
+  });
+  return null;
+}
+
 function Monogram({ mobile }: { mobile: boolean }) {
   const { viewport, gl, camera } = useThree();
   const vGroup = useRef<THREE.Group>(null);
@@ -557,7 +583,7 @@ function Monogram({ mobile }: { mobile: boolean }) {
       }),
     [],
   );
-  const halo = useMemo(() => haloPoints(HALO.pts * (mobile ? 0.45 : 1), gl.getPixelRatio()), [mobile, gl]);
+  const halo = useMemo(() => haloPoints(HALO.pts * (mobile ? 0.3 : 1), gl.getPixelRatio()), [mobile, gl]);
   useEffect(() => () => { maskGeo.dispose(); maskMat.dispose(); ring.dispose(); }, [maskGeo, maskMat, ring]);
   const starMat = useMemo(
     () =>
@@ -597,6 +623,7 @@ function Monogram({ mobile }: { mobile: boolean }) {
     vg.visible = appear > 0.001;
     if (!vg.visible) {
       if (eclGroup.current) eclGroup.current.visible = false;
+      glowState.halo = 0; // portal and internal pages keep the approved, softer bloom
       return;
     }
     if (stageScroll.dive > 0.65 && formationStart.current === null) formationStart.current = t;
@@ -618,7 +645,7 @@ function Monogram({ mobile }: { mobile: boolean }) {
     const base = Math.min(viewport.height * (mobile ? 0.22 : 0.27), viewport.width * (mobile ? 0.34 : 0.2));
     const plane = viewport.getCurrentViewport(camera, stagePlane.set(0, 0, S.z));
     const sx = mobile ? 0 : S.x;
-    const sy = mobile ? S.y + 0.16 : S.y;
+    const sy = mobile ? Math.min(S.y + 0.16, 0.3) : S.y; // phones: keep the ring inside the screen
     vg.position.set(plane.width * sx, plane.height * sy + Math.sin(t * 0.5) * 0.06, S.z - Math.abs(spin.current) * 0.5);
     vg.scale.setScalar(base * S.s);
     // The V faces the viewer so it sits inside the eclipse; it turns only with the mouse,
@@ -638,7 +665,7 @@ function Monogram({ mobile }: { mobile: boolean }) {
       const camZ = camera.position.z;
       const kP = (camZ - zH) / Math.max(0.5, camZ - vg.position.z);
       eg.position.set(vg.position.x * kP, vg.position.y * kP, zH);
-      eg.scale.setScalar(Math.max(0.0001, base * 1.35 * HALO.size * S.haloS * kP));
+      eg.scale.setScalar(Math.max(0.0001, base * 1.35 * HALO.size * S.haloS * kP * (mobile ? 0.82 : 1))); // phones: ring no longer touches the edges
     }
     const tg = tiltGroup.current;
     if (tg) {
@@ -681,14 +708,19 @@ function Monogram({ mobile }: { mobile: boolean }) {
     setUniform(hu, "uRingBright", HALO.bri * HALO.boost);
     setUniform(hu, "uAlpha", light * (0.55 + 0.45 * dispersion) * (1 - 0.5 * S.read * HALO.read) * (mobile ? 0.8 : 1));
 
+    // The gold stars orbit the formed V only. As it disperses they shrink away, so at the
+    // peak (over "Você sabe o valor") they never cross the headline.
+    const starK = 1 - sm(0.12, 0.42, dispersion);
     stars.current.forEach((m, i) => {
       if (!m) return;
       const a = t * (0.32 + i * 0.07) + i * 2.1 + p * 6;
       m.position.set(Math.cos(a) * 1.9 * (1 - i * 0.12), Math.sin(a * 1.3) * 0.7 + (i - 1) * 0.2, Math.sin(a) * 1.2);
       m.rotation.z += dt * (0.6 + i * 0.2);
       m.rotation.y += dt * 0.3;
-      m.visible = appear > 0.6;
+      m.scale.setScalar(Math.max(0.0001, (STAR_SIZES[i] ?? 0.1) * starK));
+      m.visible = appear > 0.6 && starK > 0.01;
     });
+    glowState.halo = light;
   });
 
   return (
@@ -704,7 +736,7 @@ function Monogram({ mobile }: { mobile: boolean }) {
       <group ref={vGroup} visible={false}>
       <mesh ref={vMask} geometry={maskGeo} material={maskMat} renderOrder={0} />
       <primitive object={vPts} />
-      {[0.2, 0.13, 0.09].map((sc, i) => (
+      {STAR_SIZES.map((sc, i) => (
         <mesh
           key={i}
           ref={(m) => {
@@ -1061,6 +1093,7 @@ function Rig() {
 
 export default function StageCanvas() {
   const mobile = useIsMobile();
+  const bloomRef = useRef<BloomLike | null>(null);
   const signalReady = () => {
     wrap.current?.setAttribute("data-scene-ready", "true");
     window.dispatchEvent(new Event("vittori-scene-ready"));
@@ -1106,8 +1139,9 @@ export default function StageCanvas() {
           {!stageScroll.skipped && <Portal mobile={mobile} />}
           <Monogram mobile={mobile} />
         </Suspense>
+        <BloomDriver target={bloomRef} />
         <EffectComposer multisampling={0} enableNormalPass={false}>
-          <Bloom mipmapBlur intensity={EXPERIENCE.bloomStrength} luminanceThreshold={1.05} luminanceSmoothing={0.25} />
+          <Bloom ref={(e) => { bloomRef.current = e; }} mipmapBlur intensity={EXPERIENCE.bloomStrength} luminanceThreshold={1.05} luminanceSmoothing={0.25} />
           <Vignette offset={0.25} darkness={0.7} />
         </EffectComposer>
       </Canvas>
