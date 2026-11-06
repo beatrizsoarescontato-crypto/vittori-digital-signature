@@ -24,9 +24,18 @@ export function SceneReadiness({ onReady }: { onReady: () => void }) {
     stageScroll.portalStartedAt = null;
     stageScroll.portalStep = 0;
     gl.info.autoReset = false;
-    gl.compileAsync(scene, camera).then(() => { if (active) warm.current = true; }).catch(() => { if (active) warm.current = true; });
+    // Safety net: three.js's compileAsync can stall (it throws internally when a material's
+    // program is swapped or disposed while it polls), which used to leave the portal stuck
+    // forever. After 2.5 s the scene proceeds anyway; shaders finish compiling on first draw.
+    const markWarm = () => { if (active) warm.current = true; };
+    const safety = window.setTimeout(markWarm, 2500);
+    try {
+      gl.compileAsync(scene, camera).then(markWarm, markWarm);
+    } catch {
+      markWarm();
+    }
     if (import.meta.env.DEV) window.__vittori = { report: () => reports.current.slice(), state: () => ({ ...stageScroll }) };
-    return () => { active = false; gl.info.autoReset = true; if (import.meta.env.DEV) delete window.__vittori; };
+    return () => { active = false; window.clearTimeout(safety); gl.info.autoReset = true; if (import.meta.env.DEV) delete window.__vittori; };
   }, [gl, scene, camera]);
   useFrame((state) => {
     const now = performance.now();

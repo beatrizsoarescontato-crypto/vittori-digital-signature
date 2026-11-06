@@ -549,13 +549,15 @@ function Monogram({ mobile }: { mobile: boolean }) {
         depthTest: false,
         fog: false,
         side: THREE.DoubleSide,
+        // One pass for both faces. Without this, three.js draws transparent double-sided
+        // materials twice and keeps swapping shader programs, which broke compileAsync.
+        forceSinglePass: true,
         blending: THREE.AdditiveBlending,
         uniforms: { uTime: { value: 0 }, uK: { value: HALO.def }, uGlow: { value: 0 }, uRead: { value: 0 }, uPeak: { value: 0 }, uCore: { value: 0 } },
       }),
     [],
   );
   const halo = useMemo(() => haloPoints(HALO.pts * (mobile ? 0.45 : 1), gl.getPixelRatio()), [mobile, gl]);
-  useEffect(() => () => { halo.geometry.dispose(); (halo.material as THREE.Material).dispose(); }, [halo]);
   useEffect(() => () => { maskGeo.dispose(); maskMat.dispose(); ring.dispose(); }, [maskGeo, maskMat, ring]);
   const starMat = useMemo(
     () =>
@@ -587,7 +589,10 @@ function Monogram({ mobile }: { mobile: boolean }) {
     const p = stageScroll.p;
     const vg = vGroup.current;
     if (!vg) return;
-    homeLevel.current = damp(homeLevel.current, window.location.pathname === "/" ? 1 : 0, 2.5, dt);
+    // Leaving the home page the V and eclipse vanish almost at once (~0.3 s), so they never
+    // show on an internal page; coming back home they return calmly.
+    const onHome = window.location.pathname === "/";
+    homeLevel.current = damp(homeLevel.current, onHome ? 1 : 0, onHome ? 2.5 : 10, dt);
     const appear = sm(0.5, 1, stageScroll.dive) * homeLevel.current;
     vg.visible = appear > 0.001;
     if (!vg.visible) {
@@ -739,10 +744,22 @@ void main(){
   vec2 q = uv * 2.6 + vec2(uTime * 0.003, tr * 0.018);
   vec2 warp = vec2(fbm(q + vec2(1.7, 8.2)), fbm(q + vec2(8.3, 2.8)));
   float far = fbm(q + 1.9 * warp);
-  // Near layer: finer wisps, moves faster with scroll (parallax = depth).
-  vec2 q2 = uv * 5.2 + vec2(-uTime * 0.006, tr * 0.06) + warp * 0.6;
-  float near = fbm4(q2);
-  float lanes = ridge(uv * 4.4 + vec2(tr * 0.04, -tr * 0.012) + warp * 0.9);
+  // Flying through the nebula: three wisp layers loop from the distance to the viewer.
+  // Each one starts small near the vanishing point (behind the V), grows as it approaches
+  // and fades out as it passes, so the gas streams past in depth. Scrolling speeds the
+  // flight; at rest it keeps drifting slowly forward.
+  vec2 vp = vec2(0.16, 0.06);
+  float near = 0.0, lanes = 0.0;
+  for (int i = 0; i < 3; i++) {
+    float fi = float(i);
+    float z = fract(tr * 0.22 + uTime * 0.008 + fi / 3.0);
+    float sc = 9.0 * exp(-1.4 * z);              // 9.0 -> 2.2: the layer approaches
+    float w = sin(3.14159265 * z); w *= w;        // the three weights always sum to 1.5
+    vec2 lp = (uv - vp) * sc + vec2(fi * 4.7, fi * 2.3);
+    near += fbm4(lp + warp * 0.5) * w;
+    lanes += ridge(lp * 0.85 + vec2(2.1, 5.3)) * w;
+  }
+  near /= 1.5; lanes /= 1.5;
 
   vec2 cA = vec2(-0.30 + 0.10 * sin(tr * 0.35), 0.20 + 0.08 * cos(tr * 0.27));
   vec2 cB = vec2(0.30 + 0.06 * cos(tr * 0.31), -0.06 + 0.12 * sin(tr * 0.22));
@@ -757,26 +774,28 @@ void main(){
   vec3 rose = vec3(0.30, 0.07, 0.09);
   vec3 ember = vec3(0.34, 0.17, 0.07); // faint warm gold in the densest cores
 
-  float dFar = smoothstep(0.42, 0.86, far);            // clouds with real voids between them
-  float dNear = smoothstep(0.48, 0.88, near);
-  float dust = smoothstep(0.72, 0.98, lanes) * 0.75;   // thin dark filaments
+  // The distant layer is only a dim veil; the clouds you see are the approaching layers.
+  float dFar = smoothstep(0.42, 0.86, far);
+  float cloud = smoothstep(0.36, 0.70, near);
+  float dust = smoothstep(0.62, 0.90, lanes) * 0.8;    // thin dark filaments, also in flight
   vec3 col = deep;
-  col += wine * dFar * (0.22 + 1.25 * mA);
-  col += bordo * dFar * mB * 1.05;
-  col += rose * dNear * dFar * (0.65 * mB + 0.4 * mA);
-  // Luminous core: a warm gold-rose glow where the densest gas meets the right-hand mass.
-  float core = smoothstep(0.52, 0.92, far) * smoothstep(0.35, 0.9, near) * mC;
+  col += wine * dFar * (0.12 + 0.55 * mA);
+  col += wine * cloud * (0.16 + 0.55 * mA);
+  col += bordo * cloud * (0.08 + 0.62 * mB);
+  col += rose * cloud * cloud * (0.32 * mB + 0.18 * mA);
+  // Luminous core: warm gold where the densest approaching gas meets the light source.
+  float core = smoothstep(0.55, 0.85, near) * smoothstep(0.4, 0.86, far) * mC;
   col += ember * core * 0.9;
-  // The gas facing the light source glows: lit cloud edges plus a soft inner light.
+  // Gas facing the light source glows: lit cloud edges plus a soft inner light.
   vec2 dl = uv - cC;
   float lightFall = exp(-dot(dl * vec2(2.6, 3.4), dl * vec2(2.6, 3.4)));
-  float rim = dFar * (1.0 - dFar) * 4.0;
-  col += mix(rose, ember, 0.22) * (rim * 0.24 + dFar * 0.10) * lightFall;
+  float rim = cloud * (1.0 - cloud) * 4.0;
+  col += mix(rose, ember, 0.22) * (rim * 0.24 + cloud * 0.10) * lightFall;
   col += ember * 0.045 * lightFall * lightFall;
-  col *= 1.0 - dust * (0.35 + 0.65 * dFar);
+  col *= 1.0 - dust * (0.35 + 0.65 * cloud);
   // Reading side (left) stays deeper; light gathers to the right, behind the V.
-  float side = smoothstep(-0.55, 0.35, uv.x);
-  col *= 0.62 + 0.38 * side;
+  float side = smoothstep(-0.30, 0.25, uv.x);
+  col *= 0.25 + 0.75 * side;
   col *= 1.0 - smoothstep(0.30, 0.78, length(uv * vec2(1.0, 1.25))) * 0.55;
   gl_FragColor = vec4(col, 1.0);
 }`;
