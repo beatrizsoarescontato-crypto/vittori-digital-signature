@@ -23,8 +23,13 @@ export function Nav() {
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
+    // While the menu is open the page content fades out (CSS) and the 3D scene hides the
+    // V and eclipse, so only the infinite background shows behind the links.
+    if (open) document.documentElement.dataset["menuOpen"] = "true";
+    else delete document.documentElement.dataset["menuOpen"];
     return () => {
       document.body.style.overflow = "";
+      delete document.documentElement.dataset["menuOpen"];
     };
   }, [open]);
 
