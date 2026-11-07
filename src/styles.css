@@ -590,7 +590,9 @@ html[data-phase="portal"][data-portal-step="0"] .portal-loader { opacity: 1; }
 .svc-copy .vlink { align-self: end; }
 .demo-surface { background: linear-gradient(145deg, color-mix(in oklab, var(--bordo-dark) 32%, transparent), color-mix(in oklab, var(--preto) 65%, transparent)); }
 .plan-option { background: linear-gradient(180deg, color-mix(in oklab, var(--dourado) 4%, transparent), transparent 65%); }
-.float-ctl[data-blocked="true"] { opacity: 0; pointer-events: none; visibility: hidden; }
+/* Desktop only: on phones the text spans the full width, so this hid the sound and WhatsApp
+   buttons for almost the whole page. On phones they stay visible on their dark pill. */
+@media (min-width: 768px) { .float-ctl[data-blocked="true"] { opacity: 0; pointer-events: none; visibility: hidden; } }
 .site-layer main > section > div, .site-layer footer > div { padding-left: max(5rem, env(safe-area-inset-left)); padding-right: max(5rem, env(safe-area-inset-right)); }
 .internal-page p, .internal-page li { overflow-wrap: break-word; }
 .internal-page .text-sm, .internal-page .text-xs { font-size: 1rem; line-height: 1.8; color: color-mix(in oklab, var(--marfim) 90%, transparent); }
@@ -623,4 +625,15 @@ html[data-phase="portal"][data-portal-step="0"] .portal-loader { opacity: 1; }
   .svc-copy { grid-template-rows: none; }
   .section-heading { font-size: 2.25rem; }
   .internal-page { scroll-margin-top: 5rem; }
+}
+/* Phones: lighter reading rhythm (tester feedback: text felt bigger and denser than on the computer). */
+@media (max-width:767px) {
+  .t-body, .internal-page .t-body, .internal-page .text-sm { font-size: .9375rem; line-height: 1.65; }
+  .t-meta, .internal-page .t-meta, .internal-page .text-xs { font-size: .875rem; line-height: 1.6; }
+  .t-title, .svc-copy .t-title { font-size: 1.625rem; line-height: 1.15; }
+  main h3.text-3xl { font-size: 1.625rem; line-height: 1.2; }
+  .section-heading { font-size: 2rem; }
+  .svc-num { font-size: 3.5rem; }
+  .svc-card { min-height: 0; }
+  .float-ctl { width: 2.75rem; height: 2.75rem; }
 }
