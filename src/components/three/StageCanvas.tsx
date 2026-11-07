@@ -360,7 +360,9 @@ function sampleStage(screens: number, remaining: number): Stage {
   }
   if (screens > last.t) { a = last; b = last; }
   const raw = Math.min(1, Math.max(0, (screens - a.t) / (b.t - a.t || 1)));
-  const e = raw < 0.5 ? 4 * raw ** 3 : 1 - (-2 * raw + 2) ** 3 / 2;
+  // Linear between keyframes: the damping in the frame loop smooths it, and the motion
+  // glides through each section instead of braking to a stop at every keyframe.
+  const e = raw;
   const end = 1 - sm(0.3, 1.6, remaining);
   const out = {} as Stage;
   for (const k of STAGE_KEYS) {
@@ -533,7 +535,19 @@ function Monogram({ mobile }: { mobile: boolean }) {
         }
       }
     };
-    const schedule = () => { if (!frame) frame = requestAnimationFrame(measure); };
+    // Measuring ~80 text boxes forces layout; doing it on every scroll frame cost ~5 ms per
+    // frame and made the scene stutter between sections. The results only dim the halo
+    // (already smoothed), so ~7 measurements per second are plenty.
+    let last = 0;
+    let timer = 0;
+    const schedule = () => {
+      if (frame || timer) return;
+      const wait = Math.max(0, 140 - (performance.now() - last));
+      timer = window.setTimeout(() => {
+        timer = 0;
+        frame = requestAnimationFrame(() => { last = performance.now(); measure(); });
+      }, wait);
+    };
     const resize = new ResizeObserver(schedule);
     const discover = () => {
       resize.disconnect();
@@ -547,7 +561,7 @@ function Monogram({ mobile }: { mobile: boolean }) {
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule);
     discover();
-    return () => { resize.disconnect(); mutations.disconnect(); cancelAnimationFrame(frame); window.removeEventListener("scroll", schedule); window.removeEventListener("resize", schedule); };
+    return () => { resize.disconnect(); mutations.disconnect(); cancelAnimationFrame(frame); window.clearTimeout(timer); window.removeEventListener("scroll", schedule); window.removeEventListener("resize", schedule); };
   }, []);
 
   const vPts = useMemo(() => {
@@ -635,8 +649,12 @@ function Monogram({ mobile }: { mobile: boolean }) {
     // measured in screens, so going down and back up retraces the same path without jumps.
     const vh = window.innerHeight || 1;
     const maxScroll = Math.max(1, document.documentElement.scrollHeight - vh);
-    const screens = (p * maxScroll) / vh;
-    const target = sampleStage(screens, ((1 - p) * maxScroll) / vh);
+    // Read the scroll directly (as in the approved preview). The site's eased progress
+    // (expo.out over 1.35 s) arrives in bursts per wheel notch and, damped again here,
+    // made the V and halo move in jolts.
+    const scrollPx = Math.min(maxScroll, Math.max(0, window.scrollY));
+    const screens = scrollPx / vh;
+    const target = sampleStage(screens, (maxScroll - scrollPx) / vh);
     const S = stage.current;
     for (const k of STAGE_KEYS) S[k] = damp(S[k], target[k], k === "disp" || k === "spread" ? 3.2 : 3.6, dt);
     const dispersion = S.disp;
