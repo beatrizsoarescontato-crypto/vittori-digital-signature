@@ -631,7 +631,7 @@ function Monogram({ mobile }: { mobile: boolean }) {
     if (!vg) return;
     // Leaving the home page the V and eclipse vanish almost at once (~0.3 s), so they never
     // show on an internal page; coming back home they return calmly.
-    const onHome = window.location.pathname === "/";
+    const onHome = window.location.pathname === "/" && document.documentElement.dataset["menuOpen"] !== "true";
     homeLevel.current = damp(homeLevel.current, onHome ? 1 : 0, onHome ? 2.5 : 10, dt);
     const appear = sm(0.5, 1, stageScroll.dive) * homeLevel.current;
     vg.visible = appear > 0.001;
