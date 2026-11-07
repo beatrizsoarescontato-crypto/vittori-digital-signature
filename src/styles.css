@@ -569,6 +569,8 @@ html[data-phase="portal"][data-portal-step="0"] .portal-loader { opacity: 1; }
   /* espaço reservado: o último conteúdo nunca fica sob os controles */
   .site-layer footer { padding-bottom: calc(5.5rem + env(safe-area-inset-bottom)); }
   .glass { background: color-mix(in oklab, var(--preto) 70%, transparent); }
+  /* Keep the Vittori Inteligência card bordô on phones too (the rule above used to override it). */
+  .glass.glass--bordo { background: linear-gradient(160deg, color-mix(in oklab, var(--bordo) 40%, var(--preto)), color-mix(in oklab, var(--bordo-dark) 45%, transparent) 60%, color-mix(in oklab, var(--preto) 78%, transparent)); }
 }
 @media (hover: none) { .glow-edge::before { display: none; } .svc-card { transform: none; } }
 @media (prefers-reduced-motion: reduce) {
