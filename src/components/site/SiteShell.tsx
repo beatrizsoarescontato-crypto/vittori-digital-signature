@@ -38,13 +38,24 @@ export function SiteShell({ children, fab = true }: { children: ReactNode; fab?:
         control.dataset["blocked"] = collision ? "true" : "false";
       }
     };
-    const schedule = () => { if (!frame) frame = requestAnimationFrame(check); };
+    // Reading ~186 element boxes on every scroll frame cost ~5 ms per frame (scene stutter).
+    // Hiding a floating button a fraction of a second later is invisible, so ~7 checks/s.
+    let last = 0;
+    let timer = 0;
+    const schedule = () => {
+      if (frame || timer) return;
+      const wait = Math.max(0, 140 - (performance.now() - last));
+      timer = window.setTimeout(() => {
+        timer = 0;
+        frame = requestAnimationFrame(() => { last = performance.now(); check(); });
+      }, wait);
+    };
     const resize = new ResizeObserver(schedule);
     if (layer.current) resize.observe(layer.current);
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule);
     schedule();
-    return () => { resize.disconnect(); cancelAnimationFrame(frame); window.removeEventListener("scroll", schedule); window.removeEventListener("resize", schedule); delete root.dataset["dockHidden"]; };
+    return () => { resize.disconnect(); cancelAnimationFrame(frame); window.clearTimeout(timer); window.removeEventListener("scroll", schedule); window.removeEventListener("resize", schedule); delete root.dataset["dockHidden"]; };
   }, []);
   return (
     <div className="grain relative min-h-screen bg-preto">
